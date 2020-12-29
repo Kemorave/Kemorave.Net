@@ -6,7 +6,7 @@ namespace Kemorave.SQLite
 {
   public  interface IDBModel
     {
-        [Kemorave.SQLite.SQLiteColumn(Kemorave.SQLite.SQLiteColumnAttribute.DefaultValueBehavior.Populate)]
+        [Kemorave.SQLite.SQLiteProperty(Kemorave.SQLite.SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
         long ID { get; set; }
     }
 }

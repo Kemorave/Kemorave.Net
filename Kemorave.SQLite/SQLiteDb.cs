@@ -301,7 +301,7 @@ namespace Kemorave.SQLite
                 int TORE = 0;
                 System.Reflection.PropertyInfo[] props = type.GetProperties();
 
-                Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
+                Dictionary<string, object> keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props);
                 if (keyValues?.Count <= 0)
                 {
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
@@ -312,7 +312,7 @@ namespace Kemorave.SQLite
                 {
                     foreach (T item in rows)
                     {
-                        keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props, item);
+                        keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props, item);
                         foreach (KeyValuePair<string, object> val in keyValues)
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
@@ -348,7 +348,7 @@ namespace Kemorave.SQLite
 
 
                 System.Reflection.PropertyInfo[] props = type.GetProperties();
-                Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
+                Dictionary<string, object> keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props);
                 if (keyValues?.Count <= 0)
                 {
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
@@ -359,7 +359,7 @@ namespace Kemorave.SQLite
                 {
                     foreach (T item in rows)
                     {
-                        keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props, item);
+                        keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props, item);
                         foreach (KeyValuePair<string, object> val in keyValues)
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
@@ -429,7 +429,7 @@ namespace Kemorave.SQLite
             System.Reflection.PropertyInfo[] props = type.GetProperties();
             using (SQLiteDataReader reader = GetCommand($"SELECT {selection} FROM {tableName} {condition}").ExecuteReader())
             {
-                Dictionary<string, object> values = SQLiteColumnAttribute.GetPopulateProperties(type, props);
+                Dictionary<string, object> values = SQLitePropertyAttribute.GetPopulateProperties(type, props);
                 if (values.Count == 0)
                 {
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
@@ -442,7 +442,7 @@ namespace Kemorave.SQLite
                     {
                         keyValues[item.Key] = reader[item.Key];
                     }
-                    SQLiteColumnAttribute.SetProperties(in temp, props, keyValues);
+                    SQLitePropertyAttribute.SetProperties(in temp, props, keyValues);
                     yield return temp;
                 }
             }

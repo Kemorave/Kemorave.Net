@@ -122,19 +122,26 @@ namespace Kemorave.SQLite
             {
                 Command += " PRIMARY KEY ";
             }
-            if (tableColumn.IsNullable && !tableColumn.IsPrimaryKey)
+           if (!string.IsNullOrEmpty(DefaultValue))
             {
-                Command += " NULL ";
+                Command += $" DEFAULT \'{DefaultValue}\' ";
             }
             if (tableColumn.IsAutoIncrement)
             {
                 Command += " AUTOINCREMENT ";
             }
-           
-            if (!string.IsNullOrEmpty(DefaultValue))
+            
+            if (tableColumn.IsNullable && !tableColumn.IsPrimaryKey)
             {
-                Command += $" DEFAULT '{DefaultValue}' ";
+                Command += " NULL ";
             }
+            else
+            {
+                Command += " NOT NULL ";
+            }
+          
+           
+           
             if (tableColumn.IsUNIQUE)
             {
                 Command += " UNIQUE ";

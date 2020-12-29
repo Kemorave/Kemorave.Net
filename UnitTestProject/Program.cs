@@ -16,15 +16,15 @@ namespace UnitTestProject
         [Kemorave.SQLite.SQLiteTable("Test")]
         private class Test : Kemorave.SQLite.IDBModel
         {
-            [Kemorave.SQLite.SQLiteColumn(Kemorave.SQLite.SQLiteColumnAttribute.DefaultValueBehavior.Populate)]
+            [Kemorave.SQLite.SQLiteProperty(Kemorave.SQLite.SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
             public long ID { get; set; }
-            [Kemorave.SQLite.SQLiteColumn]
+            [Kemorave.SQLite.SQLiteProperty]
             public string Test_Name { get; set; }
-            [Kemorave.SQLite.SQLiteColumn]
-            public string Major { get; set; } = "CS";
+            [Kemorave.SQLite.SQLiteProperty]
+            public string Major { get; set; }
             public override string ToString()
             {
-                return $"ID : {ID} Name : {Test_Name}";
+                return $"ID : {ID} Name : {Test_Name} Major {Major}";
             }
         }
         private const string FILENAME = "MySQLiteDB.sqlite";
@@ -38,9 +38,9 @@ namespace UnitTestProject
                 Kemorave.SQLite.DBInfo dBInfo = new Kemorave.SQLite.DBInfo(FILEPATH);
                 Kemorave.SQLite.TableInfo testTab = new Kemorave.SQLite.TableInfo("Test");
                 testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("ID", Kemorave.SQLite.SQLiteType.INTEGER, true) );
-                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Test_Name", Kemorave.SQLite.SQLiteType.VARCHAR) {
-                    DefaultValue ="Hello kitty" , IsNullable=true } );
-                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Major", Kemorave.SQLite.SQLiteType.VARCHAR));
+                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Test_Name", Kemorave.SQLite.SQLiteType.VARCHAR));
+                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Major", Kemorave.SQLite.SQLiteType.TEXT) {
+                    DefaultValue ="Hello" , IsNullable=true } );
                 dBInfo.Tables.Add(testTab);
                 using (Kemorave.SQLite.SQLiteDb db = new Kemorave.SQLite.SQLiteDb(FILEPATH))
                 {
@@ -53,7 +53,7 @@ namespace UnitTestProject
                     db.Recreate(dBInfo);
                     for (int i = 1; i <= 100; i++)
                     {
-                        tests.Add(new Test() { Test_Name = "Hema " + i, Major = "CS " + i });
+                        tests.Add(new Test() { Test_Name = "Hema " + i});
                     }
                     //stopwatch.Start();
                     db.Insert(tests);
@@ -81,12 +81,12 @@ namespace UnitTestProject
                     //    Debug.WriteLine(item.ToString());
                     //}
                     //db.Delete( test);
-                    //foreach (Test item in db.GetItems<Test>())
-                    //{
-                    //    test = item;
-                    // //   Debug.WriteLine(item.ToString());
-                    //}
-                    if(db.CanRollBack)
+                    foreach (Test item in db.GetItems<Test>())
+                    {
+                       // test = item;
+                           Debug.WriteLine(item.ToString());
+                    }
+                    if (db.CanRollBack)
                     db.RollBack();
                 }
             }
@@ -108,7 +108,7 @@ namespace UnitTestProject
 
         private static void Connection_Update(object sender, System.Data.SQLite.UpdateEventArgs e)
         {
-            Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
+         //   Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
         }
     }
 }

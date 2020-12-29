@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Kemorave.SQLite
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
-    public class SQLiteColumnAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class SQLitePropertyAttribute : Attribute
     {
-        public enum DefaultValueBehavior { PopulateAndInclude, Ignore, Populate, Include }
-        public SQLiteColumnAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string propertyName = null)
+        public enum DefaultValueBehavior { PopulateAndInclude, Populate, Include }
+        public SQLitePropertyAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string propertyName = null)
         {
             SetName(propertyName);
             SetDefaultValueBehavior(defaultValueBehavior);
@@ -24,15 +25,13 @@ namespace Kemorave.SQLite
         {
             Name = name;
         }
-        internal static Type SQLiteAttributesType = typeof(SQLiteColumnAttribute);
-
-
-        internal static Dictionary<string, object> GetIncludeProperties(Type type,PropertyInfo[] props, object obj = null)
+        internal static Type SQLiteAttributesType = typeof(SQLitePropertyAttribute);
+        internal static Dictionary<string, object> GetIncludeProperties(Type type, PropertyInfo[] props, object obj = null)
         {
             Dictionary<string, object> names = new Dictionary<string, object>();
             foreach (PropertyInfo prop in props)
             {
-                foreach (SQLiteColumnAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
+                foreach (SQLitePropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
                 {
                     switch (att.DefaultBehavior)
                     {
@@ -55,7 +54,7 @@ namespace Kemorave.SQLite
             Dictionary<string, object> names = new Dictionary<string, object>();
             foreach (PropertyInfo prop in props)
             {
-                foreach (SQLiteColumnAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
+                foreach (SQLitePropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
                 {
                     switch (att.DefaultBehavior)
                     {
@@ -73,19 +72,43 @@ namespace Kemorave.SQLite
             }
             return names;
         }
-
         internal static void SetProperties<T>(in T temp, PropertyInfo[] props, Dictionary<string, object> keyValues) where T : class, IDBModel, new()
         {
+            object obj = null;
             foreach (PropertyInfo prop in props)
             {
-                foreach (SQLiteColumnAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
+                foreach (SQLitePropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
                 {
                     if (keyValues.ContainsKey(att.Name))
                     {
-                        prop.SetValue(temp, keyValues[att.Name]); 
-                    } 
+                        try
+                        {
+                            obj = keyValues[att.Name];
+                            if (obj != System.DBNull.Value)
+                            {
+                                prop.SetValue(temp, obj);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e.Message);
+                        }
+                    }
                 }
             }
         }
+    }
+    [AttributeUsage(AttributeTargets.Property)]
+    public class SQLiteColumnAttribute : Attribute
+    {
+        public SQLiteColumnAttribute([CallerMemberName] string name = null, SQLiteType sQLiteType = SQLiteType.TEXT)
+        {
+            ColumnInfo = new ColumnInfo(name, sQLiteType);
+        }
+        public SQLiteColumnAttribute(ColumnInfo columnInfo)
+        {
+            ColumnInfo = columnInfo;
+        }
+        public ColumnInfo ColumnInfo { get; private set; }
     }
 }
