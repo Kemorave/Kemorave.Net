@@ -4,25 +4,25 @@ using System.Security;
 
 namespace Kemorave.SQLite
 {
-    public class DBInfo
+    public class DataBaseInfo
     {
-        public DBInfo(string path)
+        public DataBaseInfo(string path)
         {
             Path = path ?? throw new ArgumentNullException(nameof(path));
             Tables = new System.Collections.ObjectModel.Collection<TableInfo>();
         }
 
-        public DBInfo(string path, SecureString secure) : this(path)
+        public DataBaseInfo(string path, SecureString secure) : this(path)
         {
             Secure = secure ?? throw new ArgumentNullException(nameof(secure));
         }
 
-        public DBInfo(string path, string command) : this(path)
+        public DataBaseInfo(string path, string command) : this(path)
         {
             CommandText = command ?? throw new ArgumentNullException(nameof(command));
         }
 
-        public DBInfo(string path, SecureString secure, string command) : this(path, secure)
+        public DataBaseInfo(string path, SecureString secure, string command) : this(path, secure)
         {
             CommandText = command ?? throw new ArgumentNullException(nameof(command));
         }

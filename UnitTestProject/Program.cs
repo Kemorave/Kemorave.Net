@@ -39,9 +39,9 @@ namespace UnitTestProject
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
-                Kemorave.SQLite.DBInfo dBInfo = new Kemorave.SQLite.DBInfo(FILEPATH);
+                Kemorave.SQLite.DataBaseInfo dBInfo = new Kemorave.SQLite.DataBaseInfo(FILEPATH);
                 dBInfo.AddTableFromType(typeof(Test));
-                using (Kemorave.SQLite.SQLiteDb db = new Kemorave.SQLite.SQLiteDb(FILEPATH))
+                using (Kemorave.SQLite.DataBase db = new Kemorave.SQLite.DataBase(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;

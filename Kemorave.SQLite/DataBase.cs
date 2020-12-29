@@ -42,13 +42,13 @@ namespace Kemorave.SQLite
     /// SQLite databse manager
     /// 
     /// </summary> 
-    public class SQLiteDb : IDisposable
+    public class DataBase : IDisposable
     {
         private bool _isCanceled;
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
         /// <summary>
         ///  When true database commits changes without a chance for rollbacks 
-        ///  else use <see cref="SQLiteDb.CommitChanges"/> 
+        ///  else use <see cref="DataBase.CommitChanges"/> 
         ///  <para/>
         ///  Default is true
         /// </summary>
@@ -108,7 +108,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        ~SQLiteDb()
+        ~DataBase()
         {
             Dispose(true);
         }
@@ -125,7 +125,7 @@ namespace Kemorave.SQLite
         {
             Dispose(false);
         }
-        public SQLiteDb(SQLiteConnection connection)
+        public DataBase(SQLiteConnection connection)
         {
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             if (Connection.State == ConnectionState.Closed)
@@ -134,7 +134,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        public SQLiteDb(string uri, SecureString secure = null)
+        public DataBase(string uri, SecureString secure = null)
         {
             RefreshConnection(uri, secure?.ToString());
             if (secure != null)
@@ -221,8 +221,8 @@ namespace Kemorave.SQLite
         /// </summary>
         /// <param name="force">When true the database file is deleted whole</param>
         /// <param name="dBInfo">Database info</param>
-        /// <returns><see cref="DBInfo.CommandText"/> affected rows</returns>
-        public int Recreate(DBInfo dBInfo, bool force = false)
+        /// <returns><see cref="DataBaseInfo.CommandText"/> affected rows</returns>
+        public int Recreate(DataBaseInfo dBInfo, bool force = false)
         {
             if (System.IO.File.Exists(DataSource))
             {
