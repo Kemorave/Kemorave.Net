@@ -98,17 +98,4 @@ namespace Kemorave.SQLite
             }
         }
     }
-    [AttributeUsage(AttributeTargets.Property)]
-    public class SQLiteColumnAttribute : Attribute
-    {
-        public SQLiteColumnAttribute([CallerMemberName] string name = null, SQLiteType sQLiteType = SQLiteType.TEXT)
-        {
-            ColumnInfo = new ColumnInfo(name, sQLiteType);
-        }
-        public SQLiteColumnAttribute(ColumnInfo columnInfo)
-        {
-            ColumnInfo = columnInfo;
-        }
-        public ColumnInfo ColumnInfo { get; private set; }
-    }
 }

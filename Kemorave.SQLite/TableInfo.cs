@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kemorave.SQLite
 {
@@ -13,10 +9,9 @@ namespace Kemorave.SQLite
             Name = name;
             Columns = new System.Collections.ObjectModel.Collection<ColumnInfo>();
         }
-
         public string Name { get; }
         public System.Collections.ObjectModel.Collection<ColumnInfo> Columns { get; }
-        public string ExtraCMD { get; set; }
+        public string Command { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -43,8 +38,16 @@ namespace Kemorave.SQLite
         {
             return $"DELETE FROM {name}";
         }
-        public string GetDropCommand() => GetDropCommand(Name);
-        public string GetClearCommand() => GetClearCommand(Name);
+        public string GetDropCommand()
+        {
+            return GetDropCommand(Name);
+        }
+
+        public string GetClearCommand()
+        {
+            return GetClearCommand(Name);
+        }
+
         public override string ToString()
         {
             return $"{Name} ({Columns?.GetColumnsCreationInfo()})";

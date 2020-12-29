@@ -27,6 +27,8 @@ namespace Kemorave.SQLite
             CASCADE
         }
         private bool _IsNullable;
+        private bool _IsUNIQUE;
+
         /// <summary>
         /// Creates a column in database
         /// </summary>
@@ -45,7 +47,19 @@ namespace Kemorave.SQLite
         /// <param name="type">data type</param>
         /// <param name="isPrimaryKey">Set column as the primary key for table</param>
         /// <param name="isAutoIncrement">Each row in column will have diffrent incremental value</param>
-        public ColumnInfo(string columnName, SQLiteType type, bool isPrimaryKey,bool isAutoIncrement=true) : this(columnName, type)
+        public ColumnInfo(string columnName, SQLiteType type, bool isPrimaryKey, bool isAutoIncrement = true) : this(columnName, type)
+        {
+            IsPrimaryKey = isPrimaryKey;
+            IsAutoIncrement = isAutoIncrement;
+        }
+        /// <summary>
+        /// Creates a column in database
+        /// </summary>
+        /// <param name="columnName">name</param>
+        /// <param name="type">data type</param>
+        /// <param name="isPrimaryKey">Set column as the primary key for table</param>
+        /// <param name="isAutoIncrement">Each row in column will have diffrent incremental value</param>
+        public ColumnInfo(string columnName, SQLiteType type, bool isPrimaryKey, bool isAutoIncrement ,string parentTable, string parentTableRefID = null) : this(columnName, type,parentTable,parentTableRefID)
         {
             IsPrimaryKey = isPrimaryKey;
             IsAutoIncrement = isAutoIncrement;
@@ -61,20 +75,17 @@ namespace Kemorave.SQLite
         {
             ParentTableRefID = parentTableRefID ?? columnName;
             ParentTable = parentTable ?? throw new ArgumentNullException(nameof(parentTable));
-            IsForeignKey = true;
         }
         public ColumnInfo(ColumnInfo columnInfo, string parentTable, string parentTableRefID = null) : this(columnInfo.ColumnName, columnInfo.Type)
         {
             ParentTableRefID = parentTableRefID ?? columnInfo.ColumnName;
             ParentTable = parentTable ?? throw new ArgumentNullException(nameof(parentTable));
-            IsForeignKey = true;
-        }
+         }
 
         public string ColumnName { get; }
         public SQLiteType Type { get; }
         public bool IsPrimaryKey { get; }
         public string DefaultValue { get; set; }
-        public bool IsUNIQUE { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -95,8 +106,23 @@ namespace Kemorave.SQLite
                 }
             }
         }
+        public bool IsUNIQUE
+        {
+            get => _IsUNIQUE;
+            set
+            {
+                if (IsPrimaryKey && value)
+                {
+                    throw new InvalidOperationException($"Uique not allowed while {nameof(IsPrimaryKey)} is set to True");
+                }
+                else
+                {
+                    _IsUNIQUE = value;
+                }
+            }
+        }
         public bool IsAutoIncrement { get; set; }
-        public bool IsForeignKey { get; }
+        public bool IsForeignKey { get => !string.IsNullOrEmpty(ParentTable); }
 
         public string ParentTable { get; }
         public string ParentTableRefID { get; }

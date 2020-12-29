@@ -26,7 +26,17 @@ namespace Kemorave.SQLite
         {
             CommandText = command ?? throw new ArgumentNullException(nameof(command));
         }
-
+        public void AddTableFromType(Type type)
+        {
+            if (SQLiteTableAttribute.FromType(type) is TableInfo tableInfo)
+            {
+                Tables.Add(tableInfo);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Type {type.Name} have no (SQLiteTableAttribute) attribute");
+            }
+        }
         public string Path { get; }
         public System.Security.SecureString Secure { get; }
         /// <summary>

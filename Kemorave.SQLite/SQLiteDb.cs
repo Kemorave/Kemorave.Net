@@ -177,7 +177,28 @@ namespace Kemorave.SQLite
 
         public int CreateTable(TableInfo table)
         {
-            return this.ExecuteCommand(table.GetCreateCommand());
+            try
+            {
+                return this.ExecuteCommand(table.GetCreateCommand());
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(table.Command))
+                {
+                    ExecuteCommand(table.Command);
+                }
+            }
+        }
+        public int CreateTable(Type type)
+        {
+            if (SQLiteTableAttribute.FromType(type) is TableInfo tableInfo)
+            {
+                return CreateTable(tableInfo);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Type {type.Name} have no (SQLiteTableAttribute) attribute");
+            }
         }
         public int ExecuteCommand(string cmdt)
         {

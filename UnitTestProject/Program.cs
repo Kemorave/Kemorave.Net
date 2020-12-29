@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Kemorave.SQLite;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject
@@ -17,10 +18,13 @@ namespace UnitTestProject
         private class Test : Kemorave.SQLite.IDBModel
         {
             [Kemorave.SQLite.SQLiteProperty(Kemorave.SQLite.SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
+            [SQLiteColumn("ID", SQLiteType.INTEGER,true,true,false)]
             public long ID { get; set; }
             [Kemorave.SQLite.SQLiteProperty]
+            [Kemorave.SQLite.SQLiteColumn("Test_Name", Kemorave.SQLite.SQLiteType.VARCHAR, false, false, true)]
             public string Test_Name { get; set; }
             [Kemorave.SQLite.SQLiteProperty]
+            [Kemorave.SQLite.SQLiteColumn("Major", Kemorave.SQLite.SQLiteType.VARCHAR,false,false,true)]
             public string Major { get; set; }
             public override string ToString()
             {
@@ -36,12 +40,7 @@ namespace UnitTestProject
             {
                 Stopwatch stopwatch = new Stopwatch();
                 Kemorave.SQLite.DBInfo dBInfo = new Kemorave.SQLite.DBInfo(FILEPATH);
-                Kemorave.SQLite.TableInfo testTab = new Kemorave.SQLite.TableInfo("Test");
-                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("ID", Kemorave.SQLite.SQLiteType.INTEGER, true) );
-                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Test_Name", Kemorave.SQLite.SQLiteType.VARCHAR));
-                testTab.Columns.Add(new Kemorave.SQLite.ColumnInfo("Major", Kemorave.SQLite.SQLiteType.TEXT) {
-                    DefaultValue ="Hello" , IsNullable=true } );
-                dBInfo.Tables.Add(testTab);
+                dBInfo.AddTableFromType(typeof(Test));
                 using (Kemorave.SQLite.SQLiteDb db = new Kemorave.SQLite.SQLiteDb(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
@@ -51,7 +50,7 @@ namespace UnitTestProject
                     //Test test = null;
                     List<Test> tests = new List<Test>();
                     db.Recreate(dBInfo);
-                    for (int i = 1; i <= 100; i++)
+                    for (int i = 1; i <= 10; i++)
                     {
                         tests.Add(new Test() { Test_Name = "Hema " + i});
                     }
@@ -88,6 +87,11 @@ namespace UnitTestProject
                     }
                     if (db.CanRollBack)
                     db.RollBack();
+                    foreach (Test item in db.GetItems<Test>())
+                    {
+                        // test = item;
+                        Debug.WriteLine(item.ToString());
+                    }
                 }
             }
             catch (Exception e)
