@@ -27,18 +27,36 @@ namespace Kemorave.SQLite
             CASCADE
         }
         private bool _IsNullable;
-
+        /// <summary>
+        /// Creates a column in database
+        /// </summary>
+        /// <param name="columnName">name</param>
+        /// <param name="type">data type</param>
         public ColumnInfo(string columnName, SQLiteType type)
         {
             ColumnName = columnName ?? throw new ArgumentNullException(nameof(columnName));
             Type = type;
         }
 
-        public ColumnInfo(string columnName, SQLiteType type, bool isPrimaryKey) : this(columnName, type)
+        /// <summary>
+        /// Creates a column in database
+        /// </summary>
+        /// <param name="columnName">name</param>
+        /// <param name="type">data type</param>
+        /// <param name="isPrimaryKey">Set column as the primary key for table</param>
+        /// <param name="isAutoIncrement">Each row in column will have diffrent incremental value</param>
+        public ColumnInfo(string columnName, SQLiteType type, bool isPrimaryKey,bool isAutoIncrement=true) : this(columnName, type)
         {
             IsPrimaryKey = isPrimaryKey;
+            IsAutoIncrement = isAutoIncrement;
         }
-
+        /// <summary>
+        /// Creates a column as a foreign key 
+        /// </summary>
+        /// <param name="columnName">name</param>
+        /// <param name="type">data type</param>
+        /// <param name="parentTable">Refrenced table</param>
+        /// <param name="parentTableRefID">Refrenced table column name (usualy the same as column name)</param>
         public ColumnInfo(string columnName, SQLiteType type, string parentTable, string parentTableRefID = null) : this(columnName, type)
         {
             ParentTableRefID = parentTableRefID ?? columnName;
@@ -112,13 +130,14 @@ namespace Kemorave.SQLite
             {
                 Command += " AUTOINCREMENT ";
             }
+           
+            if (!string.IsNullOrEmpty(DefaultValue))
+            {
+                Command += $" DEFAULT '{DefaultValue}' ";
+            }
             if (tableColumn.IsUNIQUE)
             {
                 Command += " UNIQUE ";
-            }
-            if (!string.IsNullOrEmpty(DefaultValue))
-            {
-                Command += $" DEFAULT {DefaultValue} ";
             }
             if (!string.IsNullOrEmpty(Extra))
             {

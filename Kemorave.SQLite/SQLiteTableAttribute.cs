@@ -10,10 +10,10 @@ namespace Kemorave.SQLite
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Parameter)]
     public class SQLiteTableAttribute : Attribute
     {
-        public SQLiteTableAttribute([CallerMemberName] string className = null)
+        public SQLiteTableAttribute(string tableName)
         {
            // Debug.WriteLine("Attribute "+className);
-            TableName = className;
+            TableName = tableName;
         }
         public   string TableName { get;  }
         internal static Type SQLiteTableAttributeType = typeof(SQLiteTableAttribute);

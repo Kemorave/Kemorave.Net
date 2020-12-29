@@ -44,11 +44,50 @@ namespace Kemorave.SQLite
     /// </summary> 
     public class SQLiteDb : IDisposable
     {
-
+        private bool _isCanceled;
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
+        /// <summary>
+        ///  When true database commits changes without a chance for rollbacks 
+        ///  else use <see cref="SQLiteDb.CommitChanges"/> 
+        ///  <para/>
+        ///  Default is true
+        /// </summary>
+        public bool AutoCommitChanges { get; set; } = true;
+        public bool IsBusy { get; protected set; }
+        public bool CanRollBack => CurrentTransaction != null;
+        public string CurrentOperation { get; protected set; }
+        protected System.Data.SQLite.SQLiteTransaction CurrentTransaction { get; set; }
         public string DataSource => GetDBPath();
-        #region Other
 
+        public const string InsertOperation = "Insert";
+        public const string UpdateOperation = "Update";
+        public const string DeleteOperation = "Delete";
+
+        #region Other
+        public void CommitChanges()
+        {
+            CurrentTransaction?.Commit();
+            CurrentTransaction = null;
+        }
+        public void RollBack()
+        {
+            ExecuteCommand("ROLLBACK");
+        }
+        public void CancelPendingOperation()
+        {
+            _isCanceled = true;
+        }
+        public override string ToString()
+        {
+            try
+            {
+                return $"{System.IO.Path.GetFileName(DataSource)} ({DataSource})";
+            }
+            catch
+            {
+                return base.ToString();
+            }
+        }
         private string GetDBPath()
         {
             if (string.IsNullOrEmpty(Connection?.ConnectionString))
@@ -61,9 +100,12 @@ namespace Kemorave.SQLite
                 temp = Connection.ConnectionString;
                 temp = temp.ToLower().Split(',').FirstOrDefault();
                 temp = temp.Replace("data source =", "");
+                while (temp[0] == ' ')
+                {
+                    temp = temp.Remove(0, 1);
+                }
                 return temp;
             }
-            return null;
         }
 
         ~SQLiteDb()
@@ -71,9 +113,9 @@ namespace Kemorave.SQLite
             Dispose(true);
         }
 
-        private void Dispose(bool fin)
+        private void Dispose(bool finalizer)
         {
-            if (!fin)
+            if (!finalizer)
             {
                 GC.SuppressFinalize(this);
             }
@@ -227,50 +269,45 @@ namespace Kemorave.SQLite
             }
             return Update<T>(new List<T>() { item }, tableName);
         }
-        public int Delete<T>( T item, string tableName=null) where T : class, IDBModel, new()
+        public int Delete<T>(T item, string tableName = null) where T : class, IDBModel, new()
         {
             if (item == null)
             {
                 throw new ArgumentNullException($"{nameof(item)} can't be empty");
             }
-            return Delete<T>( new List<T>() { item },tableName);
+            return Delete<T>(new List<T>() { item }, tableName);
         }
-        public T GetItemByID<T>( long id, string tableName=null) where T : class, IDBModel, new()
+        public T GetItemByID<T>(long id, string tableName = null) where T : class, IDBModel, new()
         {
             return GetItems<T>(tableName, "*", "WHERE ID =" + id).FirstOrDefault();
         }
         #endregion
-        public int Insert<T>( IList<T> rows, string tableName=null) where T : class, IDBModel
+
+
+        public int Insert<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
         {
-            Type type = typeof(T);
-            if (tableName==null)
+            CheckBusyState();
+            try
             {
-                tableName= SQLiteTableAttribute.GetTableName(type);
-            }
-            if (string.IsNullOrEmpty(tableName))
-            {
-                throw new ArgumentNullException(nameof(tableName));
-            }
-            if (rows == null)
-            {
-                throw new ArgumentNullException($"{nameof(rows)} can't be empty");
-            }
-            if (rows.Count == 0)
-            {
-                throw new InvalidOperationException("Nothing to insert");
-            }
-            int TORE = 0;
+                OnOperationStart(InsertOperation);
 
-            System.Reflection.PropertyInfo[] props = type.GetProperties();
-            Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
-            if (keyValues?.Count <= 0)
-            {
-                throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
-            }
-            Tuple<string, string> tuple = keyValues.GetInsertNamesAndParameters();
+                Type type = typeof(T);
+                if (tableName == null)
+                {
+                    tableName = SQLiteTableAttribute.GetTableName(type);
+                }
+                CheckParams(tableName, rows);
 
-            using (SQLiteTransaction trans = Connection.BeginTransaction(System.Data.IsolationLevel.Serializable))
-            {
+                int TORE = 0;
+                System.Reflection.PropertyInfo[] props = type.GetProperties();
+
+                Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
+                if (keyValues?.Count <= 0)
+                {
+                    throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
+                }
+                Tuple<string, string> tuple = keyValues.GetInsertNamesAndParameters();
+
                 using (SQLiteCommand command = GetCommand($"INSERT INTO [{tableName}] ({tuple.Item1}) VALUES ({tuple.Item2})"))
                 {
                     foreach (T item in rows)
@@ -280,46 +317,44 @@ namespace Kemorave.SQLite
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
                         }
+                        CheckCancellation();
                         TORE += command.ExecuteNonQuery();
                         command.Parameters.Clear();
                     }
                 }
-                trans.Commit();
+                return TORE;
             }
-            return TORE;
+            finally
+            {
+                OnOperationEnd();
+            }
         }
+
+
         public int Update<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
         {
-            Type type = typeof(T);
-            if (tableName == null)
+            CheckBusyState();
+            try
             {
-                tableName = SQLiteTableAttribute.GetTableName(type);
-            }
-            if (string.IsNullOrEmpty(tableName))
-            {
-                throw new ArgumentNullException(nameof(tableName));
-            }
-            if (rows == null)
-            {
-                throw new ArgumentNullException($"{nameof(rows)} can't be empty");
-            }
-            if (rows.Count == 0)
-            {
-                throw new InvalidOperationException("Nothing to insert");
-            }
-            int TORE = 0;
+                OnOperationStart(UpdateOperation);
+                Type type = typeof(T);
+                if (tableName == null)
+                {
+                    tableName = SQLiteTableAttribute.GetTableName(type);
+                }
+                CheckParams<T>(tableName, rows);
 
-          
-            System.Reflection.PropertyInfo[] props = type.GetProperties();
-            Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
-            if (keyValues?.Count <= 0)
-            {
-                throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
-            }
-            string parameters = keyValues.GetUpdateParameters();
+                int TORE = 0;
 
-            using (SQLiteTransaction trans = Connection.BeginTransaction(System.Data.IsolationLevel.Serializable))
-            {
+
+                System.Reflection.PropertyInfo[] props = type.GetProperties();
+                Dictionary<string, object> keyValues = SQLiteColumnAttribute.GetIncludeProperties(type, props);
+                if (keyValues?.Count <= 0)
+                {
+                    throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
+                }
+                string parameters = keyValues.GetUpdateParameters();
+
                 using (SQLiteCommand command = GetCommand($"UPDATE {tableName} SET {parameters} WHERE ID = ?"))
                 {
                     foreach (T item in rows)
@@ -329,45 +364,52 @@ namespace Kemorave.SQLite
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
                         }
+                        CheckCancellation();
                         command.Parameters.Add(new SQLiteParameter(DbType.Object, item.ID));
                         TORE += command.ExecuteNonQuery();
                         command.Parameters.Clear();
                     }
                 }
-                trans.Commit();
+                return TORE;
             }
-            return TORE;
+            finally
+            {
+                OnOperationEnd();
+            }
         }
         public int Delete<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
         {
-            if (string.IsNullOrEmpty(tableName))
+            CheckBusyState();
+            try
             {
-                throw new ArgumentNullException(nameof(tableName));
-            }
-            if (rows == null)
-            {
-                throw new ArgumentNullException($"{nameof(rows)} can't be empty");
-            }
-            if (rows.Count == 0)
-            {
-                throw new InvalidOperationException("Nothing to insert");
-            }
-            int TORE = 0;
-            using (SQLiteTransaction trans = Connection.BeginTransaction(System.Data.IsolationLevel.Serializable))
-            {
+                OnOperationStart(DeleteOperation);
+                Type type = typeof(T);
+
+                if (tableName == null)
+                {
+                    tableName = SQLiteTableAttribute.GetTableName(type);
+                }
+                CheckParams(tableName, rows);
+
+                int TORE = 0;
+
                 using (SQLiteCommand command = GetCommand($"DELETE FROM  {tableName} WHERE ID = ?"))
                 {
                     foreach (T item in rows)
                     {
                         command.Parameters.Add(new SQLiteParameter(DbType.Object, item.ID));
 
+                        CheckCancellation();
                         TORE += command.ExecuteNonQuery();
                         command.Parameters.Clear();
                     }
                 }
-                trans.Commit();
+                return TORE;
             }
-            return TORE;
+            finally
+            {
+                OnOperationEnd();
+            }
         }
         public int DropTable(string tableName)
         {
@@ -377,7 +419,7 @@ namespace Kemorave.SQLite
         {
             return ExecuteCommand(TableInfo.GetClearCommand(tableName));
         }
-        public IEnumerable<T> GetItems<T>(string tableName=null, string selection = "*", string condition = null) where T : class, IDBModel, new()
+        public IEnumerable<T> GetItems<T>(string tableName = null, string selection = "*", string condition = null) where T : class, IDBModel, new()
         {
             Type type = typeof(T);
             if (tableName == null)
@@ -405,6 +447,64 @@ namespace Kemorave.SQLite
                 }
             }
         }
+
+
+        #region Operaion
+        private void CheckParams<T>(string tableName, IList<T> rows) where T : class, IDBModel
+        {
+            if (string.IsNullOrEmpty(tableName))
+            {
+                throw new ArgumentNullException(nameof(tableName));
+            }
+            if (rows == null)
+            {
+                throw new ArgumentNullException($"{nameof(rows)} can't be empty or null");
+            }
+            if (rows.Count == 0)
+            {
+                throw new InvalidOperationException("Items list has no items");
+            }
+        }
+
+        private void CheckCancellation()
+        {
+            if (_isCanceled)
+            {
+                throw new OperationCanceledException("Operation " + CurrentOperation + " is cancelled");
+            }
+        }
+
+        protected virtual void OnOperationEnd()
+        {
+            IsBusy = false;
+            _isCanceled = false;
+            CurrentOperation = null;
+            if (AutoCommitChanges)
+            {
+                CommitChanges();
+            }
+        }
+
+        private void CheckBusyState()
+        {
+            if (IsBusy)
+            {
+                throw new DatabaseBusyException("Current operation " + CurrentOperation + " is not finished");
+            }
+            else
+            {
+                CommitChanges();
+            }
+        }
+
+        protected virtual void OnOperationStart(string operation)
+        {
+            IsBusy = true;
+            CurrentOperation = operation;
+            CurrentTransaction = Connection.BeginTransaction(System.Data.IsolationLevel.Serializable);
+        }
+
+        #endregion
         #endregion
 
 
