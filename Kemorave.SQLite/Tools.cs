@@ -74,6 +74,7 @@ namespace Kemorave.SQLite
             int count = 0;
             foreach (var column in list)
             {
+                
                 if (count == 0)
                 {
                     info += column.GetCreationInfo();
@@ -87,7 +88,7 @@ namespace Kemorave.SQLite
             foreach (var column in list.Where(c => c.IsForeignKey))
             {
                
-                    info += "," + column.GetCreationInfo();
+                    info += "," + column.GetForeignKeyCreationInfo();
                  
             }
             return info;

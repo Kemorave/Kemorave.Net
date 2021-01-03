@@ -137,6 +137,14 @@ namespace Kemorave.SQLite
                 return null;
             }
             string Command = $" FOREIGN KEY ({ColumnName}) REFERENCES {ParentTable}({ParentTableRefID}) ";
+            if (OnDeleteAction != SQLiteActions.NO_ACTION)
+            {
+                Command += $" ON DELETE {OnDeleteAction.ToString().Replace("_", string.Empty)}";
+            }
+            if (OnUpdateAction != SQLiteActions.NO_ACTION)
+            {
+                Command += $" ON UPDATE {OnUpdateAction.ToString().Replace("_", string.Empty)}";
+            }
             return Command;
         }
         public string GetCreationInfo()

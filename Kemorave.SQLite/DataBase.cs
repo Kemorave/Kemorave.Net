@@ -42,7 +42,7 @@ namespace Kemorave.SQLite
     /// SQLite databse manager
     /// 
     /// </summary> 
-    public class DataBase : IDisposable
+    public class DataBase : IDisposable, IDataBaseGetter
     {
         private bool _isCanceled;
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
@@ -64,6 +64,15 @@ namespace Kemorave.SQLite
         public const string DeleteOperation = "Delete";
 
         #region Other
+        public string Backup(string destPath)
+        {
+            CheckBusyState();
+            string name = $"SQLite Backup {DateTime.Now}.backup";
+            string destfile = System.IO.Path.Combine(destPath, name);
+            if (System.IO.File.Exists(destfile)) System.IO.File.Delete(destfile);
+            System.IO.File.Copy(DataSource, destfile);
+            return destfile;
+        }
         public void CommitChanges()
         {
             CurrentTransaction?.Commit();
@@ -456,6 +465,12 @@ namespace Kemorave.SQLite
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
                 }
                 T temp = new T();
+                System.Reflection.MethodInfo fillMethod = SQLiteFillMethodAttribute.GetFillMethod(type);
+                object[] fillMethodInvArgs = null;
+                if (fillMethod != null)
+                {
+                    fillMethodInvArgs = new object[] { this };
+                }
                 Dictionary<string, object> keyValues = new Dictionary<string, object>(values);
                 while (reader.Read())
                 {
@@ -464,6 +479,7 @@ namespace Kemorave.SQLite
                         keyValues[item.Key] = reader[item.Key];
                     }
                     SQLitePropertyAttribute.SetProperties(in temp, props, keyValues);
+                    fillMethod?.Invoke(temp, fillMethodInvArgs);
                     yield return temp;
                 }
             }
@@ -510,7 +526,7 @@ namespace Kemorave.SQLite
         {
             if (IsBusy)
             {
-                throw new DatabaseBusyException("Current operation " + CurrentOperation + " is not finished");
+                throw new DatabaseBusyException("Database is busy with" + CurrentOperation + " operation");
             }
             else
             {

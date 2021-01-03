@@ -10,11 +10,12 @@ namespace Kemorave.SQLite
     public class SQLitePropertyAttribute : Attribute
     {
         public enum DefaultValueBehavior { PopulateAndInclude, Populate, Include }
-        public SQLitePropertyAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string propertyName = null)
+        public SQLitePropertyAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string columnName = null)
         {
-            SetName(propertyName);
+            SetName(columnName);
             SetDefaultValueBehavior(defaultValueBehavior);
         }
+        
         public string Name { get; private set; }
         public DefaultValueBehavior DefaultBehavior { get; private set; }
         public void SetDefaultValueBehavior(DefaultValueBehavior defaultValueBehavior)

@@ -10,28 +10,53 @@ namespace UnitTestProject
     [TestClass]
     public class Program
     {
-        [TestMethod]
-        public void TestMethod1()
+        [SQLiteTable("TestScheduler")]
+        class TestScheduler : IDBModel
         {
-        }
-        [Kemorave.SQLite.SQLiteTable("Test")]
-        private class Test : Kemorave.SQLite.IDBModel
-        {
-            [Kemorave.SQLite.SQLiteProperty(Kemorave.SQLite.SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
-            [SQLiteColumn("ID", SQLiteType.INTEGER,true,true,false)]
+            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
+            [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
             public long ID { get; set; }
-            [Kemorave.SQLite.SQLiteProperty]
-            [Kemorave.SQLite.SQLiteColumn("Test_Name", Kemorave.SQLite.SQLiteType.VARCHAR, false, false, true)]
-            public string Test_Name { get; set; }
-            [Kemorave.SQLite.SQLiteProperty]
-            [Kemorave.SQLite.SQLiteColumn("Major", Kemorave.SQLite.SQLiteType.VARCHAR,false,false,true)]
-            public string Major { get; set; }
+            [SQLiteProperty]
+            [SQLiteTableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", ColumnInfo.SQLiteActions.CASCADE, ColumnInfo.SQLiteActions.CASCADE)]
+            public long TestID { get; set; }
+            public Test Test { get; set; }
+            [SQLiteProperty]
+            [SQLiteTableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
+            public DateTime TestDate { get; set; }
+            [SQLiteFillMethod]
+            public void SetNavigationProperties(IDataBaseGetter getter)
+            {
+                Test = getter.GetItemByID<Test>(TestID);
+            }
             public override string ToString()
             {
-                return $"ID : {ID} Name : {Test_Name} Major {Major}";
+                return $"{Test} Date : {TestDate}";
             }
         }
+
+        [SQLiteTable("Test")]
+        private class Test : IDBModel
+        {
+            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
+            [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
+            public long ID { get; set; }
+            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.PopulateAndInclude,"Test_Name")]
+            [SQLiteTableColumn("Test_Name", SQLiteType.VARCHAR, false, false, false)]
+            public string Name { get; set; }
+            [SQLiteProperty]
+            [SQLiteTableColumn("Major", SQLiteType.VARCHAR, false, false, false)]
+            public string Major { get; set; }
+              public override string ToString()
+            {
+                return $"ID : {ID} Name : {Name} Major {Major}";
+            }
+        }
+
+
+
+
         private const string FILENAME = "MySQLiteDB.sqlite";
+
         private static readonly string FILEPATH = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + FILENAME;
         [STAThread]
         public static void Main(string[] args)
@@ -39,58 +64,28 @@ namespace UnitTestProject
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
-                Kemorave.SQLite.DataBaseInfo dBInfo = new Kemorave.SQLite.DataBaseInfo(FILEPATH);
+                DataBaseInfo dBInfo = new DataBaseInfo(FILEPATH);
                 dBInfo.AddTableFromType(typeof(Test));
-                using (Kemorave.SQLite.DataBase db = new Kemorave.SQLite.DataBase(FILEPATH))
+                dBInfo.AddTableFromType(typeof(TestScheduler));
+                using (DataBase db = new DataBase(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;
                     db.Connection.RollBack += Connection_RollBack;
-                    db.AutoCommitChanges = false;
-                    //Test test = null;
-                    List<Test> tests = new List<Test>();
+                    //    db.AutoCommitChanges = false;
                     db.Recreate(dBInfo);
-                    for (int i = 1; i <= 10; i++)
+                    Test test = new Test();
+                    test.Name = "Hola";
+                    test.Major = "CS";
+                    db.Insert(test);
+                    foreach (var item in db.GetItems<Test>())
                     {
-                        tests.Add(new Test() { Test_Name = "Hema " + i});
+                        test = item;
+                        db.Insert(new TestScheduler() { TestID = item.ID, TestDate = new DateTime(2021,6,6) });
                     }
-                    //stopwatch.Start();
-                    db.Insert(tests);
-                    //stopwatch.Stop();
-                    //Debug.WriteLine($"Inseting {tests.Count} items in {stopwatch.Elapsed.ToString()}");
-                    //stopwatch.Restart();
-                    //test = db.GetItemByID<Test>(555);
-                    //stopwatch.Stop();
-                    ////Debug.WriteLine($"Get {test} item in {stopwatch.Elapsed.ToString()}");
-
-                    //stopwatch.Restart();
-
-                    //foreach (Test item in db.GetItems<Test>("Test"))
-                    //{
-                    //}
-                    //stopwatch.Stop();
-                    //Debug.WriteLine($"Get {tests.Count} items in {stopwatch.Elapsed.ToString()}");
-
-                    //test.Test_Name = "Nigga";
-                    //test.Major = "Hello kitty";
-                    //db.Update( test);
-                    //foreach (Test item in db.GetItems<Test>())
-                    //{
-                    //    test = item;
-                    //    Debug.WriteLine(item.ToString());
-                    //}
-                    //db.Delete( test);
-                    foreach (Test item in db.GetItems<Test>())
+                    foreach (var item in db.GetItems<TestScheduler>())
                     {
-                       // test = item;
-                           Debug.WriteLine(item.ToString());
-                    }
-                    if (db.CanRollBack)
-                    db.RollBack();
-                    foreach (Test item in db.GetItems<Test>())
-                    {
-                        // test = item;
-                        Debug.WriteLine(item.ToString());
+
                     }
                 }
             }
@@ -112,7 +107,7 @@ namespace UnitTestProject
 
         private static void Connection_Update(object sender, System.Data.SQLite.UpdateEventArgs e)
         {
-         //   Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
+            //   Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
         }
     }
 }

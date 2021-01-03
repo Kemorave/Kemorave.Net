@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kemorave.Net.Api.DB
 {
-    public class DBController<Model> : DBControllerBase<DBResult, Model> where Model : IDBModel
+    public class DBController<Model> : DBControllerBase<DBResult, Model> where Model : class,IDBModel,new()
     {
         
         public DBController(ApiConfigration configration, string uri, object tag = null) : base(configration, uri, tag)

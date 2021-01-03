@@ -32,7 +32,7 @@ namespace  Kemorave.SQLite
             }
             foreach (var prop in type.GetProperties())
             {
-                foreach (SQLiteColumnAttribute item in prop.GetCustomAttributes(typeof(SQLiteColumnAttribute), true))
+                foreach (SQLiteTableColumnAttribute item in prop.GetCustomAttributes(typeof(SQLiteTableColumnAttribute), true))
                 {
                     tableInfo.Columns?.Add(item.ColumnInfo);
                 }
