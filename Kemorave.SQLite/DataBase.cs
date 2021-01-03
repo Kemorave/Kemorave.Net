@@ -336,6 +336,12 @@ namespace Kemorave.SQLite
                 {
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
                 }
+                System.Reflection.MethodInfo fillMethod = SQLiteFillMethodAttribute.GetFillMethod(type);
+                object[] fillMethodInvArgs = null;
+                if (fillMethod != null)
+                {
+                    fillMethodInvArgs = new object[] { this };
+                }
                 Tuple<string, string> tuple = keyValues.GetInsertNamesAndParameters();
 
                 using (SQLiteCommand command = GetCommand($"INSERT INTO [{tableName}] ({tuple.Item1}) VALUES ({tuple.Item2})"))
@@ -350,6 +356,7 @@ namespace Kemorave.SQLite
                         CheckCancellation();
                         TORE += command.ExecuteNonQuery();
                         item.ID = Connection.LastInsertRowId;
+                        fillMethod?.Invoke(item, fillMethodInvArgs); 
                         command.Parameters.Clear();
                     }
                 }
