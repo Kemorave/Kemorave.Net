@@ -349,6 +349,7 @@ namespace Kemorave.SQLite
                         }
                         CheckCancellation();
                         TORE += command.ExecuteNonQuery();
+                        item.ID = Connection.LastInsertRowId;
                         command.Parameters.Clear();
                     }
                 }

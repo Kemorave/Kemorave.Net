@@ -11,7 +11,7 @@ namespace UnitTestProject
     public class Program
     {
         [SQLiteTable("TestScheduler")]
-        class TestScheduler : IDBModel
+        private class TestScheduler : IDBModel
         {
             [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
             [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
@@ -19,7 +19,7 @@ namespace UnitTestProject
             [SQLiteProperty]
             [SQLiteTableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", ColumnInfo.SQLiteActions.CASCADE, ColumnInfo.SQLiteActions.CASCADE)]
             public long TestID { get; set; }
-            public Test Test { get; set; }
+            public Test Test { get;private set; }
             [SQLiteProperty]
             [SQLiteTableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
             public DateTime TestDate { get; set; }
@@ -40,13 +40,13 @@ namespace UnitTestProject
             [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
             [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
             public long ID { get; set; }
-            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.PopulateAndInclude,"Test_Name")]
+            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.PopulateAndInclude, "Test_Name")]
             [SQLiteTableColumn("Test_Name", SQLiteType.VARCHAR, false, false, false)]
             public string Name { get; set; }
             [SQLiteProperty]
             [SQLiteTableColumn("Major", SQLiteType.VARCHAR, false, false, false)]
             public string Major { get; set; }
-              public override string ToString()
+            public override string ToString()
             {
                 return $"ID : {ID} Name : {Name} Major {Major}";
             }
@@ -64,29 +64,36 @@ namespace UnitTestProject
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
-                DataBaseInfo dBInfo = new DataBaseInfo(FILEPATH);
-                dBInfo.AddTableFromType(typeof(Test));
-                dBInfo.AddTableFromType(typeof(TestScheduler));
                 using (DataBase db = new DataBase(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;
                     db.Connection.RollBack += Connection_RollBack;
                     //    db.AutoCommitChanges = false;
-                    db.Recreate(dBInfo);
-                    Test test = new Test();
-                    test.Name = "Hola";
-                    test.Major = "CS";
-                    db.Insert(test);
-                    foreach (var item in db.GetItems<Test>())
-                    {
-                        test = item;
-                        db.Insert(new TestScheduler() { TestID = item.ID, TestDate = new DateTime(2021,6,6) });
-                    }
-                    foreach (var item in db.GetItems<TestScheduler>())
-                    {
+                    db.CreateTable(typeof(Test));
+                    db.CreateTable(typeof(TestScheduler));
 
+                    Test test = new Test
+                    {
+                        Name = "Hola",
+                        Major = "CS"
+                    };
+                    db.Insert(test);
+                    db.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
+                    foreach (TestScheduler item in db.GetItems<TestScheduler>())
+                    {
+                        Debug.WriteLine(item.ToString());
                     }
+                    List<Test> list = new List<Test>();
+                    for (int i = 0; i != 100000; i++)
+                    {
+                        list.Add(new Test() { Major="CS", Name=$"Test {i}" });
+                    }
+                    stopwatch.Start();
+                    db.Insert(list);
+                    Debug.Write($"Inserted {list.Count} items in {stopwatch.Elapsed}");
+                    stopwatch.Stop();
+                    stopwatch.Reset();
                 }
             }
             catch (Exception e)
