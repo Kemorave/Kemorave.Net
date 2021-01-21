@@ -50,6 +50,11 @@ namespace Kemorave.Net.Api.DB
             return Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Model>>(await res.Content.ReadAsStringAsync()).FirstOrDefault();
 
         }
+        /// <summary>
+        /// Adds item to table
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Operation result</returns>
         public override async Task<DBActionResult> InsertItem(Model model)
         {
             try

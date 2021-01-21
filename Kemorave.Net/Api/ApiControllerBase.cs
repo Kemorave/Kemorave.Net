@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 using System.Threading.Tasks;
 
 namespace Kemorave.Net.Api.DB
@@ -9,8 +7,8 @@ namespace Kemorave.Net.Api.DB
     {
         protected ApiControllerBase(ApiConfigration configration, string uri, object tag = null)
         {
-            Configration = configration ?? throw new ArgumentNullException(nameof(configration));
-            Uri = uri ?? throw new ArgumentNullException(nameof(uri));
+            Configration = configration ?? throw new System.ArgumentNullException(nameof(configration));
+            Uri = uri ?? throw new System.ArgumentNullException(nameof(uri));
             Tag = tag;
         }
 
@@ -22,6 +20,6 @@ namespace Kemorave.Net.Api.DB
         public abstract Task<Result> UpdateItemAsync(Model model);
         public abstract Task<Model> GetItemAsync(int id);
         public abstract Task<Result> DeleteItemAsync(int id);
-        public abstract Task<IEnumerable<Model>> GetAllItemsAsync();
+        public abstract Task<System.Collections.Generic.IEnumerable<Model>> GetAllItemsAsync();
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kemorave.Net.Api.DB
-{
+{/// <summary>
+/// <see langword="abstract"/> Result of an action against  database
+/// </summary>
     public class DBActionResult : EventArgs
     {
         public DBActionResult(string actionCode)

@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Kemorave.Net
+﻿namespace Kemorave.Net
 {
     public static class NetUtil
     {
-        public static bool CheckInternetActivity()
+        public static bool IsConnectedToInternet()
         {
 
             try
             {
-                using (var client = new System.Net.WebClient())
+                using (System.Net.WebClient client = new System.Net.WebClient())
                 using (client.OpenRead("http://google.com/generate_204"))
+                {
                     return true;
+                }
             }
             catch
             {
