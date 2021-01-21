@@ -10,7 +10,7 @@ namespace Kemorave
         #region Local var
         private static Func<object, object> _LastGetter;
         private static Tuple<Type, string> _LastProprty = new Tuple<Type, string>(typeof(object), "");
-        private static Dictionary<Tuple<Type, string>, Func<object, object>> _funcList = new Dictionary<Tuple<Type, string>, Func<object, object>>();
+        private static readonly Dictionary<Tuple<Type, string>, Func<object, object>> _funcList = new Dictionary<Tuple<Type, string>, Func<object, object>>();
         #endregion
         private static Func<object, object> CreateGetter(Type type, string PropertyName)
         {

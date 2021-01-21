@@ -105,8 +105,7 @@ namespace Kemorave.SQLite
             }
             else
             {
-                string temp = null;
-                temp = Connection.ConnectionString;
+                string temp = Connection.ConnectionString;
                 temp = temp.ToLower().Split(',').FirstOrDefault();
                 temp = temp.Replace("data source =", "");
                 while (temp[0] == ' ')

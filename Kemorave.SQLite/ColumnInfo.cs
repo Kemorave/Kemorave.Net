@@ -131,7 +131,7 @@ namespace Kemorave.SQLite
         public SQLiteActions OnDeleteAction { get; set; }
         public string GetForeignKeyCreationInfo()
         {
-            ColumnInfo tableColumn = this;
+          //  ColumnInfo tableColumn = this;
             if (!IsForeignKey)
             {
                 return null;

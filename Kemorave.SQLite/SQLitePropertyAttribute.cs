@@ -75,7 +75,7 @@ namespace Kemorave.SQLite
         }
         internal static void SetProperties<T>(in T temp, PropertyInfo[] props, Dictionary<string, object> keyValues) where T : class, IDBModel, new()
         {
-            object obj = null;
+            object obj;
             foreach (PropertyInfo prop in props)
             {
                 foreach (SQLitePropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))

@@ -27,8 +27,10 @@ namespace  Kemorave.SQLite
             TableInfo tableInfo = null;
             foreach (SQLiteTableAttribute item in type.GetCustomAttributes(typeof(SQLiteTableAttribute), true))
             {
-                tableInfo = new TableInfo(item.TableName);
-                tableInfo.Command = item.Command;
+                tableInfo = new TableInfo(item.TableName)
+                {
+                    Command = item.Command
+                };
             }
             foreach (var prop in type.GetProperties())
             {

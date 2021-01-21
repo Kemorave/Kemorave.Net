@@ -19,7 +19,7 @@ namespace UnitTestProject
             [SQLiteProperty]
             [SQLiteTableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", ColumnInfo.SQLiteActions.CASCADE, ColumnInfo.SQLiteActions.CASCADE)]
             public long TestID { get; set; }
-            public Test Test { get;private set; }
+            public Test Test { get; private set; }
             [SQLiteProperty]
             [SQLiteTableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
             public DateTime TestDate { get; set; }
@@ -70,7 +70,10 @@ namespace UnitTestProject
                     db.Connection.Commit += Connection_Commit;
                     db.Connection.RollBack += Connection_RollBack;
                     //    db.AutoCommitChanges = false;
+                    Debug.WriteLine(db.Connection.State.ToString());
                     db.CreateTable(typeof(Test));
+                    Debug.WriteLine(db.Connection.State.ToString());
+
                     db.CreateTable(typeof(TestScheduler));
 
                     Test test = new Test
@@ -87,7 +90,7 @@ namespace UnitTestProject
                     List<Test> list = new List<Test>();
                     for (int i = 0; i != 100000; i++)
                     {
-                        list.Add(new Test() { Major="CS", Name=$"Test {i}" });
+                        list.Add(new Test() { Major = "CS", Name = $"Test {i}" });
                     }
                     stopwatch.Start();
                     db.Insert(list);

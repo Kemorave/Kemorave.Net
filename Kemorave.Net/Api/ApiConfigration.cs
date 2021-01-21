@@ -6,6 +6,11 @@ namespace Kemorave.Net.Api
 {
     public class ApiConfigration : IDisposable
     {
+
+        public const string DeleteCode = "DELETE";
+        public const string UpdateCode = "UPDATE";
+        public const string InsertCode = "INSERT";
+
         public ApiConfigration(Uri uri, string key, SecureString secure) : this(uri, key)
         {
             if (secure == null)
@@ -16,11 +21,11 @@ namespace Kemorave.Net.Api
         }
         public ApiConfigration(Uri uri, string key, SecureString[] secure) : this(uri, key)
         {
-            if (secure==null)
+            if (secure == null)
             {
                 throw new ArgumentNullException(nameof(secure));
             }
-            HttpClient.DefaultRequestHeaders.Add("Secure", secure.Select(a=>a.ToString()));
+            HttpClient.DefaultRequestHeaders.Add("Secure", secure.Select(a => a.ToString()));
         }
         public ApiConfigration(Uri uri, string key) : this(uri)
         {
@@ -36,7 +41,7 @@ namespace Kemorave.Net.Api
                 BaseAddress = Uri
             };
         }
-       
+
         public System.Net.Http.HttpClient HttpClient { get; }
         public Uri Uri { get; }
         protected string Key { get; }

@@ -10,7 +10,7 @@ namespace Kemorave.SQLite
 
     public class SQLiteFillMethodAttribute : Attribute
     {
-        private static Type Type = typeof(SQLiteFillMethodAttribute);
+        private static readonly Type Type = typeof(SQLiteFillMethodAttribute);
         public SQLiteFillMethodAttribute()
         {
         }
