@@ -39,9 +39,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>UnitTestProject.Program</StartupObject>
+    <StartupObject>UnitTestProject.IOTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Kemorave.IO">
+      <HintPath>..\Kemorave.IO\bin\Debug\netstandard2.0\Kemorave.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Kemorave.SQLite">
       <HintPath>..\Kemorave.SQLite\bin\Debug\netstandard2.0\Kemorave.SQLite.dll</HintPath>
     </Reference>
@@ -62,7 +65,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DBTest.cs" />
+    <Compile Include="IOTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

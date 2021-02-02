@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace UnitTestProject
 {
     [TestClass]
-    public class Program
+    public class DBTest
     {
         [SQLiteTable("TestScheduler")]
         private class TestScheduler : IDBModel

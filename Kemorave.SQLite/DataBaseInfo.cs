@@ -44,5 +44,17 @@ namespace Kemorave.SQLite
         /// </summary>
         public string CommandText { get; }
         public System.Collections.ObjectModel.Collection<TableInfo> Tables { get; }
+        public string GetCreationCommand()
+        {
+            string cmd = string.Empty;
+            if (Tables?.Count > 0)
+            {
+                foreach (var table in Tables)
+                {
+                    cmd += $" {table.GetCreateCommand()} ";
+                }
+            }
+            return cmd;
+        }
     }
 }
