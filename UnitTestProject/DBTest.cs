@@ -64,7 +64,7 @@ namespace UnitTestProject
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
-                using (SQLiteDataBase db = new SQLiteDataBase(FILEPATH))
+                using (Kemorave.SQLite.SQLiteDataBase db = new   SQLiteDataBase(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;
@@ -81,8 +81,8 @@ namespace UnitTestProject
                         Name = "Hola",
                         Major = "CS"
                     };
-                    db.Insert(test);
-                    db.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
+                    db.DataSetter.Insert(test);
+                    db.DataSetter.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
                     foreach (TestScheduler item in db.DataGetter.GetItems<TestScheduler>())
                     {
                         Debug.WriteLine(item.ToString());
@@ -93,7 +93,7 @@ namespace UnitTestProject
                         list.Add(new Test() { Major = "CS", Name = $"Test {i}" });
                     }
                     stopwatch.Start();
-                    db.Insert(list);
+                    db.DataSetter.Insert(list);
                     Debug.Write($"Inserted {list.Count} items in {stopwatch.Elapsed}");
                     stopwatch.Stop();
                     stopwatch.Reset();

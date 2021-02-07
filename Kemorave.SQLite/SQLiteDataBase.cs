@@ -182,7 +182,7 @@ namespace Kemorave.SQLite
                     {
                         if (TableExist(table.Name))
                         {
-                            DataSetter.DropTable(table.Name);
+                            this.DropTable(table.Name);
                         }
                     }
                     CreateTable(table);

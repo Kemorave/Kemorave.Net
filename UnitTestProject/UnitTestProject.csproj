@@ -39,13 +39,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>UnitTestProject.IOTest</StartupObject>
+    <StartupObject>UnitTestProject.DBTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Kemorave.IO">
       <HintPath>..\Kemorave.IO\bin\Debug\netstandard2.0\Kemorave.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Kemorave.SQLite">
+    <Reference Include="Kemorave.SQLite, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Kemorave.SQLite\bin\Debug\netstandard2.0\Kemorave.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
