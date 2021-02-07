@@ -58,7 +58,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        private void CheckBusyState()
+        internal void CheckBusyState()
         {
             if (IsBusy)
             {
@@ -85,34 +85,9 @@ namespace Kemorave.SQLite
             LastTransaction = null;
         }
 
-        public int CreateTable(TableInfo table)
-        {
-            throw new NotImplementedException();
-        }
+      
 
-        public int CreateTable(Type type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int DropTable(string tableName)
-        {
-            return DataBase.ExecuteCommand(TableInfo.GetDropCommand(tableName));
-        }
-        public int ClearTable(string tableName)
-        {
-            return DataBase.ExecuteCommand(TableInfo.GetClearCommand(tableName));
-        }
-
-        public DataTable GetDataTable(string cmd)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Recreate(DataBaseInfo dBInfo, bool force = false)
-        {
-            throw new NotImplementedException();
-        }
+       
         public void RollBack()
         {
             DataBase.ExecuteCommand("ROLLBACK");

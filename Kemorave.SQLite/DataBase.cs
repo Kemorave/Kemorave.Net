@@ -13,17 +13,6 @@ namespace Kemorave.SQLite
     /// </summary> 
     public class DataBase : IDisposable, IDataBase
     {
-        public IDataBaseGetter DataGetter { get; }
-        public IDataBaseSetter DataSetter { get; }
-        public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
-        /// <summary>
-        ///  When true database commits changes without a chance for rollbacks 
-        ///  else use <see cref="DataBase.CommitChanges"/> 
-        ///  <para/>
-        ///  Default is true
-        /// </summary>
-        public string DataSource => GetDBPath();
-
 
         public string Backup(string destPath)
         {
@@ -128,8 +117,6 @@ namespace Kemorave.SQLite
         {
             return GetCommand(cmd).ExecuteReader(behavior);
         }
-
-
         public int CreateTable(TableInfo table)
         {
             try
@@ -215,16 +202,37 @@ namespace Kemorave.SQLite
             }
         }
 
-        private void RefreshConnection(string dataSource, string secure)
+        private void RefreshConnection(string filePath, string secure)
         {
+            (DataSetter as DataBaseSetter).CheckBusyState();
             Connection?.Dispose();
-            Connection = new SQLiteConnection("Data Source = " + dataSource);
+            Connection = new SQLiteConnection("Data Source = " + filePath);
             if (!string.IsNullOrEmpty(secure))
             {
                 Connection.SetPassword(secure);
             }
         }
+ 
+        public int DropTable(string tableName)
+        {
+            return ExecuteCommand(TableInfo.GetDropCommand(tableName));
+        }
+        public int ClearTable(string tableName)
+        {
+            return ExecuteCommand(TableInfo.GetClearCommand(tableName));
+        }
 
+
+        public IDataBaseGetter DataGetter { get; }
+        public IDataBaseSetter DataSetter { get; }
+        public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
+        /// <summary>
+        ///  When true database commits changes without a chance for rollbacks 
+        ///  else use <see cref="DataBase.CommitChanges"/> 
+        ///  <para/>
+        ///  Default is true
+        /// </summary>
+        public string DataSource => GetDBPath();
 
 
     }
