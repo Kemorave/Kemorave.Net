@@ -126,18 +126,17 @@ namespace Kemorave.Wpf
   {
    double actualWidth;
    double actualHeight;
-   FrameworkElement content = base.Content as FrameworkElement;
-   if (RippleHelper.GetIsCentered(this) && (content != null))
-   {
-    actualWidth = content.ActualWidth;
-    actualHeight = content.ActualHeight;
-   }
-   else
-   {
-    actualWidth = sizeChangedEventArgs.NewSize.Width;
-    actualHeight = sizeChangedEventArgs.NewSize.Height;
-   }
-   double num3 = Math.Sqrt(Math.Pow(actualWidth, 2.0) + Math.Pow(actualHeight, 2.0));
+            if (RippleHelper.GetIsCentered(this) && (base.Content is FrameworkElement content))
+            {
+                actualWidth = content.ActualWidth;
+                actualHeight = content.ActualHeight;
+            }
+            else
+            {
+                actualWidth = sizeChangedEventArgs.NewSize.Width;
+                actualHeight = sizeChangedEventArgs.NewSize.Height;
+            }
+            double num3 = Math.Sqrt(Math.Pow(actualWidth, 2.0) + Math.Pow(actualHeight, 2.0));
    this.RippleSize = (2.0 * num3) * RippleHelper.GetRippleSizeMultiplier(this);
   }
 

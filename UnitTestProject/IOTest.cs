@@ -41,7 +41,8 @@ namespace UnitTestProject
         private static void TryZipper()
         {  Zipper zipper = null;
             String lastWrite = string.Empty,lastFile=string.Empty;
-            zipper = new Zipper((e)=> { 
+            zipper = new Zipper((e) =>
+            {
                 if (lastFile != zipper.CurrentFile)
                 {
                     lastFile = zipper.CurrentFile;
@@ -53,10 +54,12 @@ namespace UnitTestProject
                     lastWrite = newWrite;
                     WriteOnLine("=");
                 }
-            });
-            zipper.DestinationFilePath = System.IO.Path.Combine(Environment.CurrentDirectory, "Tonikaku Kawaii");
-            zipper.CompressionLevel = System.IO.Compression.CompressionLevel.Optimal;
-            zipper.OverrideExistingFiles = true;
+            })
+            {
+                DestinationFilePath = System.IO.Path.Combine(Environment.CurrentDirectory, "Tonikaku Kawaii"),
+                CompressionLevel = System.IO.Compression.CompressionLevel.Optimal,
+                OverrideExistingFiles = true
+            };
             zipper.CompressDirectory(@"F:\Anime k\GMV"); 
           }
 
@@ -67,7 +70,7 @@ namespace UnitTestProject
 
         static void WriteOnLine<T>(T obj) => Console.Write(obj);
         static void Write<T>(T obj) => Console.WriteLine(obj);
-        static ConsoleColor ConsoleDefaultColor = Console.ForegroundColor;
+        static readonly ConsoleColor ConsoleDefaultColor = Console.ForegroundColor;
         static void Write<T>(T obj, ConsoleColor color)
         {
             Console.ForegroundColor = color;

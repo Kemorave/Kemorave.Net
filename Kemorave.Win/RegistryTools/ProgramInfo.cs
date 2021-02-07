@@ -11,7 +11,7 @@ namespace Kemorave.Win.RegistryTools
     public class ProgramInfo : RegistryItemBase
 	{
 		public bool ShellThumbnailLoaded, ShellIconLoaded;
-		private static bool is64bit = true;
+		private static readonly bool is64bit = true;
 		ProgramInfo()
 		{
 		}
@@ -90,10 +90,7 @@ namespace Kemorave.Win.RegistryTools
 			return pr;
 		}
 		public static string GetCommandInCommaAndArgumentsOutsideByExe(string command)
-		{
-			int ind = 0;
-			string[] prms = command.Split(' ');
-			ind = prms[0].Length;
+		{  
 			int exeLocationIndex = command.IndexOf(".exe") + 4;
 			string cmd = command.Substring(0, exeLocationIndex);
 			string arguments = command.Substring(command.IndexOf(".exe") + 4, command.Length - exeLocationIndex);

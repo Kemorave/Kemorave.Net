@@ -40,7 +40,7 @@ namespace Kemorave.Wpf.Helper
 
         public static Brush PickBrush()
         {
-            Brush result = Brushes.Transparent;
+            Brush result;
 
             Random rnd = new Random();
 

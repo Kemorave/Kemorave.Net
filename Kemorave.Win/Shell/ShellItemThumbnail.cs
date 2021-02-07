@@ -33,8 +33,7 @@ namespace Kemorave.Win.Shell
 
     public class ShellItemThumbnail
     {
-        private readonly string Path;
-        private readonly Microsoft.WindowsAPICodePack.Shell.ShellThumbnail ShellThumbnail;
+         private readonly Microsoft.WindowsAPICodePack.Shell.ShellThumbnail ShellThumbnail;
         internal ShellItemThumbnail(Microsoft.WindowsAPICodePack.Shell.ShellThumbnail thumbnail)
         {
             ShellThumbnail = thumbnail;
@@ -55,7 +54,7 @@ namespace Kemorave.Win.Shell
 
         private ImageSource GetShellThumbnail(ThumbnailSize size)
         {
-            ImageSource source = null;
+            ImageSource source ;
             switch (size)
             {
                 case ThumbnailSize.ExtraLarge:
@@ -78,8 +77,8 @@ namespace Kemorave.Win.Shell
         }
         private ImageSource GetShellIcon(ThumbnailSize size)
         {
-            ImageSource source = null;
-            System.Drawing.Icon icon = null;
+            ImageSource source;
+            System.Drawing.Icon icon;
             switch (size)
             {
                 case ThumbnailSize.ExtraLarge:

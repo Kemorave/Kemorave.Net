@@ -34,24 +34,23 @@ namespace Kemorave.Wpf
         }
         private void AnimatedListBox_LayoutUpdated(object sender, EventArgs e)
         {
-            this.updateScrollPosition(sender);
+            this.UpdateScrollPosition(sender);
         }
 
         private void AnimatedListBox_Loaded(object sender, RoutedEventArgs e)
         {
-            this.updateScrollPosition(sender);
+            this.UpdateScrollPosition(sender);
         }
 
         private void AnimatedListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.updateScrollPosition(sender);
+            this.UpdateScrollPosition(sender);
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            AnimatedScrollViewer templateChild = base.GetTemplateChild("PART_AnimatedScrollViewer") as AnimatedScrollViewer;
-            if (templateChild != null)
+            if (base.GetTemplateChild("PART_AnimatedScrollViewer") is AnimatedScrollViewer templateChild)
             {
                 this.ScrollViewer = templateChild;
             }
@@ -61,7 +60,7 @@ namespace Kemorave.Wpf
             base.LayoutUpdated += new EventHandler(this.AnimatedListBox_LayoutUpdated);
         }
 
-        public void updateScrollPosition(object sender)
+        public void UpdateScrollPosition(object sender)
         {
             AnimatedListBox box = (AnimatedListBox)sender;
             if ((box != null) && box.ScrollToSelectedItem)
@@ -69,8 +68,7 @@ namespace Kemorave.Wpf
                 double num = 0.0;
                 for (int i = 0; i < (box.SelectedIndex + box.SelectedIndexOffset); i++)
                 {
-                    ListBoxItem item = box.ItemContainerGenerator.ContainerFromItem(box.Items[i]) as ListBoxItem;
-                    if (item != null)
+                    if (box.ItemContainerGenerator.ContainerFromItem(box.Items[i]) is ListBoxItem item)
                     {
                         num += item.ActualHeight;
                     }

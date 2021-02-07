@@ -59,7 +59,7 @@ namespace UnitTestProject
 
         private static readonly string FILEPATH = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + FILENAME;
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
             try
             {

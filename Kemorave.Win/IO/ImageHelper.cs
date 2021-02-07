@@ -152,7 +152,7 @@ namespace Kemorave.Win.IO
                             red += color.R;
                         }
                     }
-                    Func<int, int> avg = c => c / (int)(image.Width * image.Height);
+                    int avg(int c) => c / (int)(image.Width * image.Height);
                     red = avg(red);
                     green = avg(green);
                     alpha = avg(alpha);
