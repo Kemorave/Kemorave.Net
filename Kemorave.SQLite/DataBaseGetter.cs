@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Kemorave.SQLite
 {
-    public class DataBaseGetter : IDataBaseGetter
+    internal class DataBaseGetter : IDataBaseGetter
     {
         private readonly IDataBase DataBase;
         public DataBaseGetter(IDataBase dataBase)

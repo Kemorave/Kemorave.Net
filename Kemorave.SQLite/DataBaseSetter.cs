@@ -5,7 +5,7 @@ using System.Data.SQLite;
 
 namespace Kemorave.SQLite
 {
-    public class DataBaseSetter : IDataBaseSetter
+    internal class DataBaseSetter : IDataBaseSetter
     {
         public const string InsertOperation = "Insert";
         public const string UpdateOperation = "Update";
