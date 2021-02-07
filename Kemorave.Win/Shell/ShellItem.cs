@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.WindowsAPICodePack.Shell;
 
 namespace Kemorave.Win.Shell
@@ -12,13 +7,15 @@ namespace Kemorave.Win.Shell
     {
         private ShellItemThumbnail thumbnail;
 
+        public ShellItem(string path)
+        {
+            Path = path ?? throw new ArgumentNullException(nameof(path));
+            ShellInfo = ShellObject.FromParsingName(path) ?? throw new ArgumentException(nameof(ShellInfo));
+        }
         ~ShellItem()
         {
-
+            Dispose(true);
         }
-        public virtual string Path { get; }
-        public ShellObject ShellInfo { get; }
-        public ShellItemThumbnail Thumbnail => GetThumbnail();
         private ShellItemThumbnail GetThumbnail()
         {
             if (thumbnail == null)
@@ -28,7 +25,7 @@ namespace Kemorave.Win.Shell
             return thumbnail;
         }
 
-        public void Dispose(bool finalizer)
+        protected virtual void Dispose(bool finalizer)
         {
             if (!finalizer)
             {
@@ -36,9 +33,12 @@ namespace Kemorave.Win.Shell
             }
             ShellInfo.Dispose();
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
             Dispose(false);
         }
+        public virtual string Path { get; }
+        public virtual ShellObject ShellInfo { get; }
+        public virtual ShellItemThumbnail Thumbnail => GetThumbnail();
     }
 }

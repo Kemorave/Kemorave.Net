@@ -1,0 +1,33 @@
+﻿namespace Kemorave.SQLite
+{
+    public enum SQLiteType
+    {
+        INT,
+        INTEGER,
+        TINYINT,
+        SMALLINT,
+        MEDIUMINT,
+        BIGINT,
+        UNSIGNED_BIG_INT,
+        INT2,
+        INT8,
+        NUMERIC,
+        DECIMAL,
+        BOOLEAN,
+        DATE,
+        DATETIME,
+        REAL,
+        DOUBLE,
+        DOUBLE_PRECISION,
+        FLOAT,
+        CHARACTER,
+        VARCHAR,
+        VARYING_CHARACTER,
+        NCHAR,
+        NATIVE_CHARACTER,
+        NVARCHAR,
+        TEXT,
+        CLOB,
+        BLOB
+    }
+}

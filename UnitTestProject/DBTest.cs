@@ -83,7 +83,7 @@ namespace UnitTestProject
                     };
                     db.Insert(test);
                     db.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
-                    foreach (TestScheduler item in db.GetItems<TestScheduler>())
+                    foreach (TestScheduler item in db.DataGetter.GetItems<TestScheduler>())
                     {
                         Debug.WriteLine(item.ToString());
                     }

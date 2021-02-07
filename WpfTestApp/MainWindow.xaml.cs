@@ -1,18 +1,8 @@
-﻿using System;
+﻿using Kemorave.Wpf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Kemorave.Win.Shell;
 
 namespace WpfTestApp
 {
@@ -21,10 +11,37 @@ namespace WpfTestApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        public class Item : Kemorave.Wpf.IGraphItem
+        {
+            public Item(double percentage, string name, string description, Brush brush, object tag=null)
+            {
+                Percentage = percentage;
+                Name = name ?? throw new ArgumentNullException(nameof(name));
+                Description = description ?? throw new ArgumentNullException(nameof(description));
+                Brush = brush ?? throw new ArgumentNullException(nameof(brush));
+                Tag = tag;
+            }
+
+            public double Percentage { get; }
+
+            public string Name { get; }
+
+            public string Description { get; }
+
+            public Brush Brush { get; set ; }
+            public object Tag { get ; set ; }
+        }
         public MainWindow()
         {
             InitializeComponent();
-          
+            RecChart.UpdateItems(new List<IGraphItem>
+            {
+                new Item(60,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+                new Item(50,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+                new Item(10,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+                new Item(20,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush())
+
+            });
         }
     }
 }

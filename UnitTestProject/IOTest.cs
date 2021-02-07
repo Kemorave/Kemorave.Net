@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kemorave.IO;
 using System.Threading.Tasks;
+using Kemorave.IO.Zip;
 
 namespace UnitTestProject
 {
@@ -38,7 +39,7 @@ namespace UnitTestProject
         }
 
         private static void TryZipper()
-        { Kemorave.IO.Zipper zipper = null;
+        {  Zipper zipper = null;
             String lastWrite = string.Empty,lastFile=string.Empty;
             zipper = new Zipper((e)=> { 
                 if (lastFile != zipper.CurrentFile)

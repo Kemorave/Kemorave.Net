@@ -4,9 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfTestApp"
+        xmlns:wpf="clr-namespace:Kemorave.Wpf;assembly=Kemorave.Wpf"
+        xmlns:helper="clr-namespace:Kemorave.Wpf.Helper;assembly=Kemorave.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-  <Image x:Name="image"/>
- </Grid>
-</Window>
+        Title="MainWindow" 
+        Width="800"
+        Height="671">
+  <wpf:AnimatedScrollViewer>
+  <StackPanel>
+   <wpf:CircularProgressbar  Height="150"
+                             Value="50" />
+   <ProgressBar Height="150" />
+   <wpf:RectangleChart x:Name="RecChart"
+                       Height="150">
+
+   </wpf:RectangleChart>
+   <wpf:Ripple Feedback="Red"  Height="150" HorizontalAlignment="Stretch" Background="Beige"/>
+  </StackPanel>
+ </wpf:AnimatedScrollViewer>
+ 
+ </Window>

@@ -10,13 +10,9 @@ namespace Kemorave.Win.IO
     public static class ImageHelper
     {
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
-
-
-
+        public static extern bool DeleteObject(IntPtr hObject); 
         public static string DummyFilesFolderPath { get; set; } = Environment.CurrentDirectory + "\\Dummy";
-
-
+         
         public static void SaveBitmapToPng(this BitmapSource bitmapSource, string fileName)
         {
             SaveBitmapToImage(bitmapSource, fileName, new PngBitmapEncoder(), ".Png");
