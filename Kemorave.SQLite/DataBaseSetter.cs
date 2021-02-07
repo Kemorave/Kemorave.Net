@@ -12,8 +12,8 @@ namespace Kemorave.SQLite
         public const string DeleteOperation = "Delete";
         private bool _isCanceled;
 
-        private readonly IDataBase DataBase;
-        public DataBaseSetter(IDataBase dataBase)
+        private readonly ISQLiteDataBase DataBase;
+        public DataBaseSetter(ISQLiteDataBase dataBase)
         {
             DataBase = dataBase;
         }

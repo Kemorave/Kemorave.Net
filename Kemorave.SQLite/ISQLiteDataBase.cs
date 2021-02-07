@@ -3,11 +3,10 @@ using System.Data.SQLite;
 
 namespace Kemorave.SQLite
 {
-    public interface IDataBase
+    public interface ISQLiteDataBase
     {
         SQLiteConnection Connection { get; }
         string DataSource { get; }
-
         string Backup(string destPath);
         SQLiteDataReader ExectuteReader(string cmd, CommandBehavior behavior = CommandBehavior.Default);
         int ExecuteCommand(string cmdt);

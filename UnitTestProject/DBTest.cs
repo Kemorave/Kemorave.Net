@@ -64,7 +64,7 @@ namespace UnitTestProject
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
-                using (DataBase db = new DataBase(FILEPATH))
+                using (SQLiteDataBase db = new SQLiteDataBase(FILEPATH))
                 {
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;

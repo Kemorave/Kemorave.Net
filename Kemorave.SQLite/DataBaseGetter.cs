@@ -7,8 +7,8 @@ namespace Kemorave.SQLite
 {
     internal class DataBaseGetter : IDataBaseGetter
     {
-        private readonly IDataBase DataBase;
-        public DataBaseGetter(IDataBase dataBase)
+        private readonly ISQLiteDataBase DataBase;
+        public DataBaseGetter(ISQLiteDataBase dataBase)
         {
             DataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
         }

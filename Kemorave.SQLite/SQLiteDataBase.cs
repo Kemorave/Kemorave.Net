@@ -11,7 +11,7 @@ namespace Kemorave.SQLite
     /// SQLite databse manager
     /// 
     /// </summary> 
-    public class DataBase : IDisposable, IDataBase
+    public class SQLiteDataBase : IDisposable, ISQLiteDataBase
     {
 
         public string Backup(string destPath)
@@ -56,7 +56,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        ~DataBase()
+        ~SQLiteDataBase()
         {
             Dispose(true);
         }
@@ -73,7 +73,7 @@ namespace Kemorave.SQLite
         {
             Dispose(false);
         }
-        public DataBase(SQLiteConnection connection) : this()
+        public SQLiteDataBase(SQLiteConnection connection) : this()
         {
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             if (Connection.State == ConnectionState.Closed)
@@ -82,7 +82,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        public DataBase(string uri, SecureString secure = null) : this()
+        public SQLiteDataBase(string uri, SecureString secure = null) : this()
         {
             RefreshConnection(uri, secure?.ToString());
             if (secure != null)
@@ -92,7 +92,7 @@ namespace Kemorave.SQLite
             Connection.Open();
         }
 
-        public DataBase()
+        public SQLiteDataBase()
         {
             DataGetter = new DataBaseGetter(this);
             DataSetter = new DataBaseSetter(this);
@@ -228,7 +228,7 @@ namespace Kemorave.SQLite
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
         /// <summary>
         ///  When true database commits changes without a chance for rollbacks 
-        ///  else use <see cref="DataBase.CommitChanges"/> 
+        ///  else use <see cref="SQLiteDataBase.CommitChanges"/> 
         ///  <para/>
         ///  Default is true
         /// </summary>
