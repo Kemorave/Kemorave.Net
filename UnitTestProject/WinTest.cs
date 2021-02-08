@@ -12,7 +12,7 @@ namespace UnitTestProject
         [STAThread]
         public static void Main()
         {
-            var programes = Kemorave.Win.RegistryTools.ProgramInfo.GetAllInstalledPrograms().OrderBy(it=>it.ToString());
+            var programes = Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms().OrderBy(it=>it.ToString());
             int index = 0;
             foreach (var item in programes)
             {
@@ -25,7 +25,7 @@ namespace UnitTestProject
             var line = Console.ReadLine();
             if (int.TryParse(line, out index))
             {
-                Kemorave.Win.RegistryTools.ProgramInfo.UninstallApplication(Programes[index].UninstallString);
+                Kemorave.Win.RegistryTools.RegistryHelper.UninstallApplication(Programes[index].UninstallString);
             }
             else
             {
