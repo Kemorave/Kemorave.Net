@@ -10,18 +10,14 @@ namespace Kemorave.SQLite
         public const string InsertOperation = "Insert";
         public const string UpdateOperation = "Update";
         public const string DeleteOperation = "Delete";
-        private bool _isCanceled;
-
-        private readonly ISQLiteDataBase DataBase;
         public DataBaseSetter(ISQLiteDataBase dataBase)
         {
             DataBase = dataBase;
         }
-        public bool AutoCommitChanges { get; set; } = true;
-        public bool IsBusy { get; protected set; }
-        public bool CanRollBack => LastTransaction != null;
-        public string CurrentOperation { get; protected set; }
-        protected System.Data.SQLite.SQLiteTransaction LastTransaction { get; set; }
+        private bool _isCanceled;
+
+        private readonly ISQLiteDataBase DataBase;
+
         #region Operaion
         private void CheckParams<T>(string tableName, IList<T> rows) where T : class, IDBModel
         {
@@ -38,7 +34,6 @@ namespace Kemorave.SQLite
                 throw new InvalidOperationException("Items list has no items");
             }
         }
-
         private void CheckCancellation()
         {
             if (_isCanceled)
@@ -46,8 +41,7 @@ namespace Kemorave.SQLite
                 throw new OperationCanceledException("Operation " + CurrentOperation + " is cancelled");
             }
         }
-
-        protected virtual void OnOperationEnd()
+        private  void OnOperationEnd()
         {
             IsBusy = false;
             _isCanceled = false;
@@ -57,7 +51,6 @@ namespace Kemorave.SQLite
                 CommitChanges();
             }
         }
-
         internal void CheckBusyState()
         {
             if (IsBusy)
@@ -69,8 +62,7 @@ namespace Kemorave.SQLite
                 CommitChanges();
             }
         }
-
-        protected virtual void OnOperationStart(string operation)
+        private void OnOperationStart(string operation)
         {
             IsBusy = true;
             CurrentOperation = operation;
@@ -115,7 +107,7 @@ namespace Kemorave.SQLite
 
                 int TORE = 0;
 
-                using (SQLiteCommand command = DataBase.GetCommand($"DELETE FROM  {tableName} WHERE ID = ?"))
+                using (SQLiteCommand command = DataBase.CreateCommand($"DELETE FROM  {tableName} WHERE ID = ?"))
                 {
                     foreach (T item in rows)
                     {
@@ -133,8 +125,6 @@ namespace Kemorave.SQLite
                 OnOperationEnd();
             }
         }
-
-
         public int Insert<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
         {
             CheckBusyState();
@@ -165,7 +155,7 @@ namespace Kemorave.SQLite
                 //}
                 Tuple<string, string> tuple = keyValues.GetInsertNamesAndParameters();
 
-                using (SQLiteCommand command = DataBase.GetCommand($"INSERT INTO [{tableName}] ({tuple.Item1}) VALUES ({tuple.Item2})"))
+                using (SQLiteCommand command = DataBase.CreateCommand($"INSERT INTO [{tableName}] ({tuple.Item1}) VALUES ({tuple.Item2})"))
                 {
                     foreach (T item in rows)
                     {
@@ -188,9 +178,6 @@ namespace Kemorave.SQLite
                 OnOperationEnd();
             }
         }
-
-
-
         public int Update<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
         {
             CheckBusyState();
@@ -215,7 +202,7 @@ namespace Kemorave.SQLite
                 }
                 string parameters = keyValues.GetUpdateParameters();
 
-                using (SQLiteCommand command = DataBase.GetCommand($"UPDATE {tableName} SET {parameters} WHERE ID = ?"))
+                using (SQLiteCommand command = DataBase.CreateCommand($"UPDATE {tableName} SET {parameters} WHERE ID = ?"))
                 {
                     foreach (T item in rows)
                     {
@@ -262,5 +249,12 @@ namespace Kemorave.SQLite
             }
             return Delete<T>(new List<T>() { item }, tableName);
         }
+
+        public bool AutoCommitChanges { get; set; } = true;
+        public bool IsBusy { get; protected set; }
+        public bool CanRollBack => LastTransaction != null;
+        public string CurrentOperation { get; protected set; }
+        protected System.Data.SQLite.SQLiteTransaction LastTransaction { get; set; }
+
     }
 }

@@ -12,6 +12,7 @@ namespace Kemorave.SQLite
         {
             DataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
         }
+
         public T GetItemByID<T>(long id, string tableName = null) where T : class, IDBModel, new()
         {
             return GetItems<T>(tableName, "*", "WHERE ID =" + id).FirstOrDefault();
@@ -33,7 +34,7 @@ namespace Kemorave.SQLite
                 tableName = SQLiteTableAttribute.GetTableName(type);
             }
             System.Reflection.PropertyInfo[] props = type.GetProperties();
-            using (SQLiteDataReader reader = DataBase.GetCommand($"SELECT {selection} FROM {tableName} {condition}").ExecuteReader())
+            using (SQLiteDataReader reader = DataBase.CreateCommand($"SELECT {selection} FROM {tableName} {condition}").ExecuteReader())
             {
                 Dictionary<string, object> values = SQLitePropertyAttribute.GetPopulateProperties(type, props);
                 if (values.Count == 0)

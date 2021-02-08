@@ -13,7 +13,47 @@ namespace Kemorave.SQLite
     /// </summary> 
     public class SQLiteDataBase : IDisposable, ISQLiteDataBase
     {
+        public SQLiteDataBase(SQLiteConnection connection) : this()
+        {
+            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            if (Connection.State == ConnectionState.Closed)
+            {
+                Connection.Open();
+            }
+        }
+        public SQLiteDataBase(string uri, SecureString secure = null) : this()
+        {
+            RefreshConnection(uri, secure?.ToString());
+            if (secure != null)
+            {
+                Connection.SetPassword(secure.ToString());
+            }
+            Connection.Open();
+        }
+        private SQLiteDataBase()
+        {
+            DataGetter = new DataBaseGetter(this);
+            DataSetter = new DataBaseSetter(this);
+        }
 
+        #region IDisposable implimentaion
+        ~SQLiteDataBase()
+        {
+            Dispose(true);
+        }
+        private void Dispose(bool finalizer)
+        {
+            if (!finalizer)
+            {
+                GC.SuppressFinalize(this);
+            }
+            Connection?.Dispose();
+        }
+        public void Dispose()
+        {
+            Dispose(false);
+        }
+        #endregion
         public string Backup(string destPath)
         {
             string name = $"SQLite Backup {DateTime.Now}.backup";
@@ -55,49 +95,6 @@ namespace Kemorave.SQLite
                 return temp;
             }
         }
-
-        ~SQLiteDataBase()
-        {
-            Dispose(true);
-        }
-
-        private void Dispose(bool finalizer)
-        {
-            if (!finalizer)
-            {
-                GC.SuppressFinalize(this);
-            }
-            Connection?.Dispose();
-        }
-        public void Dispose()
-        {
-            Dispose(false);
-        }
-        public SQLiteDataBase(SQLiteConnection connection) : this()
-        {
-            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            if (Connection.State == ConnectionState.Closed)
-            {
-                Connection.Open();
-            }
-        }
-
-        public SQLiteDataBase(string uri, SecureString secure = null) : this()
-        {
-            RefreshConnection(uri, secure?.ToString());
-            if (secure != null)
-            {
-                Connection.SetPassword(secure.ToString());
-            }
-            Connection.Open();
-        }
-
-        public SQLiteDataBase()
-        {
-            DataGetter = new DataBaseGetter(this);
-            DataSetter = new DataBaseSetter(this);
-        }
-
         public bool TableExist(string table_name)
         {
             using (SQLiteDataReader reader = ExectuteReader($"SELECT 1 FROM sqlite_master WHERE type='table' AND name='{table_name}';", CommandBehavior.SingleRow))
@@ -112,10 +109,9 @@ namespace Kemorave.SQLite
                 return reader.HasRows;
             }
         }
-
         public SQLiteDataReader ExectuteReader(string cmd, CommandBehavior behavior = CommandBehavior.Default)
         {
-            return GetCommand(cmd).ExecuteReader(behavior);
+            return CreateCommand(cmd).ExecuteReader(behavior);
         }
         public int CreateTable(TableInfo table)
         {
@@ -144,12 +140,12 @@ namespace Kemorave.SQLite
         }
         public int ExecuteCommand(string cmdt)
         {
-            using (SQLiteCommand cmd = GetCommand(cmdt))
+            using (SQLiteCommand cmd = CreateCommand(cmdt))
             {
                 return cmd.ExecuteNonQuery();
             }
         }
-        public SQLiteCommand GetCommand(string cmd = null)
+        public SQLiteCommand CreateCommand(string cmd = null)
         {
             if (cmd != null)
             {
@@ -201,7 +197,6 @@ namespace Kemorave.SQLite
                 throw new System.IO.FileNotFoundException("Source file not found");
             }
         }
-
         private void RefreshConnection(string filePath, string secure)
         {
             (DataSetter as DataBaseSetter).CheckBusyState();
@@ -212,7 +207,6 @@ namespace Kemorave.SQLite
                 Connection.SetPassword(secure);
             }
         }
- 
         public int DropTable(string tableName)
         {
             return ExecuteCommand(TableInfo.GetDropCommand(tableName));
@@ -221,8 +215,6 @@ namespace Kemorave.SQLite
         {
             return ExecuteCommand(TableInfo.GetClearCommand(tableName));
         }
-
-
         public IDataBaseGetter DataGetter { get; }
         public IDataBaseSetter DataSetter { get; }
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
@@ -233,7 +225,5 @@ namespace Kemorave.SQLite
         ///  Default is true
         /// </summary>
         public string DataSource => GetDBPath();
-
-
     }
 }

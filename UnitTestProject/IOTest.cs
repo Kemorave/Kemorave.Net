@@ -4,6 +4,7 @@ using System.Linq;
 using Kemorave.IO;
 using System.Threading.Tasks;
 using Kemorave.IO.Zip;
+using static UnitTestProject.Writing;
 
 namespace UnitTestProject
 {
@@ -68,17 +69,21 @@ namespace UnitTestProject
             throw new NotImplementedException();
         }
 
-        static void WriteOnLine<T>(T obj) => Console.Write(obj);
-        static void Write<T>(T obj) => Console.WriteLine(obj);
-        static readonly ConsoleColor ConsoleDefaultColor = Console.ForegroundColor;
-        static void Write<T>(T obj, ConsoleColor color)
+      
+    }
+  public  class Writing
+    {
+        public static void WriteOnLine<T>(T obj) => Console.Write(obj);
+        public static void Write<T>(T obj) => Console.WriteLine(obj);
+        public static readonly ConsoleColor ConsoleDefaultColor = Console.ForegroundColor;
+        public static void Write<T>(T obj, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(obj);
             Console.ForegroundColor = ConsoleDefaultColor;
 
         }
-        static void WriteOnLine<T>(T obj, ConsoleColor color)
+        public static void WriteOnLine<T>(T obj, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.Write(obj);
