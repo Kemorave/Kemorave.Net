@@ -6,15 +6,20 @@ using Microsoft.Win32;
 
 namespace Kemorave.Win.RegistryTools
 {
-    public class ProgramInfo : RegistryItemBase
+    public sealed class ProgramInfo : RegistryItemBase
     {
         public bool ShellThumbnailLoaded, ShellIconLoaded;
 
         private ProgramInfo()
         {
         }
-        internal static ProgramInfo ToProgramInfo(RegistryKey appRegistryKey)
+        public static ProgramInfo ToProgramInfo(RegistryKey appRegistryKey)
         {
+            if (appRegistryKey == null)
+            {
+                throw new ArgumentNullException(nameof(appRegistryKey));
+            }
+
             DateTime InstallDate = DateTime.MinValue;
             ProgramInfo pr = new ProgramInfo()
             {
@@ -111,7 +116,7 @@ namespace Kemorave.Win.RegistryTools
             return ImageHelper.GetMediaFileThumbnail(IconPath, ImageSize.Default, FileType.File);
         }
 
-        public virtual ImageSource AssociatedIcon => GetIcon();
+        public   ImageSource AssociatedIcon => GetIcon();
         public bool IsSystemComponent { get; private set; }
         public string IconPath { get; private set; }
         public string AboutLink { get; private set; }

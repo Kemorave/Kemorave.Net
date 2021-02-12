@@ -8,8 +8,7 @@ namespace Kemorave.Win.RegistryTools
 {
     public class RegistryHelper
     {
-        private static readonly bool Is64BitOS = Environment.Is64BitOperatingSystem;
-
+        public static readonly bool Is64BitOS = Environment.Is64BitOperatingSystem;
         public static void LaunchCurrentApplicationOnStartup(bool isEnabled)
         {
             const string StartupReg = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -137,6 +136,7 @@ namespace Kemorave.Win.RegistryTools
             {
                 throw new ArgumentNullException(nameof(uninstallRegistryKey));
             }
+            string name;
             foreach (string key in uninstallRegistryKey.GetSubKeyNames())
             {
                 ProgramInfo tempInfo = null;
@@ -144,7 +144,7 @@ namespace Kemorave.Win.RegistryTools
                 {
                     using (RegistryKey appRegistryKey = uninstallRegistryKey.OpenSubKey(key, false))
                     {
-                        string name = appRegistryKey.GetValue("DisplayName")?.ToString();
+                        name = appRegistryKey?.GetValue("DisplayName")?.ToString();
                         if (!string.IsNullOrEmpty(name))
                         {
                             tempInfo = ProgramInfo.ToProgramInfo(appRegistryKey);
