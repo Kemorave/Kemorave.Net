@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Security;
+using Kemorave.SQLite.Attribute;
 
 namespace Kemorave.SQLite
 {

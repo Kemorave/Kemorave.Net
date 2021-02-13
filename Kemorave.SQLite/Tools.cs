@@ -1,8 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,13 +13,13 @@ namespace Kemorave.SQLite
     {
         #region Refletion/Tools
 
-        internal static Object GetPropValue(Object obj, Type type, String name)
+        internal static object GetPropValue(object obj, Type type, string name)
         {
             if (obj == null)
             {
                 return null;
             }
-            foreach (String part in name.Split('.'))
+            foreach (string part in name.Split('.'))
             {
                 if (obj == null) { return null; }
                 PropertyInfo info = type.GetProperty(part);
@@ -67,42 +65,16 @@ namespace Kemorave.SQLite
         }
 
         #endregion
-
-        public static string GetColumnsCreationInfo(this IEnumerable<ColumnInfo> list)
-        {
-            String info = string.Empty;
-            int count = 0;
-            foreach (var column in list)
-            {
-                
-                if (count == 0)
-                {
-                    info += column.GetCreationInfo();
-                }
-                else
-                {
-                    info += "," + column.GetCreationInfo(); ;
-                }
-                count++;
-            } 
-            foreach (var column in list.Where(c => c.IsForeignKey))
-            {
-               
-                    info += "," + column.GetForeignKeyCreationInfo();
-                 
-            }
-            return info;
-        }
+         
         #region Security
 
-        #endregion
-        public static string EncryptString(string encryptString, String EncryptionKey)
+        public static string EncryptString(string encryptString, string EncryptionKey)
         {
-            if (String.IsNullOrEmpty(encryptString))
+            if (string.IsNullOrEmpty(encryptString))
             {
                 return encryptString;
             }
-            if (String.IsNullOrEmpty(EncryptionKey))
+            if (string.IsNullOrEmpty(EncryptionKey))
             {
                 return encryptString;
             }
@@ -124,13 +96,13 @@ namespace Kemorave.SQLite
             }
             return encryptString;
         }
-        public static string DecryptString(String cipherText, String EncryptionKey)
+        public static string DecryptString(string cipherText, string EncryptionKey)
         {
-            if (String.IsNullOrEmpty(cipherText))
+            if (string.IsNullOrEmpty(cipherText))
             {
                 return cipherText;
             }
-            if (String.IsNullOrEmpty(EncryptionKey))
+            if (string.IsNullOrEmpty(EncryptionKey))
             {
                 return cipherText;
             }
@@ -152,5 +124,7 @@ namespace Kemorave.SQLite
             }
             return cipherText;
         }
+
+        #endregion
     }
 }

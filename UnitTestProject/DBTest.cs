@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Kemorave.SQLite;
+using Kemorave.SQLite.Attribute;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject
@@ -71,13 +72,13 @@ namespace UnitTestProject
                     db.Connection.RollBack += Connection_RollBack;
                     //    db.AutoCommitChanges = false;
                     Debug.WriteLine(db.Connection.State.ToString());
-                    db.CreateTable(typeof(Test));
+                    db.TableManager.CreateTable(typeof(Test));
                     Debug.WriteLine(db.Connection.State.ToString());
 
-                    db.CreateTable(typeof(TestScheduler));
+                    db.TableManager.CreateTable(typeof(TestScheduler));
 
-                    var names = db.GetTablesNames();
-                    var tt = db.GetTableInfo("TestScheduler");
+                    var names = db.TableManager.GetTablesNames();
+                    var tt = db.TableManager.GetTableInfo("TestScheduler");
 
                     Test test = new Test
                     {

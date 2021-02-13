@@ -1,10 +1,10 @@
 ﻿using System; 
 using System.Linq;
  
-namespace  Kemorave.SQLite
+namespace  Kemorave.SQLite.Attribute
 { 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Parameter)]
-    public class SQLiteTableAttribute : Attribute
+    public class SQLiteTableAttribute : System.Attribute
     {
         public SQLiteTableAttribute(string tableName,string cmd = null)
         {

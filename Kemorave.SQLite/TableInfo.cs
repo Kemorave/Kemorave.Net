@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Kemorave.SQLite
 {
@@ -28,8 +29,34 @@ namespace Kemorave.SQLite
             {
                 throw new InvalidOperationException($"{nameof(Columns)} have no columns");
             }
-            return $"CREATE TABLE IF NOT EXISTS {Name} ({Columns?.GetColumnsCreationInfo()})";
+            return $"CREATE TABLE IF NOT EXISTS {Name} ({GetColumnsCreationInfo()})";
         }
+        public string GetColumnsCreationInfo()
+        {
+            string info = string.Empty;
+            int count = 0;
+            foreach (ColumnInfo column in Columns)
+            {
+
+                if (count == 0)
+                {
+                    info += column.GetCreationInfo();
+                }
+                else
+                {
+                    info += "," + column.GetCreationInfo(); ;
+                }
+                count++;
+            }
+            foreach (ColumnInfo column in Columns.Where(c => c.IsForeignKey))
+            {
+
+                info += "," + column.GetForeignKeyCreationInfo();
+
+            }
+            return info;
+        }
+
         public static string GetDropCommand(string name)
         {
             return $"DROP TABLE {name}";
@@ -50,7 +77,7 @@ namespace Kemorave.SQLite
 
         public override string ToString()
         {
-            return $"{Name} ({Columns?.GetColumnsCreationInfo()})";
+            return $"{Name} ({GetColumnsCreationInfo()})";
         }
     }
 }

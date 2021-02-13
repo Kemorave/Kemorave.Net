@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Kemorave.SQLite
+namespace Kemorave.SQLite.Attribute
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class SQLitePropertyAttribute : Attribute
+    public class SQLitePropertyAttribute : System.Attribute
     {
         public enum DefaultValueBehavior { PopulateAndInclude, Populate, Include }
         public SQLitePropertyAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string columnName = null)

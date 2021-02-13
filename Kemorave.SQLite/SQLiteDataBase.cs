@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace Kemorave.SQLite
     /// SQLite databse manager
     /// 
     /// </summary> 
-    public class SQLiteDataBase : IDisposable, ISQLiteDataBase
+    public class SQLiteDataBase : IDisposable
     {
         public SQLiteDataBase(SQLiteConnection connection) : this()
         {
@@ -35,6 +34,7 @@ namespace Kemorave.SQLite
         {
             DataGetter = new DataBaseGetter(this);
             DataSetter = new DataBaseSetter(this);
+            TableManager = new TableManager(this);
         }
 
         #region IDisposable implimentaion
@@ -55,47 +55,6 @@ namespace Kemorave.SQLite
             Dispose(false);
         }
         #endregion
-        public string[] GetTablesNames()
-        {
-            List<string> names = new List<string>();
-            using (SQLiteDataReader reader = ExectuteReader($"SELECT name FROM sqlite_master WHERE type='table';", CommandBehavior.SingleRow))
-            {
-                while (reader.Read())
-                {
-                    names.Add(reader["name"].ToString());
-                }
-            }
-            return names.ToArray();
-        }
-        public TableInfo GetTableInfo(string name)
-        {
-            TableInfo tableInfo = new TableInfo(name);
-            ColumnInfo column;
-            using (var reader = CreateCommand($"PRAGMA table_info('{name}')").ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    int columnId = reader.GetInt32(reader.GetOrdinal("cid"));
-                    string columnName = reader.GetString(reader.GetOrdinal("name"));
-                    string type = reader.GetString(reader.GetOrdinal("type"));
-                    bool notNull = reader.GetBoolean(reader.GetOrdinal("notnull"));
-                    object defaultValue = reader.GetValue(reader.GetOrdinal("dflt_value"));
-                    bool primaryKey = reader.GetBoolean(reader.GetOrdinal("pk"));
-                    if (primaryKey)
-                    {
-                        column = new ColumnInfo(columnName, (SQLiteType)Enum.Parse(typeof(SQLiteType), type), true);
-                     }
-                    else
-                    {
-                        column = new ColumnInfo(columnName, (SQLiteType)Enum.Parse(typeof(SQLiteType), type));
-                        column.IsNullable = !notNull;
-                    }
-                    column.DefaultValue = defaultValue?.ToString();
-                    tableInfo.Columns.Add(column);
-                }
-            }
-            return tableInfo;
-        }
         public string Backup(string destPath)
         {
             string name = $"SQLite Backup {DateTime.Now}.backup";
@@ -137,48 +96,9 @@ namespace Kemorave.SQLite
                 return temp;
             }
         }
-        public bool TableExist(string table_name)
-        {
-            using (SQLiteDataReader reader = ExectuteReader($"SELECT 1 FROM sqlite_master WHERE type='table' AND name='{table_name}';", CommandBehavior.SingleRow))
-            {
-                return reader.HasRows;
-            }
-        }
-        public bool TempTableExist(string table_name)
-        {
-            using (SQLiteDataReader reader = ExectuteReader($"SELECT 1 FROM sqlite_temp_master WHERE type='table' AND name='{table_name}';", CommandBehavior.SingleRow))
-            {
-                return reader.HasRows;
-            }
-        }
         public SQLiteDataReader ExectuteReader(string cmd, CommandBehavior behavior = CommandBehavior.Default)
         {
             return CreateCommand(cmd).ExecuteReader(behavior);
-        }
-        public int CreateTable(TableInfo table)
-        {
-            try
-            {
-                return this.ExecuteCommand(table.GetCreateCommand());
-            }
-            finally
-            {
-                if (!string.IsNullOrEmpty(table.Command))
-                {
-                    ExecuteCommand(table.Command);
-                }
-            }
-        }
-        public int CreateTable(Type type)
-        {
-            if (SQLiteTableAttribute.FromType(type) is TableInfo tableInfo)
-            {
-                return CreateTable(tableInfo);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Type {type.Name} have no (SQLiteTableAttribute) attribute");
-            }
         }
         public int ExecuteCommand(string cmdt)
         {
@@ -218,12 +138,12 @@ namespace Kemorave.SQLite
                 {
                     if (!force)
                     {
-                        if (TableExist(table.Name))
+                        if (TableManager.TableExist(table.Name))
                         {
-                            this.DropTable(table.Name);
+                            TableManager.DropTable(table.Name);
                         }
                     }
-                    CreateTable(table);
+                    TableManager.CreateTable(table);
                 }
                 if (!string.IsNullOrEmpty(dBInfo.CommandText))
                 {
@@ -249,22 +169,12 @@ namespace Kemorave.SQLite
                 Connection.SetPassword(secure);
             }
         }
-        public int DropTable(string tableName)
-        {
-            return ExecuteCommand(TableInfo.GetDropCommand(tableName));
-        }
-        public int ClearTable(string tableName)
-        {
-            return ExecuteCommand(TableInfo.GetClearCommand(tableName));
-        }
         public IDataBaseGetter DataGetter { get; }
         public IDataBaseSetter DataSetter { get; }
+        public TableManager TableManager { get; }
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
         /// <summary>
-        ///  When true database commits changes without a chance for rollbacks 
-        ///  else use <see cref="SQLiteDataBase.CommitChanges"/> 
-        ///  <para/>
-        ///  Default is true
+        /// Path to database file
         /// </summary>
         public string DataSource => GetDBPath();
     }

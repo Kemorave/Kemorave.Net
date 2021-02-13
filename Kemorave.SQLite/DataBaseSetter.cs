@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using Kemorave.SQLite.Attribute;
 
 namespace Kemorave.SQLite
 {
@@ -10,13 +11,13 @@ namespace Kemorave.SQLite
         public const string InsertOperation = "Insert";
         public const string UpdateOperation = "Update";
         public const string DeleteOperation = "Delete";
-        public DataBaseSetter(ISQLiteDataBase dataBase)
+        public DataBaseSetter(SQLiteDataBase dataBase)
         {
             DataBase = dataBase;
         }
         private bool _isCanceled;
 
-        private readonly ISQLiteDataBase DataBase;
+        private readonly SQLiteDataBase DataBase;
 
         #region Operaion
         private void CheckParams<T>(string tableName, IList<T> rows) where T : class, IDBModel
@@ -249,6 +250,12 @@ namespace Kemorave.SQLite
             }
             return Delete<T>(new List<T>() { item }, tableName);
         }
+        /// <summary>
+        ///  When true database commits changes without a chance for rollbacks 
+        ///  else use <see cref="SQLiteDataBase.CommitChanges"/> 
+        ///  <para/>
+        ///  Default is true
+        /// </summary>
 
         public bool AutoCommitChanges { get; set; } = true;
         public bool IsBusy { get; protected set; }

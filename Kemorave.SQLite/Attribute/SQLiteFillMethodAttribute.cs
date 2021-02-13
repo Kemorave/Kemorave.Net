@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Kemorave.SQLite
+namespace Kemorave.SQLite.Attribute
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 
-    public class SQLiteFillMethodAttribute : Attribute
+    public class SQLiteFillMethodAttribute : System.Attribute
     {
         private static readonly Type Type = typeof(SQLiteFillMethodAttribute);
         public SQLiteFillMethodAttribute()

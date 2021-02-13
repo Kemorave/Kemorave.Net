@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
+using Kemorave.SQLite.Attribute;
 
 namespace Kemorave.SQLite
 {
     internal class DataBaseGetter : IDataBaseGetter
     {
-        private readonly ISQLiteDataBase DataBase;
-        public DataBaseGetter(ISQLiteDataBase dataBase)
+        private readonly SQLiteDataBase DataBase;
+        public DataBaseGetter(SQLiteDataBase dataBase)
         {
             DataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
         }

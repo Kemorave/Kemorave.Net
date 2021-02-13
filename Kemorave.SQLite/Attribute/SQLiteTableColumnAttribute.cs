@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Kemorave.SQLite
+namespace Kemorave.SQLite.Attribute
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class SQLiteTableColumnAttribute : Attribute
+    public class SQLiteTableColumnAttribute : System.Attribute
     {
         /// <summary>
         /// Creates a foreignKey column 
