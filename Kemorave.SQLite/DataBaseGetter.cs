@@ -12,7 +12,6 @@ namespace Kemorave.SQLite
         {
             DataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
         }
-
         public T GetItemByID<T>(long id, string tableName = null) where T : class, IDBModel, new()
         {
             return GetItems<T>(tableName, "*", "WHERE ID =" + id).FirstOrDefault();
@@ -61,5 +60,6 @@ namespace Kemorave.SQLite
                 }
             }
         }
+
     }
 }

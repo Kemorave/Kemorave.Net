@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -54,6 +55,47 @@ namespace Kemorave.SQLite
             Dispose(false);
         }
         #endregion
+        public string[] GetTablesNames()
+        {
+            List<string> names = new List<string>();
+            using (SQLiteDataReader reader = ExectuteReader($"SELECT name FROM sqlite_master WHERE type='table';", CommandBehavior.SingleRow))
+            {
+                while (reader.Read())
+                {
+                    names.Add(reader["name"].ToString());
+                }
+            }
+            return names.ToArray();
+        }
+        public TableInfo GetTableInfo(string name)
+        {
+            TableInfo tableInfo = new TableInfo(name);
+            ColumnInfo column;
+            using (var reader = CreateCommand($"PRAGMA table_info('{name}')").ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int columnId = reader.GetInt32(reader.GetOrdinal("cid"));
+                    string columnName = reader.GetString(reader.GetOrdinal("name"));
+                    string type = reader.GetString(reader.GetOrdinal("type"));
+                    bool notNull = reader.GetBoolean(reader.GetOrdinal("notnull"));
+                    object defaultValue = reader.GetValue(reader.GetOrdinal("dflt_value"));
+                    bool primaryKey = reader.GetBoolean(reader.GetOrdinal("pk"));
+                    if (primaryKey)
+                    {
+                        column = new ColumnInfo(columnName, (SQLiteType)Enum.Parse(typeof(SQLiteType), type), true);
+                     }
+                    else
+                    {
+                        column = new ColumnInfo(columnName, (SQLiteType)Enum.Parse(typeof(SQLiteType), type));
+                        column.IsNullable = !notNull;
+                    }
+                    column.DefaultValue = defaultValue?.ToString();
+                    tableInfo.Columns.Add(column);
+                }
+            }
+            return tableInfo;
+        }
         public string Backup(string destPath)
         {
             string name = $"SQLite Backup {DateTime.Now}.backup";

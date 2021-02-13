@@ -76,6 +76,9 @@ namespace UnitTestProject
 
                     db.CreateTable(typeof(TestScheduler));
 
+                    var names = db.GetTablesNames();
+                    var tt = db.GetTableInfo("TestScheduler");
+
                     Test test = new Test
                     {
                         Name = "Hola",
