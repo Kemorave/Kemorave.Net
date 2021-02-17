@@ -2,33 +2,35 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Text;
 
 namespace Kemorave.Collection
 {
+    /// <summary>
+    /// An observable list that support modification from non-UI threads 
+    /// <para/>
+    /// Used after initializing <see cref="ThreadingHelp.Initialize(IMainUIThreadIInvoker)"/>
+    /// </summary>
     public class ObservableList<T> : System.Collections.ObjectModel.ObservableCollection<T>
     {
-        public static void Initialize(Kemorave.IMainUIThreadIInvoker invoker)
-        {
-            Threading.MainUIThreadIInvoker = invoker;
-        }
         public static PropertyChangedEventArgs HasItemsPropertyChangedEventArgs = new PropertyChangedEventArgs("HasItems");
         public event EventHandler OnClear;
-        public bool HasItems { get { return Count > 0; } }
+        public bool HasItems => Count > 0;
         /// <summary>
         /// An observable list that support modification from non-UI threads 
-        /// Used after <see cref="Initialize"/>
+        /// <para/>
+        /// Used after initializing <see cref="ThreadingHelp.Initialize(IMainUIThreadIInvoker)"/>
         /// </summary>
         public ObservableList()
         {
-            CollectionChanged += ThreadSafeCollection_CollectionChanged; ;
+            CollectionChanged += OnCollectionChanged; ;
         }
 
-        private void ThreadSafeCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (Count == 0 || Count == 1)
+            {
                 OnPropertyChanged(HasItemsPropertyChangedEventArgs);
-
+            }
         }
 
 
@@ -48,7 +50,7 @@ namespace Kemorave.Collection
         public new void Add(T item)
         {
             //Thread.Sleep(10);
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.Add(item);
             });
@@ -56,7 +58,7 @@ namespace Kemorave.Collection
         public new void Remove(T item)
         {
             //Thread.Sleep(10);
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.Remove(item);
             });
@@ -64,28 +66,28 @@ namespace Kemorave.Collection
 
         public new void Move(int oldIndex, int newIndex)
         {
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.MoveItem(oldIndex, newIndex);
             });
         }
         public new void MoveItem(int oldIndex, int newIndex)
         {
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.MoveItem(oldIndex, newIndex);
             });
         }
         public new void InsertItem(int index, T newItem)
         {
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.InsertItem(index, newItem);
             });
         }
         public new void Clear()
         {
-            Threading.RunOnMainUIThread(() =>
+            ThreadingHelp.RunOnMainUIThread(() =>
             {
                 base.ClearItems();
                 OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -101,8 +103,11 @@ namespace Kemorave.Collection
                 return;
             }
             if (ClearOld)
+            {
                 Clear();
-            foreach (var item in list)
+            }
+
+            foreach (T item in list)
             {
                 this.Add(item);
             }
@@ -114,8 +119,11 @@ namespace Kemorave.Collection
                 return;
             }
             if (ClearOld)
+            {
                 Clear();
-            foreach (var item in list)
+            }
+
+            foreach (T item in list)
             {
                 this.Add(item);
             }
@@ -127,8 +135,11 @@ namespace Kemorave.Collection
                 return;
             }
             if (ClearOld)
+            {
                 Clear();
-            foreach (var item in list)
+            }
+
+            foreach (T item in list)
             {
                 Add(item);
             }

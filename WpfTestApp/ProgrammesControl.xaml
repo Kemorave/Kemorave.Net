@@ -1,0 +1,238 @@
+﻿<UserControl x:Class="WpfTestApp.ProgrammesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:WpfTestApp"
+             xmlns:attached="clr-namespace:Kemorave.Wpf.Helper;assembly=Kemorave.Wpf"
+             xmlns:bin="clr-namespace:Kemorave.Wpf.Binding;assembly=Kemorave.Wpf"
+             xmlns:prop="clr-namespace:WpfTestApp.Properties"
+             mc:Ignorable="d"
+             xmlns:win="clr-namespace:Kemorave.Win.RegistryTools;assembly=Kemorave.Win"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             d:DesignHeight="450"
+             d:DesignWidth="1149.525">
+ <UserControl.DataContext>
+  <local:ProgramesManagmentVM />
+ </UserControl.DataContext>
+ <UserControl.Resources>
+  <bin:BindingProxy x:Key="SettingsProxy"
+                    Data="{Binding Source={x:Static prop:Settings.Default},Path=.}" />
+
+  <local:SizeSuffix  x:Key="SizeSuffix" />
+ </UserControl.Resources>
+ <DockPanel Background="{x:Null}">
+  <Menu DockPanel.Dock="Top">
+   <MenuItem Header="File">
+    <MenuItem Header="Exit" />
+   </MenuItem>
+   <MenuItem Header="View">
+    <MenuItem Header="Include System Component applications"
+              IsCheckable="True"
+              IsChecked="{Binding  ShowSystemComponentApps,Mode=TwoWay}">
+     <MenuItem.Icon>
+      <Image Source="Resources/AppVStreamingUX_ICON1.ico" />
+     </MenuItem.Icon>
+    </MenuItem>
+    <MenuItem Header="Columns">
+     <MenuItem.Icon>
+      <Image Source="Resources/imageres_2_5310.ico" />
+     </MenuItem.Icon>
+     <MenuItem Header="Install location"
+               IsCheckable="True"
+               IsChecked="{Binding  Source={StaticResource SettingsProxy},Path=Data.ShowInstallLocationCol,Mode=TwoWay}">
+
+     </MenuItem>
+     <MenuItem Header="Install date"
+               IsCheckable="True"
+               IsChecked="{Binding  Source={StaticResource SettingsProxy},Path=Data.ShowInstallDateCol,Mode=TwoWay}">
+
+     </MenuItem>
+     <MenuItem Header="System Component"
+               IsCheckable="True"
+               IsChecked="{Binding  Source={StaticResource SettingsProxy},Path=Data.ShowIsSysCompDateCol,Mode=TwoWay}" />
+
+    </MenuItem>
+
+   </MenuItem>
+  </Menu>
+  <ProgressBar DockPanel.Dock="Top"
+               Height="5"
+               Background="{x:Null}"
+               BorderThickness="0"
+               IsIndeterminate="{Binding Path=IsBusy}" />
+  <Menu TextBlock.FontStyle="Italic" FontSize="14" DockPanel.Dock="Top">
+   <MenuItem Header="Uninstall"
+             IsEnabled="{Binding Path=CanUninstall}"
+             Command="{Binding Path=UninstallApplicationCommand}">
+    <MenuItem.Icon>
+     <Image>
+      <Image.Source>
+       <BitmapImage DecodePixelHeight="30"
+                    UriSource="Resources/DxpTaskSync_1_62.ico" />
+      </Image.Source>
+     </Image>
+    </MenuItem.Icon>
+   </MenuItem>
+   <MenuItem Header="Quiet uninstall"
+             IsEnabled="{Binding Path=CanQuiteUninstall}"
+             Command="{Binding Path=QuiteUninstallApplicationCommand}">
+    <MenuItem.Icon>
+     <Image Source="Resources/ieframe_1_36883.ico" />
+    </MenuItem.Icon>
+   </MenuItem>
+   <MenuItem Header="Update"
+             Command="{Binding Path=UpdateApplicationCommand}"
+             IsEnabled="{Binding Path=CanUpdate}">
+    <MenuItem.Icon>
+     <Image  Source="Resources/urlmon_100.ico" />
+    </MenuItem.Icon>
+   </MenuItem>
+   <MenuItem   Header="Information"
+               IsEnabled="{Binding Path=CanOpenInfo}"
+               Command="{Binding Path=UninstallApplicationCommand}">
+    <MenuItem.Icon>
+     <Image>
+      <Image.Source>
+       <BitmapImage DecodePixelHeight="30"
+                    UriSource="Resources/DxpTaskSync_1_60.ico" />
+      </Image.Source>
+     </Image>
+     </MenuItem.Icon>
+   </MenuItem>
+   <Separator />
+   <MenuItem Command="{Binding Path=RefreshCommand}"
+             Header="Refresh list">
+    <MenuItem.Icon>
+     <Image>
+      <Image.Source>
+       <BitmapImage DecodePixelHeight="30"
+                    UriSource="Resources/cscui_1210.ico" />
+      </Image.Source>
+     </Image>
+    </MenuItem.Icon>
+   </MenuItem>
+  </Menu>
+  <StatusBar DockPanel.Dock="Bottom"
+             VerticalAlignment="Bottom"
+             Background="#FFDEDEDE">
+   <StatusBarItem>
+    <StackPanel Orientation="Horizontal">
+     <Image Height="20"
+            Source="pack://siteoforigin:,,,/Resources/imageres_2_5308.ico" />
+
+     <TextBlock Margin="5,0,10,0"
+                VerticalAlignment="Center">
+                <Run Text="{Binding Path=SelectedProgramesList.Count,Mode=OneWay,FallbackValue=0,StringFormat='{}{0} items selected of '}" />
+              <Run Text="{Binding Path=ProgramesList.Count,Mode=OneWay}" />
+     </TextBlock>
+    </StackPanel>
+
+   </StatusBarItem>
+   <StatusBarItem Content="{Binding Path=TotalSelectionSize,Converter={StaticResource ResourceKey=SizeSuffix},TargetNullValue='None'}" />
+   <Separator />
+   <StatusBarItem Content="{Binding Path=TotalProgramsSize,Converter={StaticResource SizeSuffix}}"
+                  ContentStringFormat="{}Total files size {0}" />
+  </StatusBar>
+  <DataGrid Background="Gray"
+            DockPanel.Dock="Bottom"  
+            AutoGenerateColumns="False"
+            SelectionMode="Extended"
+            SelectionUnit="FullRow"
+            CanUserAddRows="False"
+            IsReadOnly="True"
+            CanUserDeleteRows="False"
+            d:DataContext="{x:Type win:ProgramInfo}"
+            FontSize="16"
+            ItemsSource="{Binding Path=ProgramesList,IsAsync=True}"
+            attached:SelectorHelper.SelectedItems="{Binding Path=SelectedProgramesList,Mode=OneWay}">
+   <DataGrid.Columns>
+    <DataGridTemplateColumn SortMemberPath="DisplayName"
+                            Width="200"
+                            Header="Name">
+     <DataGridTemplateColumn.CellTemplate>
+      <DataTemplate>
+       <StackPanel Orientation="Horizontal">
+        <Image Margin="3,3,10,3"
+               Height="22"
+               Width="22"
+               Source="{Binding Path=AssociatedIcon,IsAsync=True}" />
+        <TextBlock VerticalAlignment="Center"
+                   TextWrapping="Wrap"
+                   Text="{Binding Path=DisplayName}" />
+       </StackPanel>
+      </DataTemplate>
+     </DataGridTemplateColumn.CellTemplate>
+    </DataGridTemplateColumn>
+    <DataGridTextColumn Header="Size"
+                        Width="100"
+                        Binding="{Binding Path=SizeOnDisk,IsAsync=True,FallbackValue='Loading ...',Converter={StaticResource SizeSuffix}}" />
+    <DataGridTextColumn Header="Publisher"
+                        Width="120"
+                        TextBlock.TextAlignment="Center"
+                        Binding="{Binding Path=Publisher}" />
+    <DataGridTextColumn Header="Version"
+                        Width="100"
+                        TextBlock.TextAlignment="Center"
+                        Binding="{Binding Path=DisplayVersion}" />
+    <DataGridTextColumn Header="Comments"
+                        TextBlock.LineStackingStrategy="MaxHeight"
+                        TextOptions.TextFormattingMode="Display"
+                        TextBlock.TextAlignment="Center"
+                        Width="150"
+                        Binding="{Binding Path=Comments,Mode=OneWay}" />
+    <DataGridTextColumn attached:ControlHelper.IsNotCollapsed="{Binding Source={StaticResource SettingsProxy},Path=Data.ShowInstallLocationCol}"
+                        Header="Install location"
+                        TextBlock.LineStackingStrategy="MaxHeight"
+                        TextOptions.TextFormattingMode="Display"
+                        TextBlock.TextAlignment="Center"
+                        Width="100"
+                        Binding="{Binding InstallLocation, BindsDirectlyToSource=True, Mode=OneWay, ValidatesOnNotifyDataErrors=False}" />
+    <DataGridTextColumn attached:ControlHelper.IsNotCollapsed="{Binding Source={StaticResource SettingsProxy},Path=Data.ShowInstallDateCol}"
+                        Header="Install date"
+                        TextBlock.LineStackingStrategy="MaxHeight"
+                        TextOptions.TextFormattingMode="Display"
+                        TextBlock.TextAlignment="Center"
+                        Width="100"
+                        Binding="{Binding InstallDate, BindsDirectlyToSource=True, Mode=OneWay, StringFormat=\{0:D\}, ValidatesOnNotifyDataErrors=False}" />
+    <DataGridCheckBoxColumn IsReadOnly="True"
+                            attached:ControlHelper.IsNotCollapsed="{Binding Source={StaticResource SettingsProxy},Path=Data.ShowIsSysCompDateCol}"
+                            Header="System Component"
+                            TextBlock.LineStackingStrategy="MaxHeight"
+                            TextOptions.TextFormattingMode="Display"
+                            TextBlock.TextAlignment="Center"
+                            Width="150"
+                            Binding="{Binding Path=IsSystemComponent,Mode=OneWay}" />
+   </DataGrid.Columns>
+   <DataGrid.ColumnHeaderStyle>
+    <Style TargetType="DataGridColumnHeader"
+           BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+     <Setter Property="ContextMenu">
+      <Setter.Value>
+       <ContextMenu DataContext="{Binding Source={x:Static prop:Settings.Default}}">
+        <MenuItem Header="Show install date column"
+                  IsCheckable="True"
+                  IsChecked="{Binding  Path=ShowInstallDateCol,Mode=TwoWay}" />
+        <MenuItem Header="Show System Component column"
+                  IsCheckable="True"
+                  IsChecked="{Binding  Path=ShowIsSysCompDateCol,Mode=TwoWay}" />
+       </ContextMenu>
+      </Setter.Value>
+     </Setter>
+    </Style>
+   </DataGrid.ColumnHeaderStyle>
+   <DataGrid.RowStyle>
+    <Style TargetType="DataGridRow">
+     <Style.Triggers>
+      <DataTrigger Binding="{Binding Path=IsSystemComponent}" Value="True">
+       <Setter Property="Background"
+               Value="#33FF0000" />
+      </DataTrigger>
+     </Style.Triggers>
+    </Style>
+   </DataGrid.RowStyle>
+  </DataGrid>
+
+ </DockPanel>
+</UserControl>

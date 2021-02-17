@@ -50,7 +50,7 @@ namespace Kemorave.Components.ValueConverters
    {
     return SizeSuffix(Int64.Parse(s));
    }
-   return 0;
+   return null;
   }
 
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -39,7 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>UnitTestProject.DBTest</StartupObject>
+    <StartupObject>UnitTestProject.WinTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Kemorave.IO">

@@ -34,14 +34,14 @@ namespace WpfTestApp
         public MainWindow()
         {
             InitializeComponent();
-            RecChart.UpdateItems(new List<IGraphItem>
-            {
-                new Item(60,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
-                new Item(50,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
-                new Item(10,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
-                new Item(20,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush())
+            //RecChart.UpdateItems(new List<IGraphItem>
+            //{
+            //    new Item(60,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+            //    new Item(50,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+            //    new Item(10,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush()),
+            //    new Item(20,"Me","Out of low",Kemorave.Wpf.Helper.ControlHelper.PickBrush())
 
-            });
+            //});
         }
     }
 }

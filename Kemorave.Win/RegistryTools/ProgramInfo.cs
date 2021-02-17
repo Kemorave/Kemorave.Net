@@ -21,6 +21,7 @@ namespace Kemorave.Win.RegistryTools
             }
 
             DateTime InstallDate = DateTime.MinValue;
+            //  string tmp;
             ProgramInfo pr = new ProgramInfo()
             {
                 Comments = appRegistryKey.GetValue("Comments")?.ToString(),
@@ -34,14 +35,15 @@ namespace Kemorave.Win.RegistryTools
                 UpdateLink = appRegistryKey.GetValue("URLUpdateInfo")?.ToString(),
                 ModifyPath = appRegistryKey.GetValue("ModifyPath")?.ToString(),
                 DisplayName = appRegistryKey.GetValue("DisplayName")?.ToString(),
-                InstallDate = DateTime.TryParse(appRegistryKey.GetValue("InstallDate")?.ToString(), out InstallDate) ? InstallDate : DateTime.MinValue,
-                DisplayInstallDate = InstallDate == DateTime.MinValue ? appRegistryKey.GetValue("InstallDate")?.ToString() : InstallDate.ToLongTimeString(),
+                InstallDate = DateTime.TryParse(appRegistryKey.GetValue("InstallDate")?.ToString()?.Insert(4, "/")?.Insert(7, "/"), out InstallDate) ? InstallDate : DateTime.MinValue,
+                DisplayInstallDate = InstallDate == DateTime.MinValue ? appRegistryKey.GetValue("InstallDate")?.ToString() : InstallDate.ToShortDateString(),
                 AboutLink = appRegistryKey.GetValue("URLInfoAbout")?.ToString(),
                 UninstallString = appRegistryKey.GetValue("UninstallString")?.ToString(),
                 QuietUninstallString = appRegistryKey.GetValue("QuietUninstallString")?.ToString(),
                 EstimatedSize = long.TryParse(appRegistryKey.GetValue("EstimatedSize")?.ToString(), out long EstimatedSize) ? EstimatedSize * 1024 : 0,
                 IconPath = appRegistryKey.GetValue("DisplayIcon")?.ToString()
             };
+            // System.Diagnostics.Debug.WriteLine(tmp);
             if (string.IsNullOrEmpty(pr.HelpFile))
             {
                 pr.HelpFile = null;
@@ -86,6 +88,7 @@ namespace Kemorave.Win.RegistryTools
             {
                 pr.InstallDate = null;
             }
+
             if ((pr.EstimatedSize <= 0))
             {
                 pr.EstimatedSize = null;
@@ -94,7 +97,7 @@ namespace Kemorave.Win.RegistryTools
         }
 
 
-        protected ImageSource GetIcon()
+        private ImageSource GetIcon()
         {
             if (!string.IsNullOrEmpty(IconPath))
             {
@@ -104,19 +107,53 @@ namespace Kemorave.Win.RegistryTools
                     {
                         if (System.IO.File.Exists(item))
                         {
-                            return ImageHelper.GetShellObjectThumbnail(item, ImageSize.Default, Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOption.Default);
+                            return ImageHelper.GetAssociatedIcon(item);
                         }
                     }
                 }
                 else
                 {
-                    return ImageHelper.GetShellObjectThumbnail(IconPath, ImageSize.Default, Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOption.Default);
+                    return ImageHelper.GetAssociatedIcon(IconPath);
                 }
             }
-            return ImageHelper.GetMediaFileThumbnail(IconPath, ImageSize.Default, FileType.File);
+            return ImageHelper.GetAssociatedIcon("Hola.exe", true);
+        }
+        public long? SizeOnDisk => GetSizeOnDisk();
+
+        private long? _SizeOnDisk;
+        private long? GetSizeOnDisk()
+        {
+            if (!string.IsNullOrEmpty(InstallLocation))
+            {
+                InstallLocation = System.IO.Path.GetFullPath(InstallLocation);
+                if (_SizeOnDisk == null)
+                {
+                    _SizeOnDisk = 0;
+                    _SizeOnDisk = CalculateDirSize(InstallLocation);
+                }
+            }
+            return _SizeOnDisk;
         }
 
-        public   ImageSource AssociatedIcon => GetIcon();
+        private long CalculateDirSize(string installLocation)
+        {
+            long size = 0;
+            foreach (string item in System.IO.Directory.EnumerateDirectories(installLocation))
+            {
+                size += CalculateDirSize(item);
+            }
+            foreach (string item in System.IO.Directory.EnumerateFiles(installLocation))
+            {
+                try
+                {
+                    size += new System.IO.FileInfo(item).Length;
+                }
+                catch { }
+            }
+            return size;
+        }
+
+        public ImageSource AssociatedIcon => GetIcon();
         public bool IsSystemComponent { get; private set; }
         public string IconPath { get; private set; }
         public string AboutLink { get; private set; }

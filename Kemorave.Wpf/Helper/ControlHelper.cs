@@ -94,7 +94,6 @@ namespace Kemorave.Wpf.Helper
         // Using a DependencyProperty as the backing store for IsCollapsed.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsCollapsedProperty =
             DependencyProperty.RegisterAttached("IsCollapsed", typeof(bool), typeof(ControlHelper), new PropertyMetadata(false, IsCollapsedChanged));
-
         private static void IsCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is UIElement uIElement)
@@ -105,6 +104,97 @@ namespace Kemorave.Wpf.Helper
                         uIElement.Visibility = Visibility.Collapsed; break;
                     default:
                         uIElement.Visibility = Visibility.Visible; break;
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public static bool GetIsNotHidden(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsNotHiddenProperty);
+        }
+
+        public static void SetIsNotHidden(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsNotHiddenProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for IsNotHidden.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsNotHiddenProperty =
+            DependencyProperty.RegisterAttached("IsNotHidden", typeof(bool), typeof(ControlHelper), new PropertyMetadata(true, IsNotHiddenChanged));
+
+        private static void IsNotHiddenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is UIElement uIElement)
+            {
+                switch ((bool)e.NewValue)
+                {
+                    case true:
+                        uIElement.Visibility = Visibility.Visible; break;
+                    default:
+                        uIElement.Visibility = Visibility.Hidden; break;
+                }
+            }
+        }
+        public static bool GetIsNotCollapsed(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsNotCollapsedProperty);
+        }
+
+        public static void SetIsNotCollapsed(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsNotCollapsedProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for IsNotCollapsed.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsNotCollapsedProperty =
+            DependencyProperty.RegisterAttached("IsNotCollapsed", typeof(bool), typeof(ControlHelper), new PropertyMetadata(true, IsNotCollapsedChanged));
+        private static void IsNotCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is UIElement uIElement)
+            {
+                switch ((bool)e.NewValue)
+                {
+                    case true:
+                        uIElement.Visibility = Visibility.Visible; break;
+                    default:
+                        uIElement.Visibility = Visibility.Collapsed; break;
+                }
+            }
+            if (d is System.Windows.Controls.DataGridColumn col)
+            {
+                switch ((bool)e.NewValue)
+                {
+                    case true:
+                        col.Visibility = Visibility.Visible; break;
+                    default:
+                        col.Visibility = Visibility.Collapsed; break;
                 }
             }
         }

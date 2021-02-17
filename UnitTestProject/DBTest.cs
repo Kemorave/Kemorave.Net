@@ -70,10 +70,8 @@ namespace UnitTestProject
                     db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;
                     db.Connection.RollBack += Connection_RollBack;
-                    //    db.AutoCommitChanges = false;
-                    Debug.WriteLine(db.Connection.State.ToString());
-                    db.TableManager.CreateTable(typeof(Test));
-                    Debug.WriteLine(db.Connection.State.ToString());
+
+                    db.TableManager.CreateTable(typeof(Test)); 
 
                     db.TableManager.CreateTable(typeof(TestScheduler));
 

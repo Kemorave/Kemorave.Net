@@ -35,8 +35,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Kemorave">
+      <HintPath>..\Kemorave\bin\Debug\netstandard2.0\Kemorave.dll</HintPath>
+    </Reference>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -55,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SizeSuffix.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,8 +73,17 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ProgrammesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NotifyAttribute.cs" />
+    <Compile Include="ProgramesManagmentVM.cs" />
+    <Compile Include="ProgrammesControl.xaml.cs">
+      <DependentUpon>ProgrammesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -103,6 +118,56 @@
       <Project>{0742e82f-2fa6-457a-93e1-c0c97514349b}</Project>
       <Name>Kemorave.Wpf</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DevicePairingFolder_151.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\imageres_2_5308.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\imageres_2_5309.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\imageres_2_5310.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\msdt_108.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\wab32res_6043.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\WPF C# Projects\Assemplies\Notify\NotifyPropertyChangedGenerator.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aclui_115.ico" />
+    <Resource Include="Resources\aclui_116.ico" />
+    <Resource Include="Resources\DeviceCenter_166.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cscui_1210.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\msconfig_128.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\AppVStreamingUX_ICON1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ieframe_1_36883.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\autoplay_1.ico" />
+    <Resource Include="Resources\DxpTaskSync_1_60.ico" />
+    <Resource Include="Resources\DxpTaskSync_1_62.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\urlmon_100.ico" />
+    <Resource Include="Resources\user32_101.ico" />
+    <Resource Include="Resources\user32_102.ico" />
+    <Resource Include="Resources\user32_103.ico" />
+    <Resource Include="Resources\user32_104.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace WpfTestApp
@@ -13,5 +8,19 @@ namespace WpfTestApp
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Kemorave.ThreadingHelp.Initialize(new MU());
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    internal class MU : Kemorave.IMainUIThreadIInvoker
+    {
+        public void Invoke(Action action)
+        {
+            App.Current.Dispatcher.Invoke(action);
+        }
     }
 }

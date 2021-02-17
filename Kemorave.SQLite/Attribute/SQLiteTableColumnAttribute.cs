@@ -37,7 +37,6 @@ namespace Kemorave.SQLite.Attribute
         {
             ColumnInfo = new ColumnInfo(name, sQLiteType, isPrimaryKey, isAutoIncrement, parentTableName, parentTableRefID)
             { IsUNIQUE = isUnique, OnDeleteAction = onDeleteAction, OnUpdateAction = onUpdateAction, DefaultValue = defaultValue, Extra = extra, IsNullable = isNull };
-            //ColumnInfo.IsForeignKey
         }
         public SQLiteTableColumnAttribute([CallerMemberName]
          string name = null,

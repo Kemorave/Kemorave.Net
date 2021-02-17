@@ -60,6 +60,7 @@
     <Compile Include="AnimatedListBox.cs" />
     <Compile Include="AnimatedScrollViewer.cs" />
     <Compile Include="Arc.cs" />
+    <Compile Include="Binding\BindingProxy.cs" />
     <Compile Include="CircularProgressbar.cs">
       <SubType>Common</SubType>
     </Compile>
@@ -67,6 +68,7 @@
     <Compile Include="Converter\ReverseBool.cs" />
     <Compile Include="Helper\ControlHelper.cs" />
     <Compile Include="Helper\ProgressbarHelper.cs" />
+    <Compile Include="Helper\SelectorHelper.cs" />
     <Compile Include="IGraphItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
