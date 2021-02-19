@@ -41,6 +41,7 @@ namespace WpfTestApp
             IsBusy = true;
             Task.Run(() =>
             {
+                MultiSelection = false;
                 try
                 {
                     TotalProgramsSize = 0;
@@ -75,10 +76,12 @@ namespace WpfTestApp
 
         private void SelectedProgramesList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (SelectedProgramesList.Count <= 0)
+            if (SelectedProgramesList.Count < 2)
             {
+                MultiSelection = false;
                 return;
             }
+            MultiSelection = true;
             TotalSelectionSize = 0;
             CanUninstall = false;
             this.CanOpenInfo = false;
@@ -189,20 +192,21 @@ namespace WpfTestApp
         public Kemorave.Command.RelayCommand<object> QuiteUninstallApplicationCommand { get; set; }
         [NonNotify]
         public Kemorave.Command.RelayCommand RefreshCommand { get; set; }
-        public bool ShowSystemComponentApps { get => showSystemComponentApps; set => SetProperty(ref showSystemComponentApps, value, showSystemComponentAppsPropertyChangedEventArgs); }
-        public long TotalProgramsSize { get => totalProgramsSize; set => SetProperty(ref totalProgramsSize, value, totalProgramsSizePropertyChangedEventArgs); }
+        public bool ShowSystemComponentApps { get { return showSystemComponentApps; } set { SetProperty(ref showSystemComponentApps, value, showSystemComponentAppsPropertyChangedEventArgs); } }
+        public long TotalProgramsSize { get { return totalProgramsSize; } set { SetProperty(ref totalProgramsSize, value, totalProgramsSizePropertyChangedEventArgs); } }
         /// <summary>
         /// Selected applications size
         /// </summary>
-        public long? TotalSelectionSize { get => totalSelectionSize; private set => SetProperty(ref totalSelectionSize, value, totalSelectionSizePropertyChangedEventArgs); }
+        public long? TotalSelectionSize { get { return totalSelectionSize; } private set { SetProperty(ref totalSelectionSize, value, totalSelectionSizePropertyChangedEventArgs); } }
         /// <summary>
         /// Sees if can uninstall selected applications
         /// </summary>
-        public bool CanQuiteUninstall { get => canQuiteUninstall; set => SetProperty(ref canQuiteUninstall, value, canQuiteUninstallPropertyChangedEventArgs); }
-        public bool CanUninstall { get => canUninstall; set => SetProperty(ref canUninstall, value, canUninstallPropertyChangedEventArgs); }
-        public bool CanOpenInfo { get => canOpenInfo; set => SetProperty(ref canOpenInfo, value, canOpenInfoPropertyChangedEventArgs); }
-        public bool CanUpdate { get => canUpdate; set => SetProperty(ref canUpdate, value, canUpdatePropertyChangedEventArgs); }
-        public bool IsBusy { get => isBusy; set => SetProperty(ref isBusy, value, isBusyPropertyChangedEventArgs); }
+        public bool CanQuiteUninstall { get { return canQuiteUninstall; } set { SetProperty(ref canQuiteUninstall, value, canQuiteUninstallPropertyChangedEventArgs); } }
+        public bool CanUninstall { get { return canUninstall; } set { SetProperty(ref canUninstall, value, canUninstallPropertyChangedEventArgs); } }
+        public bool CanOpenInfo { get { return canOpenInfo; } set { SetProperty(ref canOpenInfo, value, canOpenInfoPropertyChangedEventArgs); } }
+        public bool CanUpdate { get { return canUpdate; } set { SetProperty(ref canUpdate, value, canUpdatePropertyChangedEventArgs); } }
+        public bool IsBusy { get { return isBusy; } set { SetProperty(ref isBusy, value, isBusyPropertyChangedEventArgs); } }
+        public bool MultiSelection { get { return multiSelection; } private set { SetProperty(ref multiSelection, value, multiSelectionPropertyChangedEventArgs); } }
 
         #region NotifyPropertyChangedGenerator
 
@@ -224,6 +228,8 @@ namespace WpfTestApp
         private static readonly PropertyChangedEventArgs canUpdatePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(CanUpdate));
         private bool isBusy;
         private static readonly PropertyChangedEventArgs isBusyPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(IsBusy));
+        private bool multiSelection;
+        private static readonly PropertyChangedEventArgs multiSelectionPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(MultiSelection));
 
         private void SetProperty<T>(ref T field, T value, PropertyChangedEventArgs ev)
         {

@@ -51,7 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Effects\DeeperColorEffect.cs" />
+    <Compile Include="IO\FileType.cs" />
+    <Compile Include="IO\FileWatcherEventArgs.cs" />
+    <Compile Include="IO\ImageSize.cs" />
+    <Compile Include="IO\MultiFileWatcher.cs" />
     <Compile Include="IO\ImageHelper.cs" />
+    <Compile Include="IO\FileWatcherSettings.cs" />
     <Compile Include="Shell\ShellItem.cs" />
     <Compile Include="Shell\ShellItemThumbnail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +69,7 @@
     <Compile Include="RegistryTools\RegistryItemBase.cs" />
     <Compile Include="RegistryTools\ProgramInfo.cs" />
     <Compile Include="RegistryTools\RegistryHelper.cs" />
+    <Compile Include="Shell\ThumbnailSize.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

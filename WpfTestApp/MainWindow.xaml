@@ -10,7 +10,7 @@
         Title="MainWindow"  WindowStartupLocation="CenterScreen"
         Width="800"
         Height="671">
- <local:ProgrammesControl />
+ <local:WinApi />
  <!--<wpf:AnimatedScrollViewer>
   <StackPanel>
    <wpf:CircularProgressbar  Height="150"

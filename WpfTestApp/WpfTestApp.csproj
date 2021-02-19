@@ -38,6 +38,17 @@
     <Reference Include="Kemorave">
       <HintPath>..\Kemorave\bin\Debug\netstandard2.0\Kemorave.dll</HintPath>
     </Reference>
+    <Reference Include="Kemorave.Win, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Kemorave.Win\bin\Debug\Kemorave.Win.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-core.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.4.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-shell.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -51,6 +62,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="VirtualizingWrapPanel">
+      <HintPath>..\..\WPF C# Projects\Assemplies\virtualizingwrappanel.1.5.0.nupkg\lib\net45\VirtualizingWrapPanel.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -60,7 +74,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ShellDirectoryViewPage.xaml.cs">
+      <DependentUpon>ShellDirectoryViewPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SizeSuffix.cs" />
+    <Compile Include="WinApi.xaml.cs">
+      <DependentUpon>WinApi.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -74,6 +94,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ProgrammesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShellDirectoryViewPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinApi.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -110,10 +138,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kemorave.Win\Kemorave.Win.csproj">
-      <Project>{EA978A31-BA89-4D34-AD2E-2946FC29847E}</Project>
-      <Name>Kemorave.Win</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kemorave.Wpf\Kemorave.Wpf.csproj">
       <Project>{0742e82f-2fa6-457a-93e1-c0c97514349b}</Project>
       <Name>Kemorave.Wpf</Name>

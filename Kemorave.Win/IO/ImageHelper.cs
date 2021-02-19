@@ -347,19 +347,3 @@ namespace Kemorave.Win.IO
         }
     }
 }
-public enum FileType
-{
-    None,
-    File,
-    Directory,
-    Drive,
-    Device
-}
-public enum ImageSize
-{
-    Default,
-    Small,
-    Medium,
-    Big,
-    Extra
-}

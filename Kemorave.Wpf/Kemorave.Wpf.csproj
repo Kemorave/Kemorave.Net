@@ -70,6 +70,7 @@
     <Compile Include="Helper\ProgressbarHelper.cs" />
     <Compile Include="Helper\SelectorHelper.cs" />
     <Compile Include="IGraphItem.cs" />
+    <Compile Include="VirtualizingStackPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

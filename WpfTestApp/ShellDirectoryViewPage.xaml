@@ -1,0 +1,94 @@
+﻿<Page
+ x:Class="WpfTestApp.ShellDirectoryViewPage"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:VW="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ xmlns:local="clr-namespace:WpfTestApp"
+ mc:Ignorable="d"
+ d:DesignHeight="450"
+ d:DesignWidth="800" 
+ FocusManager.FocusedElement="{Binding ElementName=ShellItemsListBox}"
+ Background="#FF252526">
+
+ <Page.Content>
+  <Grid>
+   <Grid.ColumnDefinitions>
+    <ColumnDefinition />
+    <ColumnDefinition
+     Width="Auto" />
+   </Grid.ColumnDefinitions>
+   <ListBox
+    FocusManager.IsFocusScope="True"
+    ScrollViewer.CanContentScroll="True"
+    BorderThickness="0"
+    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+    ScrollViewer.VerticalScrollBarVisibility="Visible"
+    SelectionChanged="OnShellObjectSelectionChanged"
+    VirtualizingPanel.IsVirtualizing="True"
+    VirtualizingPanel.VirtualizationMode="Recycling"
+    VirtualizingPanel.ScrollUnit="Pixel"
+    x:Name="ShellItemsListBox"
+    Background="{x:Null}">
+    <ListBox.ItemsPanel>
+     <ItemsPanelTemplate>
+      <VW:VirtualizingWrapPanel />
+     </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
+    <ListBox.ItemTemplate>
+     <DataTemplate>
+      <StackPanel 
+       Width="200"
+       Height="150">
+       <Image
+        Height="120" 
+        Stretch="Uniform"
+        Source="{Binding Path=Thumbnail.Large,IsAsync=True,Mode=OneTime,Delay=500,BindsDirectlyToSource=True}" />
+       <TextBlock 
+        TextAlignment="Center" 
+        Padding="5"
+        VerticalAlignment="Center" 
+        Text="{Binding Path=Name}"
+        TextTrimming="CharacterEllipsis"
+        Foreground="White" />
+      </StackPanel>
+     </DataTemplate>
+    </ListBox.ItemTemplate>
+    <ListBox.ItemContainerStyle>
+     <Style
+      TargetType="ListBoxItem"
+      BasedOn="{StaticResource {x:Type ListBoxItem}}">
+      <EventSetter
+       Event="MouseDoubleClick"
+       Handler="OnObjectClick" />
+     </Style>
+    </ListBox.ItemContainerStyle>
+   </ListBox>
+   <ListBox
+    BorderThickness="0"
+    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+    Width="300"
+    Grid.Column="1"
+    ItemsSource="{Binding ElementName=ShellItemsListBox, Path=SelectedItem.ShellInfo.Properties.DefaultPropertyCollection}"
+    Grid.Row="1">
+    <ListBox.ItemTemplate>
+     <DataTemplate>
+      <TextBlock
+       TextWrapping="Wrap">
+          <Run
+        Foreground="Blue"
+        Text="{Binding Path=Description.DisplayName,Mode=OneWay}"
+        FontWeight="DemiBold"
+        FontSize="13" />
+            <LineBreak />
+          <Run
+        Text="{Binding Path=ValueAsObject,Mode=OneWay,TargetNullValue='.......................'}"
+        FontWeight="DemiBold" />
+      </TextBlock>
+     </DataTemplate>
+    </ListBox.ItemTemplate>
+   </ListBox>
+  </Grid>
+ </Page.Content>
+</Page>
