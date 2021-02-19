@@ -27,8 +27,7 @@
     ScrollViewer.VerticalScrollBarVisibility="Visible"
     SelectionChanged="OnShellObjectSelectionChanged"
     VirtualizingPanel.IsVirtualizing="True"
-    VirtualizingPanel.VirtualizationMode="Recycling"
-    VirtualizingPanel.ScrollUnit="Pixel"
+    VirtualizingPanel.VirtualizationMode="Recycling" 
     x:Name="ShellItemsListBox"
     Background="{x:Null}">
     <ListBox.ItemsPanel>
@@ -70,7 +69,7 @@
     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
     Width="300"
     Grid.Column="1"
-    ItemsSource="{Binding ElementName=ShellItemsListBox, Path=SelectedItem.ShellInfo.Properties.DefaultPropertyCollection}"
+    ItemsSource="{Binding ElementName=ShellItemsListBox,IsAsync=True, Path=SelectedItem.ShellInfo.Properties.DefaultPropertyCollection}"
     Grid.Row="1">
     <ListBox.ItemTemplate>
      <DataTemplate>
