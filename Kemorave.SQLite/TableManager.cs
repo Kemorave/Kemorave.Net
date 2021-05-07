@@ -33,17 +33,9 @@ namespace Kemorave.SQLite
         }
         public int CreateTable(TableInfo table)
         {
-            try
-            {
+             
                 return dataBase.ExecuteCommand(table.GetCreateCommand());
-            }
-            finally
-            {
-                if (!string.IsNullOrEmpty(table.Command))
-                {
-                    dataBase.ExecuteCommand(table.Command);
-                }
-            }
+           
         }
         public int DropTable(string tableName)
         {

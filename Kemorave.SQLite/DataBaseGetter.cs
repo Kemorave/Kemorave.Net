@@ -50,8 +50,9 @@ namespace Kemorave.SQLite
             if (includeOptions == null)
             {
                 includeOptions = new IncludeOptions<Model, IncludeModel>();
-                includeOptions.ItemID = item?.ID;
             }
+            includeOptions.ItemID = item?.ID;
+         
             foreach (var includeItem in GetItems(includeOptions))
             {
                 yield return includeItem;
@@ -79,7 +80,16 @@ namespace Kemorave.SQLite
                 selectOptions = new SelectOptions<Model>();
             }
             System.Reflection.PropertyInfo[] props = type.GetProperties();
-            using (SQLiteDataReader reader = _dataBase.CreateCommand(selectOptions.GetCommand()).ExecuteReader())
+            var command = _dataBase.CreateCommand(selectOptions.GetCommand());
+            if(selectOptions.Where?.Conditons!=null)
+            foreach (var condition in selectOptions.Where.Conditons)
+            {
+                    foreach (var item in condition)
+                    {
+                        command.Parameters.Add(new SQLiteParameter(dbType: System.Data.DbType.Object,value:item.Value));
+                    }
+            }
+            using (SQLiteDataReader reader = command.ExecuteReader())
             {
                 Dictionary<string, object> values = PropertyAttribute.GetPopulateProperties(type, props);
                 if (values.Count == 0)
@@ -101,16 +111,19 @@ namespace Kemorave.SQLite
                     {
                         model.SetDataBase(_dataBase);
                     }
+                    int ordinal = -1;
                     foreach (KeyValuePair<string, object> item in values)
                     {
                         try
                         {
-                            keyValues[item.Key] = reader[item.Key];
+                            ordinal= reader.GetOrdinal(item.Key);
+                            if (ordinal > -1)
+                            keyValues[item.Key] = reader.GetValue(ordinal);
                         }
                         catch (System.IndexOutOfRangeException)
                         {
                             if (Debugger.IsAttached)
-                                Debug.WriteLine(($"Property '{item.Key}' is not a column in the table you can set the DefaultValueBehavior to Ignore"));
+                                Debug.WriteLine(($"Property '{item.Key}' is Ignored"));
                         }
                     }
                    

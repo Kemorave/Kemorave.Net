@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kemorave.SQLite.Options
 {
@@ -7,12 +8,16 @@ namespace Kemorave.SQLite.Options
     {
         public Where()
         {
-            Conditons = new List<Tuple<ConditionOperator, WhereConditon[]>>();
+            _Conditons = new List<Tuple<ConditionOperator, WhereConditon[]>>();
         }
 
         public Where(WhereConditon[] conditons, ConditionOperator conditionOperator = ConditionOperator.AND) : this()
         {
             AddConditons(conditionOperator, conditons);
+        }
+        public Where(params WhereConditon[] conditons) : this()
+        {
+            AddConditons( ConditionOperator.AND, conditons);
         }
 
         public override string ToString()
@@ -24,9 +29,9 @@ namespace Kemorave.SQLite.Options
         {
             string cmd = $"WHERE ";
 
-            for (int i = 0; i < Conditons.Count; i++)
+            for (int i = 0; i < _Conditons.Count; i++)
             {
-                foreach (var item in Conditons[i].Item2)
+                foreach (var item in _Conditons[i].Item2)
                 {
                     if (i == 0)
                     {
@@ -34,7 +39,7 @@ namespace Kemorave.SQLite.Options
                     }
                     else
                     {
-                        cmd += $"{Conditons[i].Item1} {item.GetCommand()}";
+                        cmd += $"{_Conditons[i].Item1} {item.GetCommand()}";
                     }
                 }
             }
@@ -43,13 +48,14 @@ namespace Kemorave.SQLite.Options
         public enum ConditionOperator { AND, OR }
         public void AddConditons(ConditionOperator conditionOperator, params WhereConditon[] conditons)
         {
-            Conditons.Add(new Tuple<ConditionOperator, WhereConditon[]>(conditionOperator, conditons));
+            _Conditons.Add(new Tuple<ConditionOperator, WhereConditon[]>(conditionOperator, conditons));
         }
         public void AddConditons(params WhereConditon[] conditons)
         {
             AddConditons(ConditionOperator.AND, conditons);
         }
 
-        List<Tuple<ConditionOperator, WhereConditon[]>> Conditons { get; }
+        List<Tuple<ConditionOperator, WhereConditon[]>> _Conditons;
+    public    IEnumerable<WhereConditon[]> Conditons { get => _Conditons.Select(c=>c.Item2); }
     }
 }

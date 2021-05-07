@@ -1,17 +1,20 @@
-﻿namespace Kemorave.SQLite.Options
+﻿using Kemorave.SQLite.SQLiteAttribute;
+
+namespace Kemorave.SQLite.Options
 {
     public sealed class IncludeOptions<Model, IncludeModel> : SelectOptions<IncludeModel>,IIncludeOptions<Model, IncludeModel> where Model :  IDBModel, new() where IncludeModel :  IDBModel, new()
 
     { 
           
-        internal IncludeOptions(string forigenKey=null, string orderBy = null, string[] atributes = null, Where where = null, int? limit = null, int? offset = null) : base(orderBy, atributes, where, limit, offset)
+        public IncludeOptions(string forigenKey=null, string orderBy = null, string[] atributes = null, Where where = null, int? limit = null, int? offset = null) : base(orderBy, atributes, where, limit, offset)
         { 
-            IncludeTable = Attribute.TableAttribute.GetTableName(typeof(IncludeModel));
+            IncludeTable = TableAttribute.GetTableName(typeof(IncludeModel));
+
+            ForigenKey = forigenKey;
             if (string.IsNullOrEmpty(ForigenKey))
             {
                 ForigenKey = Table += "Id";
             }
-            ForigenKey = forigenKey;
         }
 
         public override string ToString()

@@ -131,12 +131,20 @@ namespace Kemorave.SQLite
         }
         public int Insert<T>(IList<T> rows, string tableName = null) where T :  IDBModel
         {
+            if (rows == null)
+            {
+                throw new ArgumentNullException(nameof(rows));
+            }
+            if (rows.Count<=0)
+            {
+                return -1;
+            }
             CheckBusyState();
             try
             {
                 OnOperationStart(InsertOperation);
 
-                Type type = typeof(T);
+                Type type = rows[0].GetType();
                 if (tableName == null)
                 {
                     tableName = TableAttribute.GetTableName(type);
@@ -161,7 +169,7 @@ namespace Kemorave.SQLite
 
                 using (SQLiteCommand command = DataBase.CreateCommand($"INSERT INTO [{tableName}] ({tuple.Item1}) VALUES ({tuple.Item2})"))
                 {
-                    foreach (T item in rows)
+                    foreach (IDBModel item in rows)
                     {
                         keyValues = PropertyAttribute.GetIncludeProperties(type, props, item);
                         foreach (KeyValuePair<string, object> val in keyValues)

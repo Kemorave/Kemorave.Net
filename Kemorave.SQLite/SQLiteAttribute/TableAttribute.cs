@@ -7,15 +7,12 @@ namespace Kemorave.SQLite.SQLiteAttribute
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Parameter)]
     public class TableAttribute : System.Attribute
     {
-        public TableAttribute(string tableName, string cmd = null)
-        {
-            // Debug.WriteLine("Attribute "+className);
-            TableName = tableName;
-            Command = cmd;
+        public TableAttribute(string tableName )
+        { 
+            TableName = tableName; 
         }
 
-        public string TableName { get; }
-        public string Command { get; }
+        public string TableName { get; } 
 
         internal static Type SQLiteTableAttributeType = typeof(TableAttribute);
         public static Dictionary<string, string> Keys = new Dictionary<string, string>();
@@ -33,13 +30,10 @@ namespace Kemorave.SQLite.SQLiteAttribute
         }
         internal static TableInfo FromType(Type type)
         {
-            TableInfo tableInfo = null;
-            if (type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault() is TableAttribute item)
-            {
-                tableInfo = new TableInfo(item.TableName)
-                {
-                    Command = item.Command
-                };
+            TableInfo
+                tableInfo = new TableInfo(TableAttribute.GetTableName(type));
+            
+                
                 foreach (var prop in type.GetProperties())
                 {
                     foreach (TableColumnAttribute coll in prop.GetCustomAttributes(typeof(TableColumnAttribute), true))
@@ -47,7 +41,7 @@ namespace Kemorave.SQLite.SQLiteAttribute
                         tableInfo.Columns?.Add(coll.ColumnInfo);
                     }
                 }
-            }
+            
             return tableInfo;
         }
     }

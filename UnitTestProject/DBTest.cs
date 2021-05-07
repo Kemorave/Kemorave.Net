@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Kemorave.SQLite;
+using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,56 +12,82 @@ namespace UnitTestProject
     [TestClass]
     public class DBTest
     {
-        [Table("TestScheduler")]
-        private class TestScheduler : IDBModel
+        private class Image : Kemorave.SQLite.ModelBase.Model
         {
-            [Property(PropertyAttribute.DefaultValueBehavior.Populate)]
+            public Image()
+            {
+            }
+
+            public Image(SQLiteDataBase dataBase, string path, string type, long itemId) : base(dataBase)
+            {
+                Path = path;
+                Type = type;
+                ItemId = itemId;
+            }
+            [Kemorave.SQLite.SQLiteAttribute.TableColumn("Path", SQLiteType.TEXT,false,false,false)]
+            public string Path { get; set; }
+            [Kemorave.SQLite.SQLiteAttribute.TableColumn("Type", SQLiteType.TEXT, false, false, false)]
+            public string Type { get; set; }
+            [Kemorave.SQLite.SQLiteAttribute.TableColumn("ItemId", SQLiteType.INTEGER, false, false, false)]
+            public long ItemId { get; set; }
+            public override string ToString()
+            {
+                return base.ToString();
+            }
+
+            protected override void OnDelete()
+            {
+                base.OnDelete();
+            }
+
+            protected override void OnLoad(SQLiteDataBase dataBase)
+            {
+                base.OnLoad(dataBase);
+            }
+
+            protected override void OnUpdate()
+            {
+                base.OnUpdate();
+            }
+        }
+        private class Post : Kemorave.SQLite.IDBModel
+        {
+            public Post(SQLiteDataBase dataBase, string content) 
+            {
+                Content = content;
+                DataBase = dataBase;
+                Images = new List<Image>();
+            }
+
+            public Post()
+            {
+                Images = new List<Image>();
+            }
+
+            protected SQLiteDataBase DataBase;
+            [Kemorave.SQLite.SQLiteAttribute.Property(Behavior.Populate)]
             [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
             public long ID { get; set; }
-            //[Property]
-            [TableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", SQLiteActions.CASCADE, SQLiteActions.CASCADE)]
-            public long TestID { get; set; }
-
-            [Property(PropertyAttribute.DefaultValueBehavior.Ignore)]
-            public Test Test { get; set; }
-            //[Property]
-            [TableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
-            public DateTime TestDate { get; set; }
+            public string Content { get; set; }
+            [Property(Behavior.Ignore)]
+            public List<Image> Images { get; }
             [FillMethod]
-            public void SetNavigationProperties(DataBaseGetter getter)
+            public void Fill(Kemorave.SQLite.DataBaseGetter getter)
             {
-               // Test = getter.GetItemByID<Test>(this);
-                if (Test != null)
-                {
-                    throw new Exception("WWWWWWWWWWAAA");
-                }
+                Images.AddRange(getter.Include(this
+                    ,new IncludeOptions<Post, Image>(forigenKey:"ItemId","Path",new string[] { "Path"},
+                    new Where(WhereConditon.IsEqual("Type", "PostImage")))));
             }
-            public override string ToString()
+            public void AddImage(string path)
             {
-                return $"{Test} Date : {TestDate}";
+                new Image(DataBase,path, "PostImage", this.ID).Save();
             }
-        }
-        [Table("Test")]
-        private class Test : IDBModel
-        {
-            [Property(PropertyAttribute.DefaultValueBehavior.Populate)]
-            [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
-            public long ID { get; set; }
-            [Property(PropertyAttribute.DefaultValueBehavior.PopulateAndInclude, "Test_Name")]
-            [TableColumn("Test_Name", SQLiteType.VARCHAR, false, false, false)]
-            public string Name { get; set; }
-            //[Property]
-            [TableColumn("Major", SQLiteType.VARCHAR, false, false, false)]
-            public string Major { get; set; }
-            public override string ToString()
+           
+            public   void Save()
             {
-                return $"ID : {ID} Name : {Name} Major {Major}";
+                DataBase.DataSetter.Insert(this);
             }
         }
-
-
-
-
         private const string FILENAME = "MySQLiteDB.sqlite";
 
         private static readonly string FILEPATH = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + FILENAME;
@@ -69,49 +96,35 @@ namespace UnitTestProject
         {
             try
             {
-               // var file = Kemorave.Win.Shell.ShellItem.FromParsingName(@"F:\Musica\my_musica\Music\New folder\Beautiful Pain.mp3");
-                Stopwatch stopwatch = new Stopwatch();
-                using (Kemorave.SQLite.SQLiteDataBase db = new   SQLiteDataBase(FILEPATH))
+                // var file = Kemorave.Win.Shell.ShellItem.FromParsingName(@"F:\Musica\my_musica\Music\New folder\Beautiful Pain.mp3");
+                using (Kemorave.SQLite.SQLiteDataBase db = new SQLiteDataBase(FILEPATH))
                 {
-                    db.Connection.Update += Connection_Update;
+                    //db.Connection.Update += Connection_Update;
                     db.Connection.Commit += Connection_Commit;
-                    db.Connection.RollBack += Connection_RollBack;
+                    db.Connection.Trace += Connection_Trace; ;
 
-                    db.TableManager.CreateTable(typeof(Test)); 
-
-                    db.TableManager.CreateTable(typeof(TestScheduler));
-
-                    var names = db.TableManager.GetTablesNames();
-                    var tt = db.TableManager.GetTableInfo("TestScheduler");
-
-                    Test test = new Test
-                    {
-                        Name = "Hola",
-                        Major = "CS"
-                    };
-                    db.DataSetter.Insert(test);
-                    db.DataSetter.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
-                  //  foreach (TestScheduler item in db.DataGetter.GetItems<TestScheduler>())
-                    {
-                     //   Debug.WriteLine(item.ToString());
-                    }
-                    List<Test> list = new List<Test>();
-                    for (int i = 0; i != 1000000; i++)
-                    {
-                        list.Add(new Test() { Major = "CS", Name = $"Test {i}" });
-                    }
-                    stopwatch.Start();
-                    db.DataSetter.Insert(list);
-                    stopwatch.Stop();
-                    //stopwatch.Reset();
-                    Debug.Write($"Inserted {list.Count} items in {stopwatch.Elapsed}");
-
+                    db.TableManager.CreateTable(typeof(Image));
+                    var postT = new TableInfo("Post");
+                    postT.Columns.Add(new ColumnInfo("ID", SQLiteType.INTEGER, true, true));
+                    postT.Columns.Add(new ColumnInfo("Content", SQLiteType.TEXT));
+                    db.TableManager.CreateTable(postT);
+                    Stopwatch stopwatch = new Stopwatch();
+                    var post = new Post(db, "Gola");
+                    post.Save();
+                    post.AddImage("AAAAA");
+                    post = db.DataGetter.GetItemByID<Post>(post.ID);
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error : {e.Message}.\n{e}", "Errpr");
             }
+        }
+
+        private static void Connection_Trace(object sender, System.Data.SQLite.TraceEventArgs e)
+        {
+
+            Debug.WriteLine($"TRACE {e.Statement}");
         }
 
         private static void Connection_RollBack(object sender, EventArgs e)
@@ -126,7 +139,7 @@ namespace UnitTestProject
 
         private static void Connection_Update(object sender, System.Data.SQLite.UpdateEventArgs e)
         {
-            //   Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
+            //  Debug.WriteLine($"Table {e.Table} Row {e.RowId} Event {e.Event} Database {e.Database}");
         }
     }
 }

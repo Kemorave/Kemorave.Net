@@ -8,9 +8,15 @@ namespace Kemorave.SQLite.ModelBase
     {
 
         public Model()
-        {
+        { 
         }
-       
+
+        public Model(SQLiteDataBase dataBase)
+        {
+            DataBase = dataBase;
+            isNew = true;
+        }
+
         ~Model()
         {
             DataBase.Connection.Update -= Connection_Update;
@@ -52,15 +58,22 @@ namespace Kemorave.SQLite.ModelBase
         }
         public virtual void Save()
         {
+            if (isNew)
+            {
+                DataBase.DataSetter.Insert(this);
+                isNew = false;
+            }
+            else
             DataBase.DataSetter.Update(this);
+           
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
 
         protected SQLiteDataBase DataBase;
-        [SQLiteAttribute.Property(PropertyAttribute.DefaultValueBehavior.Populate)]
+        [SQLiteAttribute.Property(Behavior.Populate)]
         [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
         public long ID { get; set; }
-
+        bool isNew = false;
     }
 }

@@ -7,18 +7,17 @@ using System.Runtime.CompilerServices;
 namespace Kemorave.SQLite.SQLiteAttribute
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class PropertyAttribute : System.Attribute
+    public partial class PropertyAttribute : System.Attribute
     {
-        public enum DefaultValueBehavior { PopulateAndInclude, Populate, Include, Ignore }
-        public PropertyAttribute(DefaultValueBehavior defaultValueBehavior = DefaultValueBehavior.PopulateAndInclude, [CallerMemberName] string columnName = null)
+        public PropertyAttribute(Behavior defaultValueBehavior = Behavior.PopulateAndInclude, [CallerMemberName] string columnName = null)
         {
             SetName(columnName);
             SetDefaultValueBehavior(defaultValueBehavior);
         }
 
         public string Name { get; private set; }
-        public DefaultValueBehavior DefaultBehavior { get; private set; }
-        public void SetDefaultValueBehavior(DefaultValueBehavior defaultValueBehavior)
+        public Behavior DefaultBehavior { get; private set; }
+        public void SetDefaultValueBehavior(Behavior defaultValueBehavior)
         {
             DefaultBehavior = defaultValueBehavior;
         }
@@ -43,10 +42,10 @@ namespace Kemorave.SQLite.SQLiteAttribute
                     {
                         switch (att.DefaultBehavior)
                         {
-                            case DefaultValueBehavior.Include:
+                            case Behavior.Include:
                                 names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
                                 break;
-                            case DefaultValueBehavior.PopulateAndInclude:
+                            case Behavior.PopulateAndInclude:
                                 names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
                                 break;
                             default:
@@ -76,10 +75,10 @@ namespace Kemorave.SQLite.SQLiteAttribute
                         {
                             switch (att.DefaultBehavior)
                             {
-                                case DefaultValueBehavior.Populate:
+                                case Behavior.Populate:
                                     names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
                                     break;
-                                case DefaultValueBehavior.PopulateAndInclude:
+                                case Behavior.PopulateAndInclude:
                                     names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
                                     break;
                                 default:

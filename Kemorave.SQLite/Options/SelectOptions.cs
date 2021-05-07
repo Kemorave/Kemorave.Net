@@ -1,4 +1,6 @@
-﻿namespace Kemorave.SQLite.Options
+﻿using Kemorave.SQLite.SQLiteAttribute;
+
+namespace Kemorave.SQLite.Options
 {
     public class SelectOptions<Model> : ISelectOptions<Model> where Model :  IDBModel, new()
     {
@@ -7,7 +9,7 @@
             Attributes = atributes;
             Limit = limit;
             Offset = offset;
-            Table = Attribute.TableAttribute.GetTableName(typeof(Model));
+            Table = TableAttribute.GetTableName(typeof(Model));
 
             OrderBy = orderBy;
             Where = where;
