@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kemorave.Normalization
 {
- public static class DataNormalization
+    public static class DataNormalization
  {
   /// <summary>
   /// "{0:n1} {1}"

@@ -67,8 +67,11 @@
     <Compile Include="Converter\ProgressToAngleConverter.cs" />
     <Compile Include="Converter\ReverseBool.cs" />
     <Compile Include="Helper\ControlHelper.cs" />
+    <Compile Include="Helper\FrameHelper.cs" />
+    <Compile Include="Helper\ItemsListHelper.cs" />
     <Compile Include="Helper\ProgressbarHelper.cs" />
     <Compile Include="Helper\SelectorHelper.cs" />
+    <Compile Include="Helper\WindowHelper.cs" />
     <Compile Include="IGraphItem.cs" />
     <Compile Include="VirtualizingStackPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -95,6 +98,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helper\NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

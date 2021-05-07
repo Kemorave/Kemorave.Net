@@ -130,7 +130,7 @@ namespace Kemorave.SQLite
                 {
                     string path = DataSource;
                     Connection.Shutdown();
-                    Connection.Dispose();
+                    //Connection.Dispose();
                     System.IO.File.Delete(path);
                     RefreshConnection(path, dBInfo.Secure?.ToString());
                 }
@@ -169,8 +169,8 @@ namespace Kemorave.SQLite
                 Connection.SetPassword(secure);
             }
         }
-        public IDataBaseGetter DataGetter { get; }
-        public IDataBaseSetter DataSetter { get; }
+        public  DataBaseGetter DataGetter { get; }
+        public  DataBaseSetter DataSetter { get; }
         public TableManager TableManager { get; }
         public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
         /// <summary>

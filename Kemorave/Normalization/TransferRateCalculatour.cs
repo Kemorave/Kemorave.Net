@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Timers;
 
 namespace Kemorave.Normalization
 {
 
- public class TransferRateCalculatour : IDisposable
+    public class TransferRateCalculatour : IDisposable
  {
   public delegate int Action();
   public enum CalculationRate { PerMil, PerSec, PerMin, PerHou }

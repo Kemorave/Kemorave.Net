@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using Kemorave.SQLite.Attribute;
+using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
 {
@@ -53,10 +53,14 @@ namespace Kemorave.SQLite
         {
             return dataBase.ExecuteCommand(TableInfo.GetClearCommand(tableName));
         }
+        public int GetTableCount(string tableName)
+        {
+            return dataBase.ExecuteCommand($" SELECT count(*) FROM {tableName}; ");
+        }
 
         public int CreateTable(Type type)
         {
-            if (SQLiteTableAttribute.FromType(type) is TableInfo tableInfo)
+            if (TableAttribute.FromType(type) is TableInfo tableInfo)
             {
                 return CreateTable(tableInfo);
             }
@@ -68,7 +72,7 @@ namespace Kemorave.SQLite
         public string[] GetTablesNames()
         {
             List<string> names = new List<string>();
-            using (SQLiteDataReader reader = dataBase.ExectuteReader($"SELECT name FROM sqlite_master WHERE type='table';", CommandBehavior.SingleRow))
+            using (SQLiteDataReader reader = dataBase.ExectuteReader($"SELECT name FROM sqlite_master WHERE type='table';"))
             {
                 while (reader.Read())
                 {

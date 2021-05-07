@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Security;
-using Kemorave.SQLite.Attribute;
+using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
 {
@@ -29,7 +29,7 @@ namespace Kemorave.SQLite
         }
         public void AddTableFromType(Type type)
         {
-            if (SQLiteTableAttribute.FromType(type) is TableInfo tableInfo)
+            if (TableAttribute.FromType(type) is TableInfo tableInfo)
             {
                 Tables.Add(tableInfo);
             }

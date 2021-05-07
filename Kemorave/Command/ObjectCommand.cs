@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Windows.Input;
 
 namespace Kemorave.Command
 {
- public sealed class ObjectCommand : RelayCommand<object>
+    public sealed class ObjectCommand : RelayCommand<object>
  {
   public ObjectCommand(Action<object> execute) : base(execute)
   {

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -124,7 +123,15 @@ namespace Kemorave.SQLite
             }
             return cipherText;
         }
+        public static string Hash(string value,string salt=null)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException(  nameof(value));
+            }
 
+            return Convert.ToBase64String( System.Security.Cryptography.SHA1.Create().ComputeHash(Convert.FromBase64String(value)) );
+        }
         #endregion
     }
 }

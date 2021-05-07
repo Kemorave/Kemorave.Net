@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Kemorave.SQLite.Attribute
+namespace Kemorave.SQLite.SQLiteAttribute
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class SQLiteTableColumnAttribute : System.Attribute
+    public class TableColumnAttribute : Attribute
     {
         /// <summary>
         /// Creates a foreignKey column 
@@ -21,7 +21,7 @@ namespace Kemorave.SQLite.Attribute
         /// <param name="onDeleteAction"></param>
         /// <param name="onUpdateAction"></param>
         /// <param name="extra"></param>
-        public SQLiteTableColumnAttribute([CallerMemberName]
+        public TableColumnAttribute([CallerMemberName]
          string name = null,
          SQLiteType sQLiteType = SQLiteType.TEXT,
          bool isPrimaryKey = false,
@@ -31,14 +31,14 @@ namespace Kemorave.SQLite.Attribute
          string defaultValue = null,
          string parentTableName = null,
          string parentTableRefID = null,
-         ColumnInfo.SQLiteActions onDeleteAction = ColumnInfo.SQLiteActions.NO_ACTION,
-         ColumnInfo.SQLiteActions onUpdateAction = ColumnInfo.SQLiteActions.NO_ACTION,
+        SQLiteActions onDeleteAction = SQLiteActions.NO_ACTION,
+       SQLiteActions onUpdateAction = SQLiteActions.NO_ACTION,
          string extra = null)
         {
             ColumnInfo = new ColumnInfo(name, sQLiteType, isPrimaryKey, isAutoIncrement, parentTableName, parentTableRefID)
             { IsUNIQUE = isUnique, OnDeleteAction = onDeleteAction, OnUpdateAction = onUpdateAction, DefaultValue = defaultValue, Extra = extra, IsNullable = isNull };
         }
-        public SQLiteTableColumnAttribute([CallerMemberName]
+        public TableColumnAttribute([CallerMemberName]
          string name = null,
                  SQLiteType sQLiteType = SQLiteType.TEXT,
                  bool isPrimaryKey = false,
@@ -51,7 +51,7 @@ namespace Kemorave.SQLite.Attribute
             ColumnInfo = new ColumnInfo(name, sQLiteType, isPrimaryKey, isAutoIncrement)
             { IsUNIQUE = isUnique, DefaultValue = defaultValue, Extra = extra, IsNullable = isNull };
         }
-        public SQLiteTableColumnAttribute([CallerMemberName]
+        public TableColumnAttribute([CallerMemberName]
          string name = null,
                SQLiteType sQLiteType = SQLiteType.TEXT,
                bool isPrimaryKey = false,

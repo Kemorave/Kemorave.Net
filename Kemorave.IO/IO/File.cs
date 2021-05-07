@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using Kemorave.IO;
-using static Kemorave.IO.File;
 using static Kemorave.IO.SystemInfo;
 namespace Kemorave.IO
 {

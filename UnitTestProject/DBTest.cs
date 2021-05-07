@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Kemorave.SQLite;
-using Kemorave.SQLite.Attribute;
+using Kemorave.SQLite.SQLiteAttribute;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject
@@ -11,41 +11,46 @@ namespace UnitTestProject
     [TestClass]
     public class DBTest
     {
-        [SQLiteTable("TestScheduler")]
+        [Table("TestScheduler")]
         private class TestScheduler : IDBModel
         {
-            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
-            [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
+            [Property(PropertyAttribute.DefaultValueBehavior.Populate)]
+            [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
             public long ID { get; set; }
-            [SQLiteProperty]
-            [SQLiteTableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", ColumnInfo.SQLiteActions.CASCADE, ColumnInfo.SQLiteActions.CASCADE)]
+            //[Property]
+            [TableColumn("TestID", SQLiteType.INTEGER, false, false, false, false, "0", "Test", "ID", SQLiteActions.CASCADE, SQLiteActions.CASCADE)]
             public long TestID { get; set; }
-            public Test Test { get; private set; }
-            [SQLiteProperty]
-            [SQLiteTableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
+
+            [Property(PropertyAttribute.DefaultValueBehavior.Ignore)]
+            public Test Test { get; set; }
+            //[Property]
+            [TableColumn("TestDate", SQLiteType.DATETIME, false, false, false)]
             public DateTime TestDate { get; set; }
-            [SQLiteFillMethod]
-            public void SetNavigationProperties(IDataBaseGetter getter)
+            [FillMethod]
+            public void SetNavigationProperties(DataBaseGetter getter)
             {
-                Test = getter.GetItemByID<Test>(TestID);
+               // Test = getter.GetItemByID<Test>(this);
+                if (Test != null)
+                {
+                    throw new Exception("WWWWWWWWWWAAA");
+                }
             }
             public override string ToString()
             {
                 return $"{Test} Date : {TestDate}";
             }
         }
-
-        [SQLiteTable("Test")]
+        [Table("Test")]
         private class Test : IDBModel
         {
-            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.Populate)]
-            [SQLiteTableColumn("ID", SQLiteType.INTEGER, true, true, false)]
+            [Property(PropertyAttribute.DefaultValueBehavior.Populate)]
+            [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
             public long ID { get; set; }
-            [SQLiteProperty(SQLitePropertyAttribute.DefaultValueBehavior.PopulateAndInclude, "Test_Name")]
-            [SQLiteTableColumn("Test_Name", SQLiteType.VARCHAR, false, false, false)]
+            [Property(PropertyAttribute.DefaultValueBehavior.PopulateAndInclude, "Test_Name")]
+            [TableColumn("Test_Name", SQLiteType.VARCHAR, false, false, false)]
             public string Name { get; set; }
-            [SQLiteProperty]
-            [SQLiteTableColumn("Major", SQLiteType.VARCHAR, false, false, false)]
+            //[Property]
+            [TableColumn("Major", SQLiteType.VARCHAR, false, false, false)]
             public string Major { get; set; }
             public override string ToString()
             {
@@ -64,6 +69,7 @@ namespace UnitTestProject
         {
             try
             {
+               // var file = Kemorave.Win.Shell.ShellItem.FromParsingName(@"F:\Musica\my_musica\Music\New folder\Beautiful Pain.mp3");
                 Stopwatch stopwatch = new Stopwatch();
                 using (Kemorave.SQLite.SQLiteDataBase db = new   SQLiteDataBase(FILEPATH))
                 {
@@ -85,20 +91,21 @@ namespace UnitTestProject
                     };
                     db.DataSetter.Insert(test);
                     db.DataSetter.Insert(new TestScheduler() { TestID = test.ID, TestDate = new DateTime(2021, 6, 6) });
-                    foreach (TestScheduler item in db.DataGetter.GetItems<TestScheduler>())
+                  //  foreach (TestScheduler item in db.DataGetter.GetItems<TestScheduler>())
                     {
-                        Debug.WriteLine(item.ToString());
+                     //   Debug.WriteLine(item.ToString());
                     }
                     List<Test> list = new List<Test>();
-                    for (int i = 0; i != 100000; i++)
+                    for (int i = 0; i != 1000000; i++)
                     {
                         list.Add(new Test() { Major = "CS", Name = $"Test {i}" });
                     }
                     stopwatch.Start();
                     db.DataSetter.Insert(list);
-                    Debug.Write($"Inserted {list.Count} items in {stopwatch.Elapsed}");
                     stopwatch.Stop();
-                    stopwatch.Reset();
+                    //stopwatch.Reset();
+                    Debug.Write($"Inserted {list.Count} items in {stopwatch.Elapsed}");
+
                 }
             }
             catch (Exception e)

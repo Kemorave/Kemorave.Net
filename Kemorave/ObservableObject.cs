@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Kemorave
 {
- public class ObservableObject : INotifyPropertyChanged
+    public class ObservableObject : INotifyPropertyChanged
  {
 
   public event PropertyChangedEventHandler PropertyChanged;

@@ -1,7 +1,7 @@
 ﻿
 namespace Kemorave.IO
 {
- internal  static    class SystemInfo
+ public  static    class SystemInfo
     {
         #region Extensions
 

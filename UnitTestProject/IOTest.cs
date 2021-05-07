@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Kemorave.IO;
-using System.Threading.Tasks;
 using Kemorave.IO.Zip;
 using static UnitTestProject.Writing;
 
 namespace UnitTestProject
 {
-  public  class IOTest
+    public  class IOTest
     {
         [STAThread]
         public static void Main(string[] args)

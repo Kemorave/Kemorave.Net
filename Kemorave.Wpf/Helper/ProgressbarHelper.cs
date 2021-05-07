@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Kemorave.Wpf.Helper
 {
-  public  class ProgressbarHelper
+    public  class ProgressbarHelper
     {
 
         public static double GetAnimatedValue(DependencyObject obj)

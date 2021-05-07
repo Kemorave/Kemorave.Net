@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using Kemorave.SQLite.Attribute;
+using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
 {
-    internal class DataBaseSetter : IDataBaseSetter
+    public class DataBaseSetter 
     {
         public const string InsertOperation = "Insert";
         public const string UpdateOperation = "Update";
@@ -15,12 +15,15 @@ namespace Kemorave.SQLite
         {
             DataBase = dataBase;
         }
+
+        
+
         private bool _isCanceled;
 
         private readonly SQLiteDataBase DataBase;
 
         #region Operaion
-        private void CheckParams<T>(string tableName, IList<T> rows) where T : class, IDBModel
+        private void CheckParams<T>(string tableName, IList<T> rows) where T :  IDBModel
         {
             if (string.IsNullOrEmpty(tableName))
             {
@@ -92,7 +95,7 @@ namespace Kemorave.SQLite
 
 
 
-        public int Delete<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
+        public int Delete<T>(IList<T> rows, string tableName = null) where T :  IDBModel
         {
             CheckBusyState();
             try
@@ -102,7 +105,7 @@ namespace Kemorave.SQLite
 
                 if (tableName == null)
                 {
-                    tableName = SQLiteTableAttribute.GetTableName(type);
+                    tableName = TableAttribute.GetTableName(type);
                 }
                 CheckParams(tableName, rows);
 
@@ -126,7 +129,7 @@ namespace Kemorave.SQLite
                 OnOperationEnd();
             }
         }
-        public int Insert<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
+        public int Insert<T>(IList<T> rows, string tableName = null) where T :  IDBModel
         {
             CheckBusyState();
             try
@@ -136,17 +139,17 @@ namespace Kemorave.SQLite
                 Type type = typeof(T);
                 if (tableName == null)
                 {
-                    tableName = SQLiteTableAttribute.GetTableName(type);
+                    tableName = TableAttribute.GetTableName(type);
                 }
                 CheckParams(tableName, rows);
 
                 int TORE = 0;
                 System.Reflection.PropertyInfo[] props = type.GetProperties();
 
-                Dictionary<string, object> keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props);
+                Dictionary<string, object> keyValues = PropertyAttribute.GetIncludeProperties(type, props);
                 if (keyValues?.Count <= 0)
                 {
-                    throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
+                    throw new AggregateException($"Type ({type.FullName}) properties have no SQLite attributes");
                 }
                 //System.Reflection.MethodInfo fillMethod = SQLiteFillMethodAttribute.GetFillMethod(type);
                 //object[] fillMethodInvArgs = null;
@@ -160,7 +163,7 @@ namespace Kemorave.SQLite
                 {
                     foreach (T item in rows)
                     {
-                        keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props, item);
+                        keyValues = PropertyAttribute.GetIncludeProperties(type, props, item);
                         foreach (KeyValuePair<string, object> val in keyValues)
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
@@ -179,7 +182,7 @@ namespace Kemorave.SQLite
                 OnOperationEnd();
             }
         }
-        public int Update<T>(IList<T> rows, string tableName = null) where T : class, IDBModel
+        public int Update<T>(IList<T> rows, string tableName = null) where T :  IDBModel
         {
             CheckBusyState();
             try
@@ -188,7 +191,7 @@ namespace Kemorave.SQLite
                 Type type = typeof(T);
                 if (tableName == null)
                 {
-                    tableName = SQLiteTableAttribute.GetTableName(type);
+                    tableName = TableAttribute.GetTableName(type);
                 }
                 CheckParams<T>(tableName, rows);
 
@@ -196,7 +199,7 @@ namespace Kemorave.SQLite
 
 
                 System.Reflection.PropertyInfo[] props = type.GetProperties();
-                Dictionary<string, object> keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props);
+                Dictionary<string, object> keyValues = PropertyAttribute.GetIncludeProperties(type, props);
                 if (keyValues?.Count <= 0)
                 {
                     throw new AggregateException($"Type {type.FullName} properties have no SQLite attributes");
@@ -207,7 +210,7 @@ namespace Kemorave.SQLite
                 {
                     foreach (T item in rows)
                     {
-                        keyValues = SQLitePropertyAttribute.GetIncludeProperties(type, props, item);
+                        keyValues = PropertyAttribute.GetIncludeProperties(type, props, item);
                         foreach (KeyValuePair<string, object> val in keyValues)
                         {
                             command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
@@ -226,7 +229,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        public int Insert<T>(T item, string tableName = null) where T : class, IDBModel
+        public int Insert<T>(T item, string tableName = null) where T :  IDBModel
         {
             if (item == null)
             {
@@ -234,7 +237,7 @@ namespace Kemorave.SQLite
             }
             return Insert<T>(new List<T>() { item }, tableName);
         }
-        public int Update<T>(T item, string tableName = null) where T : class, IDBModel, new()
+        public int Update<T>(T item, string tableName = null) where T :  IDBModel, new()
         {
             if (item == null)
             {
@@ -242,7 +245,7 @@ namespace Kemorave.SQLite
             }
             return Update<T>(new List<T>() { item }, tableName);
         }
-        public int Delete<T>(T item, string tableName = null) where T : class, IDBModel, new()
+        public int Delete<T>(T item, string tableName = null) where T :  IDBModel, new()
         {
             if (item == null)
             {
@@ -251,8 +254,8 @@ namespace Kemorave.SQLite
             return Delete<T>(new List<T>() { item }, tableName);
         }
         /// <summary>
-        ///  When true database commits changes without a chance for rollbacks 
-        ///  else use <see cref="SQLiteDataBase.CommitChanges"/> 
+        ///  When true database commits changes without a chance for rollbacks,
+        ///  used with <see cref="IDataBaseSetter.CommitChanges"/> 
         ///  <para/>
         ///  Default is true
         /// </summary>

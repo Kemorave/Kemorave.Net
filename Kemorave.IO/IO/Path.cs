@@ -6,7 +6,7 @@ namespace Kemorave.IO
     public static class Path
     {
         public static char PathSeparator = System.IO.Path.DirectorySeparatorChar;
-         public static char[] InavildNameChars { get; private set; } = System.IO.Path.GetInvalidFileNameChars();
+        public static char[] InavildNameChars { get; private set; } = System.IO.Path.GetInvalidFileNameChars();
         public static char[] InvalidPathChars { get; private set; } = System.IO.Path.GetInvalidPathChars();
 
         public static string RemoveInvaildPathCharacters(string path, char replacment = '_')
@@ -42,11 +42,11 @@ namespace Kemorave.IO
 
         public static string GetParentPathName(string path)
         {
-                if (string.IsNullOrEmpty(path))
-                {
-                    return null;
-                }
-            return GetFileName( GetParentPath(path)); 
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            return GetFileName(GetParentPath(path));
         }
         public static string GetParentPath(string path)
         {
@@ -58,18 +58,18 @@ namespace Kemorave.IO
             {
                 if (path[i] == PathSeparator)
                 {
-                    return path.Substring(0,  i);
+                    return path.Substring(0, i);
                 }
             }
             return path;
         }
         public static string GetPathRoot(string path)
         {
-          
-                if (string.IsNullOrEmpty(path))
-                {
-                    return null;
-                }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
             for (int i = 0; i < path.Length; i++)
             {
                 if (path[i] == PathSeparator)
@@ -78,38 +78,38 @@ namespace Kemorave.IO
                     return path.Substring(0, i);
                 }
             }
-        
+
             return path;
         }
         public static string GetFileName(string path)
         {
-          
-                if (string.IsNullOrEmpty(path))
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            for (int i = path.Length - 1; i >= 0; i--)
+            {
+                if (path[i] == PathSeparator)
                 {
-                    return null;
+                    i++;
+                    return path.Substring(i, path.Length - i);
                 }
-                for (int i = path.Length - 1; i >= 0; i--)
-                {
-                    if (path[i] == PathSeparator)
-                    {
-                        i++;
-                        return path.Substring(i, path.Length - i);
-                    }
-                }
-          
+            }
+
             return null;
         }
         public static string GetFileNameWithoutExtension(string path)
         {
             try
-            { 
+            {
                 if (string.IsNullOrEmpty(path))
                 {
                     return null;
                 }
-                string ext = GetFileExtension(path),name = GetFileName(path);
+                string ext = GetFileExtension(path), name = GetFileName(path);
 
-                return name.Substring(0,name.Length-ext.Length);
+                return name.Substring(0, name.Length - ext.Length);
             }
             catch (Exception)
             {
@@ -128,11 +128,11 @@ namespace Kemorave.IO
             {
                 return null;
             }
-            for (int i = path.Length-1; i >= 0; i--)
+            for (int i = path.Length - 1; i >= 0; i--)
             {
                 if (path[i] == '.')
                 {
-                    return path.Substring(i, path.Length-i);
+                    return path.Substring(i, path.Length - i);
                 }
             }
             return null;

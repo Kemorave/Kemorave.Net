@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kemorave.Wpf.Binding
+﻿namespace Kemorave.Wpf.Binding
 {
     public class BindingProxy : System.Windows.Freezable
     {

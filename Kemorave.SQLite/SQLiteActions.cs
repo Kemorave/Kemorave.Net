@@ -1,7 +1,6 @@
 ﻿namespace Kemorave.SQLite
 {
-    public partial class ColumnInfo
-    {
+    
         public enum SQLiteActions
         {/// <summary>
          /// Nothing will happen, this is default sction
@@ -24,5 +23,5 @@
             /// </summary>
             CASCADE
         }
-    }
+    
 }

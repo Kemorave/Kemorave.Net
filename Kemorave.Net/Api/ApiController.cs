@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kemorave.Net.Api.DB
 {
-    public class ApiController<Model> : ApiControllerBase<DBActionResult, Model> where Model : class, IDBModel, new()
+    public class ApiController<Model> : ApiControllerBase<DBActionResult, Model> where Model :  IDBModel, new()
     {
         public bool JsonResultSupport { get; }
 

@@ -1,6 +1,4 @@
-﻿using Kemorave.Wpf;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Windows;
 using System.Windows.Media;
 
