@@ -10,7 +10,7 @@ namespace Kemorave.SQLite.SQLiteAttribute
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 
     
-    public class FillMethodAttribute : System.Attribute
+    public class FillMethodAttribute : Attribute
     {
         private static readonly Type Type = typeof(FillMethodAttribute);
         public FillMethodAttribute()

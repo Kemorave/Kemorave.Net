@@ -31,16 +31,16 @@ namespace Kemorave.Wpf
   // Methods
   static Ripple()
   {
-   FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(Ripple), new FrameworkPropertyMetadata(typeof(Ripple)));
-   EventManager.RegisterClassHandler(typeof(ContentControl), Mouse.PreviewMouseUpEvent, new MouseButtonEventHandler(Ripple.MouseButtonEventHandler), true);
-   EventManager.RegisterClassHandler(typeof(ContentControl), Mouse.MouseMoveEvent, new MouseEventHandler(Ripple.MouseMoveEventHandler), true);
-   EventManager.RegisterClassHandler(typeof(Popup), Mouse.PreviewMouseUpEvent, new MouseButtonEventHandler(Ripple.MouseButtonEventHandler), true);
-   EventManager.RegisterClassHandler(typeof(Popup), Mouse.MouseMoveEvent, new MouseEventHandler(Ripple.MouseMoveEventHandler), true);
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Ripple), new FrameworkPropertyMetadata(typeof(Ripple)));
+   EventManager.RegisterClassHandler(typeof(ContentControl), Mouse.PreviewMouseUpEvent, new MouseButtonEventHandler(MouseButtonEventHandler), true);
+   EventManager.RegisterClassHandler(typeof(ContentControl), Mouse.MouseMoveEvent, new MouseEventHandler(MouseMoveEventHandler), true);
+   EventManager.RegisterClassHandler(typeof(Popup), Mouse.PreviewMouseUpEvent, new MouseButtonEventHandler(MouseButtonEventHandler), true);
+   EventManager.RegisterClassHandler(typeof(Popup), Mouse.MouseMoveEvent, new MouseEventHandler(MouseMoveEventHandler), true);
   }
 
   public Ripple()
   {
-   base.SizeChanged += new SizeChangedEventHandler(this.OnSizeChanged);
+            SizeChanged += new SizeChangedEventHandler(this.OnSizeChanged);
   }
 
   private static void MouseButtonEventHandler(object sender, MouseButtonEventArgs e)
@@ -67,7 +67,7 @@ namespace Kemorave.Wpf
 
   private static void MouseMoveEventHandler(object sender, MouseEventArgs e)
   {
-   foreach (Ripple ripple in PressedInstances.ToList<Ripple>())
+   foreach (Ripple ripple in PressedInstances.ToList())
    {
     Point position = Mouse.GetPosition(ripple);
     if (((position.X < 0.0) || (position.Y < 0.0)) || ((position.X >= ripple.ActualWidth) || (position.Y >= ripple.ActualHeight)))
@@ -88,10 +88,10 @@ namespace Kemorave.Wpf
   {
    if (RippleHelper.GetIsCentered(this))
    {
-    if (base.Content is FrameworkElement content)
+    if (Content is FrameworkElement content)
     {
      Point point = content.TransformToAncestor(this).Transform(new Point(0.0, 0.0));
-     if (base.FlowDirection == FlowDirection.RightToLeft)
+     if (FlowDirection == FlowDirection.RightToLeft)
      {
       this.RippleX = (point.X - (content.ActualWidth / 2.0)) - (this.RippleSize / 2.0);
      }
@@ -103,8 +103,8 @@ namespace Kemorave.Wpf
     }
     else
     {
-     this.RippleX = (base.ActualWidth / 2.0) - (this.RippleSize / 2.0);
-     this.RippleY = (base.ActualHeight / 2.0) - (this.RippleSize / 2.0);
+     this.RippleX = (ActualWidth / 2.0) - (this.RippleSize / 2.0);
+     this.RippleY = (ActualHeight / 2.0) - (this.RippleSize / 2.0);
     }
    }
    else
@@ -126,7 +126,7 @@ namespace Kemorave.Wpf
   {
    double actualWidth;
    double actualHeight;
-            if (RippleHelper.GetIsCentered(this) && (base.Content is FrameworkElement content))
+            if (RippleHelper.GetIsCentered(this) && (Content is FrameworkElement content))
             {
                 actualWidth = content.ActualWidth;
                 actualHeight = content.ActualHeight;
@@ -144,41 +144,41 @@ namespace Kemorave.Wpf
   public Brush Feedback
   {
    get =>
-       ((Brush)base.GetValue(FeedbackProperty));
+       ((Brush)GetValue(FeedbackProperty));
    set =>
-       base.SetValue(FeedbackProperty, value);
+       SetValue(FeedbackProperty, value);
   }
 
   public double RippleSize
   {
    get =>
-       ((double)base.GetValue(RippleSizeProperty));
+       ((double)GetValue(RippleSizeProperty));
    private set =>
-       base.SetValue(RippleSizePropertyKey, value);
+       SetValue(RippleSizePropertyKey, value);
   }
 
   public double RippleX
   {
    get =>
-       ((double)base.GetValue(RippleXProperty));
+       ((double)GetValue(RippleXProperty));
    private set =>
-       base.SetValue(RippleXPropertyKey, value);
+       SetValue(RippleXPropertyKey, value);
   }
 
   public double RippleY
   {
    get =>
-       ((double)base.GetValue(RippleYProperty));
+       ((double)GetValue(RippleYProperty));
    private set =>
-       base.SetValue(RippleYPropertyKey, value);
+       SetValue(RippleYPropertyKey, value);
   }
 
   public bool RecognizesAccessKey
   {
    get =>
-       ((bool)base.GetValue(RecognizesAccessKeyProperty));
+       ((bool)GetValue(RecognizesAccessKeyProperty));
    set =>
-       base.SetValue(RecognizesAccessKeyProperty, value);
+       SetValue(RecognizesAccessKeyProperty, value);
   }
  }
 

@@ -6,6 +6,7 @@ namespace Kemorave.SQLite.Options
     {
         private WhereConditon(string column, object value, string @operator, bool not = false)
         {
+            HasParameters = true;
             Column = column ?? throw new ArgumentNullException(nameof(column));
             Value = value?.ToString() ?? throw new ArgumentNullException(nameof(value));
             if (string.IsNullOrWhiteSpace(Value))
@@ -13,9 +14,15 @@ namespace Kemorave.SQLite.Options
             Operator = @operator ?? throw new ArgumentNullException(nameof(@operator));
             Not = not;
         }
+        private WhereConditon(string ownCommand,object value)
+        {
+            _Command = ownCommand;
+            Value = value?.ToString() ;
+            HasParameters = Value != null;
+        }
         static string Escape(string value)
         {
-            return value.Replace("%", "\\%").Replace("_", "\\_").Replace("_", "\\_");
+            return value.Replace("%", "\\%").Replace("_", "\\_") ;
         }
 
         public static  WhereConditon IsEqual(string column, object value, bool not = false)
@@ -38,15 +45,16 @@ namespace Kemorave.SQLite.Options
         }
         public static WhereConditon Like(string column, string value, bool not = false)
         {
-            return new WhereConditon(column, $"%{Escape(value)}%  ESCAPE '\\'", "LIKE", not);
+
+            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)}  LIKE ?  ESCAPE '\\'",$"%{Escape(value)}%" );
         }
         public static WhereConditon StartWith(string column, string value, bool not = false)
         {
-            return new WhereConditon(column, $"{Escape(value)}%  ESCAPE '\\'", "LIKE", not);
+            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)}  LIKE ?  ESCAPE '\\'", $"{Escape(value)}%");
         }
         public static WhereConditon EndsWith(string column, string value, bool not = false)
         {
-            return new WhereConditon(column, $"%{Escape(value)}  ESCAPE '\\'", "LIKE", not);
+            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)}  LIKE ?  ESCAPE '\\'",  $"%{Escape(value)}");
         }
         public static WhereConditon IsIn(string column, object[] value, bool not = false)
         {
@@ -59,30 +67,33 @@ namespace Kemorave.SQLite.Options
                 throw new ArgumentException($"Atleast one value is needed");
             }
 
-            string flatValue = $"(?";
+            string flatValue = $"({value[0]}";
             if (value.Length > 1)
                 for (int i = 1; i < value.Length; i++)
                 {
-                    flatValue += $",?";
+                    flatValue += $",{value[i]}";
                 }
             flatValue += ")";
-            return new WhereConditon(column, flatValue, "IN", not);
+            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)} IN  (?) ", flatValue);
         }
-        public static WhereConditon Between(string column, object min, object max, bool not = false)
+        public static WhereConditon Between(string column, string min, string max, bool not = false)
         {
-             return new WhereConditon(column, $"{min} AND {max}", "BETWEEN", not);
+             return new WhereConditon( $"{column}  {(not ? "NOT" : string.Empty)} BETWEEN {min} AND {max}",null);
         }
 
         internal string GetCommand()
-        {
-
+        { 
+            if(string.IsNullOrEmpty(_Command))
             return $" {Column} {(Not ? "NOT" : string.Empty)} {Operator}  ? ";
+            return _Command;
         }
         public override string ToString()
         {
             return GetCommand();
-        }
+        } 
+        string _Command;
         public bool Not { get; }
+        public bool HasParameters { get;   }  
         public string Column { get; }
         public string Value { get; }
         public string Operator { get; }

@@ -67,10 +67,14 @@
     <Compile Include="Converter\ProgressToAngleConverter.cs" />
     <Compile Include="Converter\ReverseBool.cs" />
     <Compile Include="Helper\ControlHelper.cs" />
+    <Compile Include="Helper\CustomCommands.cs" />
     <Compile Include="Helper\FrameHelper.cs" />
     <Compile Include="Helper\ItemsListHelper.cs" />
     <Compile Include="Helper\ProgressbarHelper.cs" />
     <Compile Include="Helper\SelectorHelper.cs" />
+    <Compile Include="Helper\SliderHelper.cs" />
+    <Compile Include="Helper\TextBoxHelper.cs" />
+    <Compile Include="Helper\ToolTipHelper.cs" />
     <Compile Include="Helper\WindowHelper.cs" />
     <Compile Include="IGraphItem.cs" />
     <Compile Include="VirtualizingStackPanel.cs" />

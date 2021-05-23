@@ -37,7 +37,7 @@ namespace Kemorave.Wpf
     ///     <MyNamespace:RectangleChart/>
     ///
     /// </summary>
-    public class RectangleChart : System.Windows.Controls.Grid
+    public class RectangleChart : Grid
     {
         static RectangleChart()
         {
@@ -112,7 +112,7 @@ namespace Kemorave.Wpf
             }
             else
             {
-                Grid grid = (d as System.Windows.Controls.Grid);
+                Grid grid = (d as Grid);
                 grid?.Children?.Clear();
             }
         }
@@ -134,8 +134,8 @@ namespace Kemorave.Wpf
                 {
                     DataContext = item, Style = this.ChartItemStyle
                 };
-                grid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition() { Width = new GridLength(item.Percentage, GridUnitType.Star) });
-                System.Windows.Controls.Grid.SetColumn(pb, count);
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(item.Percentage, GridUnitType.Star) });
+                SetColumn(pb, count);
                 grid.Children.Add(pb);
                 count++;
             }

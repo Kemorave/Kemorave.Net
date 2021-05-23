@@ -31,15 +31,19 @@ namespace Kemorave.SQLite.Options
 
             for (int i = 0; i < _Conditons.Count; i++)
             {
-                foreach (var item in _Conditons[i].Item2)
+                if (i > 0)
                 {
-                    if (i == 0)
+                    cmd += _Conditons[i].Item1;
+                }
+                for (int k = 0; k < _Conditons[i].Item2.Length; k++)
+                {
+                    if (k == 0)
                     {
-                        cmd += item.GetCommand();
+                        cmd += _Conditons[i].Item2[k].GetCommand();
                     }
                     else
                     {
-                        cmd += $"{_Conditons[i].Item1} {item.GetCommand()}";
+                        cmd += $"{_Conditons[i].Item1} {_Conditons[i].Item2[k].GetCommand()}";
                     }
                 }
             }
@@ -55,7 +59,7 @@ namespace Kemorave.SQLite.Options
             AddConditons(ConditionOperator.AND, conditons);
         }
 
-        List<Tuple<ConditionOperator, WhereConditon[]>> _Conditons;
+     readonly   List<Tuple<ConditionOperator, WhereConditon[]>>  _Conditons;
     public    IEnumerable<WhereConditon[]> Conditons { get => _Conditons.Select(c=>c.Item2); }
     }
 }

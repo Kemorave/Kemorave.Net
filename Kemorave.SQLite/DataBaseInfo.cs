@@ -39,7 +39,7 @@ namespace Kemorave.SQLite
             }
         }
         public string Path { get; }
-        public System.Security.SecureString Secure { get; }
+        public SecureString Secure { get; }
         /// <summary>
         /// A command executed after creating all tables
         /// </summary>

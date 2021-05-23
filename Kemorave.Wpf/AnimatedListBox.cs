@@ -12,7 +12,7 @@ namespace Kemorave.Wpf
 
         static AnimatedListBox()
         {
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(AnimatedListBox), new FrameworkPropertyMetadata(typeof(AnimatedListBox)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(AnimatedListBox), new FrameworkPropertyMetadata(typeof(AnimatedListBox)));
         }
         public void IncreamentHorizontalScrollOffset(double delta)
         {
@@ -50,14 +50,14 @@ namespace Kemorave.Wpf
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            if (base.GetTemplateChild("PART_AnimatedScrollViewer") is AnimatedScrollViewer templateChild)
+            if (GetTemplateChild("PART_AnimatedScrollViewer") is AnimatedScrollViewer templateChild)
             {
                 this.ScrollViewer = templateChild;
             }
             //this.PreviewKeyDown += ScrollViewer.OnPreviewKeyDownEvent;
-            base.SelectionChanged += new SelectionChangedEventHandler(this.AnimatedListBox_SelectionChanged);
-            base.Loaded += new RoutedEventHandler(this.AnimatedListBox_Loaded);
-            base.LayoutUpdated += new EventHandler(this.AnimatedListBox_LayoutUpdated);
+            SelectionChanged += new SelectionChangedEventHandler(this.AnimatedListBox_SelectionChanged);
+            Loaded += new RoutedEventHandler(this.AnimatedListBox_Loaded);
+            LayoutUpdated += new EventHandler(this.AnimatedListBox_LayoutUpdated);
         }
 
         public void UpdateScrollPosition(object sender)
@@ -80,17 +80,17 @@ namespace Kemorave.Wpf
         public bool ScrollToSelectedItem
         {
             get =>
-                ((bool)base.GetValue(ScrollToSelectedItemProperty));
+                ((bool)GetValue(ScrollToSelectedItemProperty));
             set =>
-                base.SetValue(ScrollToSelectedItemProperty, value);
+                SetValue(ScrollToSelectedItemProperty, value);
         }
 
         public int SelectedIndexOffset
         {
             get =>
-                ((int)base.GetValue(SelectedIndexOffsetProperty));
+                ((int)GetValue(SelectedIndexOffsetProperty));
             set =>
-                base.SetValue(SelectedIndexOffsetProperty, value);
+                SetValue(SelectedIndexOffsetProperty, value);
         }
     }
 

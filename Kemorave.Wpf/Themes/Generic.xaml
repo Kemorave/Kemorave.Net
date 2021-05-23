@@ -4,453 +4,494 @@
                     xmlns:local="clr-namespace:Kemorave.Wpf"
                     xmlns:converter="clr-namespace:Kemorave.Wpf.Converter"
                     xmlns:local1="clr-namespace:Kemorave.Wpf">
- <converter:ProgressToAngleConverter x:Key="ProgressToAngleConverter" />
- <converter:ReverseBool x:Key="ReverseBool" />
-
-  
- <Style  TargetType="{x:Type local:CircularProgressbar}">
-  <Setter Property="Height"
-          Value="150" />
-  <Setter Property="Width"
-          Value="150" />
-  <Setter Property="Maximum"
-          Value="100" />
-  <Setter Property="Value"
-          Value="0" />
-  <Setter Property="Width"
-          Value="150" />
-  <Setter Property="BorderBrush"
-          Value="Gray" />
-  <Setter Property="ArcThickness"
-          Value="20.0" />
-  <Setter Property="ArcBorderThickness"
-          Value="2" />
-  <Setter Property="Foreground"
-          Value="Green" />
-  <Setter Property="Background"
-          Value="#4C8F8F8F" />
-  <Setter Property="Content">
-   <Setter.Value>
-    <TextBlock HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               FontSize="26"
-               Text="{Binding Value, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircularProgressbar}}, StringFormat='\{0:0\}%', ValidatesOnNotifyDataErrors=False}" />
-   </Setter.Value>
-  </Setter>
-  <Setter Property="Template">
-   <Setter.Value>
-    <ControlTemplate TargetType="{x:Type local:CircularProgressbar}">
-     <Grid>
-      <Ellipse  Name="BackEllipse"
-                Stroke="{TemplateBinding BorderBrush}"
-                StrokeThickness="{TemplateBinding ArcBorderThickness}"
-                Fill="{TemplateBinding Background}" />
-      <local:Arc helper:ControlHelper.IsCollapsed="{TemplateBinding IsIndeterminate}"
-                 StrokeThickness="{TemplateBinding ArcThickness}"
-                 Stroke="{TemplateBinding Foreground}"
-                 OriginRotationDegrees="{TemplateBinding OriginRotationDegrees}"
-                 Direction="{TemplateBinding SweepDirection}"
-                 Margin="{Binding ElementName=BackEllipse,Path=StrokeThickness}">
-       <local:Arc.StartAngle>
-        <MultiBinding Converter="{StaticResource ProgressToAngleConverter}">
-         <Binding Path="Minimum"
-                  RelativeSource="{RelativeSource TemplatedParent}" />
-         <Binding Path="."
-                  RelativeSource="{RelativeSource TemplatedParent}" />
-        </MultiBinding>
-       </local:Arc.StartAngle>
-       <local:Arc.EndAngle>
-        <MultiBinding Converter="{StaticResource ProgressToAngleConverter}">
-         <Binding Path="Value"
-                  RelativeSource="{RelativeSource TemplatedParent}" />
-         <Binding Path="."
-                  RelativeSource="{RelativeSource TemplatedParent}" />
-        </MultiBinding>
-       </local:Arc.EndAngle>
-      </local:Arc>
-      <Ellipse helper:ControlHelper.IsCollapsed="{TemplateBinding IsIndeterminate,Converter={StaticResource ReverseBool}}"
-               StrokeDashArray="0 8 2 8 2"
-               Stroke="{TemplateBinding Foreground}"
-               StrokeThickness="{TemplateBinding ArcThickness}"
-               Margin="{Binding ElementName=BackEllipse,Path=StrokeThickness}">
-       <Ellipse.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-         <BeginStoryboard>
-          <Storyboard>
-           <DoubleAnimation From="0"
-                            Duration="0:0:5"
-                            By="0.1"
-                            To="40"
-                            RepeatBehavior="Forever"
-                            Storyboard.TargetProperty="StrokeDashOffset" />
-          </Storyboard>
-         </BeginStoryboard>
-        </EventTrigger>
-       </Ellipse.Triggers>
-      </Ellipse>
-      <ContentPresenter Content="{TemplateBinding Content}" />
-     </Grid>
-    </ControlTemplate>
-   </Setter.Value>
-  </Setter>
- </Style>
+    <converter:ProgressToAngleConverter x:Key="ProgressToAngleConverter" />
+    <converter:ReverseBool x:Key="ReverseBool" />
 
 
- <Style TargetType="{x:Type local:RectangleChart}">
-  <Setter Property="ChartItemStyle">
-   <Setter.Value>
-    <Style TargetType="Rectangle">
-     <Setter Property="Cursor"
-             Value="Hand" />
-     <Setter Property="Stroke"
-             Value="Transparent" />
-     <Setter Property="Margin"
-             Value="1,4" />
-     <Setter Property="ToolTipService.Placement"
-             Value="Top" />
-     <Setter Property="Fill"
-             Value="{Binding Path=Brush,TargetNullValue={x:Static Colors.Gray}}" />
-     <Setter Property="ToolTip"
-             Value="{Binding Description}" />
-
+    <Style  TargetType="{x:Type local:CircularProgressbar}">
+        <Setter Property="Height"
+                Value="150" />
+        <Setter Property="Width"
+                Value="150" />
+        <Setter Property="Maximum"
+                Value="100" />
+        <Setter Property="Value"
+                Value="0" />
+        <Setter Property="Width"
+                Value="150" />
+        <Setter Property="BorderBrush"
+                Value="Gray" />
+        <Setter Property="ArcThickness"
+                Value="20.0" />
+        <Setter Property="ArcBorderThickness"
+                Value="2" />
+        <Setter Property="Foreground"
+                Value="Green" />
+        <Setter Property="Background"
+                Value="#4C8F8F8F" />
+        <Setter Property="Content">
+            <Setter.Value>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="26"
+                           Text="{Binding Value, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircularProgressbar}}, StringFormat='\{0:0\}%', ValidatesOnNotifyDataErrors=False}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:CircularProgressbar}">
+                    <Grid>
+                        <Ellipse  Name="BackEllipse"
+                                  Stroke="{TemplateBinding BorderBrush}"
+                                  StrokeThickness="{TemplateBinding ArcBorderThickness}"
+                                  Fill="{TemplateBinding Background}" />
+                        <local:Arc helper:ControlHelper.IsCollapsed="{TemplateBinding IsIndeterminate}"
+                                   StrokeThickness="{TemplateBinding ArcThickness}"
+                                   Stroke="{TemplateBinding Foreground}"
+                                   OriginRotationDegrees="{TemplateBinding OriginRotationDegrees}"
+                                   Direction="{TemplateBinding SweepDirection}"
+                                   Margin="{Binding ElementName=BackEllipse,Path=StrokeThickness}">
+                            <local:Arc.StartAngle>
+                                <MultiBinding Converter="{StaticResource ProgressToAngleConverter}">
+                                    <Binding Path="Minimum"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <Binding Path="."
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </local:Arc.StartAngle>
+                            <local:Arc.EndAngle>
+                                <MultiBinding Converter="{StaticResource ProgressToAngleConverter}">
+                                    <Binding Path="Value"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <Binding Path="."
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </local:Arc.EndAngle>
+                        </local:Arc>
+                        <Ellipse helper:ControlHelper.IsCollapsed="{TemplateBinding IsIndeterminate,Converter={StaticResource ReverseBool}}"
+                                 StrokeDashArray="0 8 2 8 2"
+                                 Stroke="{TemplateBinding Foreground}"
+                                 StrokeThickness="{TemplateBinding ArcThickness}"
+                                 Margin="{Binding ElementName=BackEllipse,Path=StrokeThickness}">
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation From="0"
+                                                             Duration="0:0:5"
+                                                             By="0.1"
+                                                             To="40"
+                                                             RepeatBehavior="Forever"
+                                                             Storyboard.TargetProperty="StrokeDashOffset" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 
-   </Setter.Value>
+    <Style TargetType="{x:Type local:RectangleChart}">
+        <Setter Property="ChartItemStyle">
+            <Setter.Value>
+                <Style TargetType="Rectangle">
+                    <Setter Property="Cursor"
+                            Value="Hand" />
+                    <Setter Property="Stroke"
+                            Value="Transparent" />
+                    <Setter Property="Margin"
+                            Value="1,4" />
+                    <Setter Property="ToolTipService.Placement"
+                            Value="Top" />
+                    <Setter Property="Fill"
+                            Value="{Binding Path=Brush,TargetNullValue={x:Static Colors.Gray}}" />
+                    <Setter Property="ToolTip"
+                            Value="{Binding Description}" />
 
-  </Setter>
- </Style>
-
-
- <Style   Style.TargetType="{x:Type local:AnimatedScrollViewer}">
-  <Setter Setter.Property="Control.Template">
-   <Setter.Value>
-    <ControlTemplate ControlTemplate.TargetType="{x:Type local:AnimatedScrollViewer}">
-     <Grid Grid.Name="Grid"
-           Panel.Background="{TemplateBinding Control.Background}">
-      <Grid.ColumnDefinitions>
-       <ColumnDefinition ColumnDefinition.Width="*" />
-       <ColumnDefinition ColumnDefinition.Width="Auto" />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-       <RowDefinition RowDefinition.Height="*" />
-       <RowDefinition RowDefinition.Height="Auto" />
-      </Grid.RowDefinitions>
-      <Rectangle Rectangle.Name="Corner"
-                 Shape.Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                 Grid.Column="1"
-                 Grid.Row="1" />
-      <ScrollContentPresenter Focusable="False"
-                              ScrollContentPresenter.Name="PART_ScrollContentPresenter"
-                              FrameworkElement.Margin="{TemplateBinding Control.Padding}"
-                              Grid.Column="0"
-                              Grid.Row="0"
-                              ContentPresenter.Content="{TemplateBinding ContentControl.Content}"
-                              ContentPresenter.ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                              ScrollContentPresenter.CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
-                              ScrollContentPresenter.CanHorizontallyScroll="True"
-                              ScrollContentPresenter.CanVerticallyScroll="True" />
-      <ScrollBar ScrollBar.Name="PART_VerticalScrollBar"
-                 FrameworkElement.Cursor="Arrow"
-                 IsTabStop="True"
-                 Focusable="True"
-                 UIElement.Visibility="Collapsed"
-                 Grid.Column="1"
-                 Grid.Row="0"
-                 ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
-                 RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
-                 RangeBase.Minimum="0"
-                 AutomationProperties.AutomationId="VerticalScrollBar"
-                 RangeBase.Value="{Binding Path=VerticalOffset,Mode=OneWay,RelativeSource={RelativeSource TemplatedParent}}" />
-      <ScrollBar ScrollBar.Name="PART_HorizontalScrollBar"
-                 FrameworkElement.Cursor="Arrow"
-                 UIElement.Visibility="Collapsed"
-                 Grid.Column="0"
-                 Grid.Row="1"
-                 ScrollBar.Orientation="Horizontal"
-                 ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportWidth}"
-                 RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableWidth}"
-                 RangeBase.Minimum="0"
-                 AutomationProperties.AutomationId="HorizontalScrollBar"
-                 RangeBase.Value="{Binding Path=HorizontalOffset,Mode=OneWay,RelativeSource={RelativeSource TemplatedParent}}" />
-      <ScrollBar    Grid.Column="1"
-                    Grid.Row="0"
-                    ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
-                    RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
-                    RangeBase.Minimum="0"
-                    AutomationProperties.AutomationId="VerticalScrollBar"
-                    RangeBase.Value="{Binding Path=TargetVerticalOffset,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" />
-      <ScrollBar  Grid.Column="0"
-                  Grid.Row="1"
-                  ScrollBar.Orientation="Horizontal"
-                  ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportWidth}"
-                  RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableWidth}"
-                  RangeBase.Minimum="0"
-                  AutomationProperties.AutomationId="HorizontalScrollBar"
-                  RangeBase.Value="{Binding Path=TargetHorizontalOffset,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" />
-
-     </Grid>
-
-    </ControlTemplate>
-   </Setter.Value>
-  </Setter>
- </Style>
-
- <SolidColorBrush x:Key="ListBorder"
-                  SolidColorBrush.Color="#828790" />
- <Style   Style.TargetType="{x:Type local:AnimatedListBox}">
-  <Setter Setter.Property="Control.Background"
-          Setter.Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-  <Setter Setter.Property="Control.BorderBrush"
-          Setter.Value="{StaticResource ListBorder}" />
-  <Setter Setter.Property="Control.BorderThickness"
-          Setter.Value="1" />
-  <Setter Setter.Property="Control.Foreground"
-          Setter.Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-  <Setter Setter.Property="ScrollViewer.HorizontalScrollBarVisibility"
-          Setter.Value="Auto" />
-  <Setter Setter.Property="ScrollViewer.VerticalScrollBarVisibility"
-          Setter.Value="Auto" />
-  <Setter Setter.Property="ScrollViewer.CanContentScroll"
-          Setter.Value="True" />
-  <Setter Setter.Property="Control.Template">
-   <Setter.Value>
-    <ControlTemplate ControlTemplate.TargetType="{x:Type local:AnimatedListBox}">
+                </Style>
 
 
-     <local:AnimatedScrollViewer  KeyScrollable="{TemplateBinding local:AnimatedScrollViewer.KeyScrollable}"
-                                   x:Name="PART_AnimatedScrollViewer"
-                                   p8:Control.Padding="{TemplateBinding Control.Padding}"
-                                   p8:UIElement.Focusable="True"
-                                   HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                   VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                   xmlns:p8="http://schemas.microsoft.com/winfx/2006/xaml/presentation" >
-      <ItemsPresenter Focusable="False"
-                      UIElement.SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-     </local:AnimatedScrollViewer>
+            </Setter.Value>
+
+        </Setter>
+    </Style>
 
 
-    </ControlTemplate>
-   </Setter.Value>
-  </Setter>
- </Style>
+    <Style   Style.TargetType="{x:Type local:AnimatedScrollViewer}">
+        <Setter Setter.Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate ControlTemplate.TargetType="{x:Type local:AnimatedScrollViewer}">
+                    <Grid Grid.Name="Grid"
+                          Panel.Background="{TemplateBinding Control.Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition ColumnDefinition.Width="*" />
+                            <ColumnDefinition ColumnDefinition.Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition RowDefinition.Height="*" />
+                            <RowDefinition RowDefinition.Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Rectangle Rectangle.Name="Corner"
+                                   Shape.Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                                   Grid.Column="1"
+                                   Grid.Row="1" />
+                        <ScrollContentPresenter Focusable="False"
+                                                ScrollContentPresenter.Name="PART_ScrollContentPresenter"
+                                                FrameworkElement.Margin="{TemplateBinding Control.Padding}"
+                                                Grid.Column="0"
+                                                Grid.Row="0"
+                                                ContentPresenter.Content="{TemplateBinding ContentControl.Content}"
+                                                ContentPresenter.ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                                ScrollContentPresenter.CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
+                                                ScrollContentPresenter.CanHorizontallyScroll="True"
+                                                ScrollContentPresenter.CanVerticallyScroll="True" />
+                        <ScrollBar ScrollBar.Name="PART_VerticalScrollBar"
+                                   FrameworkElement.Cursor="Arrow"
+                                   IsTabStop="True"
+                                   Focusable="True"
+                                   UIElement.Visibility="Collapsed"
+                                   Grid.Column="1"
+                                   Grid.Row="0"
+                                   ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
+                                   RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
+                                   RangeBase.Minimum="0"
+                                   AutomationProperties.AutomationId="VerticalScrollBar"
+                                   RangeBase.Value="{Binding Path=VerticalOffset,Mode=OneWay,RelativeSource={RelativeSource TemplatedParent}}" />
+                        <ScrollBar ScrollBar.Name="PART_HorizontalScrollBar"
+                                   FrameworkElement.Cursor="Arrow"
+                                   UIElement.Visibility="Collapsed"
+                                   Grid.Column="0"
+                                   Grid.Row="1"
+                                   ScrollBar.Orientation="Horizontal"
+                                   ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportWidth}"
+                                   RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableWidth}"
+                                   RangeBase.Minimum="0"
+                                   AutomationProperties.AutomationId="HorizontalScrollBar"
+                                   RangeBase.Value="{Binding Path=HorizontalOffset,Mode=OneWay,RelativeSource={RelativeSource TemplatedParent}}" />
+                        <ScrollBar    Grid.Column="1"
+                                      Grid.Row="0"
+                                      ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
+                                      RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
+                                      RangeBase.Minimum="0"
+                                      AutomationProperties.AutomationId="VerticalScrollBar"
+                                      RangeBase.Value="{Binding Path=TargetVerticalOffset,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" />
+                        <ScrollBar  Grid.Column="0"
+                                    Grid.Row="1"
+                                    ScrollBar.Orientation="Horizontal"
+                                    ScrollBar.ViewportSize="{TemplateBinding ScrollViewer.ViewportWidth}"
+                                    RangeBase.Maximum="{TemplateBinding ScrollViewer.ScrollableWidth}"
+                                    RangeBase.Minimum="0"
+                                    AutomationProperties.AutomationId="HorizontalScrollBar"
+                                    RangeBase.Value="{Binding Path=TargetHorizontalOffset,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" />
 
- <Style x:Key="{x:Type local:Ripple}"
-        Style.TargetType="{x:Type local:Ripple}">
-  <Setter Setter.Property="local:Ripple.RecognizesAccessKey"
-          Setter.Value="True" />
-  <Setter Setter.Property="FrameworkElement.HorizontalAlignment"
-          Setter.Value="Stretch" />
-  <Setter Setter.Property="FrameworkElement.VerticalAlignment"
-          Setter.Value="Stretch" />
-  <Setter Setter.Property="Control.Background"
-          Setter.Value="#00FFFFFF" />
-  <Setter Setter.Property="Control.IsTabStop"
-          Setter.Value="False" />
-  <Setter Setter.Property="UIElement.ClipToBounds"
-          Setter.Value="{Binding RelativeSource={RelativeSource Self},Path=(helper:RippleHelper.ClipToBounds)}" />
-  <Setter Setter.Property="local:Ripple.Feedback"
-          Setter.Value="{Binding RelativeSource={RelativeSource Self},Path=(helper:RippleHelper.Feedback)}" />
-  <Setter Setter.Property="Control.Template">
-   <Setter.Value>
-    <ControlTemplate ControlTemplate.TargetType="{x:Type local:Ripple}">
-     <Grid Panel.Background="#00FFFFFF">
-      <VisualStateManager.VisualStateGroups>
-       <VisualStateGroup x:Name="CommonStates">
-        <VisualStateGroup.Transitions>
-         <VisualTransition VisualTransition.From="Normal"
-                           VisualTransition.To="MousePressed">
-          <Storyboard>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
-                                  DoubleKeyFrame.Value="0" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:1.2"
-                                  DoubleKeyFrame.Value="1">
-             <EasingDoubleKeyFrame.EasingFunction>
-              <SineEase EasingFunctionBase.EasingMode="EaseIn" />
-             </EasingDoubleKeyFrame.EasingFunction>
-            </EasingDoubleKeyFrame>
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
-                                  DoubleKeyFrame.Value="0" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:1.2"
-                                  DoubleKeyFrame.Value="1">
-             <EasingDoubleKeyFrame.EasingFunction>
-              <SineEase EasingFunctionBase.EasingMode="EaseIn" />
-             </EasingDoubleKeyFrame.EasingFunction>
-            </EasingDoubleKeyFrame>
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                          Storyboard.TargetName="ClickEllipse">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
-                                  DoubleKeyFrame.Value="0" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.05"
-                                  DoubleKeyFrame.Value=".26" />
-           </DoubleAnimationUsingKeyFrames>
-          </Storyboard>
-         </VisualTransition>
-         <VisualTransition VisualTransition.From="MousePressed"
-                           VisualTransition.To="MouseOut">
-          <Storyboard>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
-                                  DoubleKeyFrame.Value="0">
-             <EasingDoubleKeyFrame.EasingFunction>
-              <SineEase EasingFunctionBase.EasingMode="EaseIn" />
-             </EasingDoubleKeyFrame.EasingFunction>
-            </EasingDoubleKeyFrame>
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
-                                  DoubleKeyFrame.Value="0">
-             <EasingDoubleKeyFrame.EasingFunction>
-              <SineEase EasingFunctionBase.EasingMode="EaseIn" />
-             </EasingDoubleKeyFrame.EasingFunction>
-            </EasingDoubleKeyFrame>
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                          Storyboard.TargetName="ClickEllipse">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
-                                  DoubleKeyFrame.Value="0" />
-           </DoubleAnimationUsingKeyFrames>
-          </Storyboard>
-         </VisualTransition>
-         <VisualTransition VisualTransition.From="MousePressed"
-                           VisualTransition.To="Normal">
-          <Storyboard>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
-                                  DoubleKeyFrame.Value="1"
-                                  x:Name="MousePressedToNormalScaleXKeyFrame" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
-                                  DoubleKeyFrame.Value="1" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
-                                  DoubleKeyFrame.Value="0" />
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
-                                          Storyboard.TargetName="ScaleTransform">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
-                                  DoubleKeyFrame.Value="1"
-                                  x:Name="MousePressedToNormalScaleYKeyFrame" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
-                                  DoubleKeyFrame.Value="1" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
-                                  DoubleKeyFrame.Value="0" />
-           </DoubleAnimationUsingKeyFrames>
-           <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                          Storyboard.TargetName="ClickEllipse">
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.05"
-                                  DoubleKeyFrame.Value=".26" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
-                                  DoubleKeyFrame.Value=".26" />
-            <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
-                                  DoubleKeyFrame.Value="0">
-             <EasingDoubleKeyFrame.EasingFunction>
-              <SineEase EasingFunctionBase.EasingMode="EaseOut" />
-             </EasingDoubleKeyFrame.EasingFunction>
-            </EasingDoubleKeyFrame>
-           </DoubleAnimationUsingKeyFrames>
-          </Storyboard>
-         </VisualTransition>
-        </VisualStateGroup.Transitions>
-        <VisualState x:Name="Normal">
-         <Storyboard>
-          <DoubleAnimation Storyboard.TargetProperty="ScaleX"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="0" />
-          <DoubleAnimation Storyboard.TargetProperty="ScaleY"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="0" />
-          <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                           Storyboard.TargetName="ClickEllipse"
-                           DoubleAnimation.To="0" />
-         </Storyboard>
-        </VisualState>
-        <VisualState x:Name="MousePressed">
-         <Storyboard>
-          <DoubleAnimation Storyboard.TargetProperty="ScaleX"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="1" />
-          <DoubleAnimation Storyboard.TargetProperty="ScaleY"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="1" />
-          <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                           Storyboard.TargetName="ClickEllipse"
-                           DoubleAnimation.To="0.26" />
-         </Storyboard>
-        </VisualState>
-        <VisualState x:Name="MouseOut">
-         <Storyboard>
-          <DoubleAnimation Storyboard.TargetProperty="ScaleX"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="0" />
-          <DoubleAnimation Storyboard.TargetProperty="ScaleY"
-                           Storyboard.TargetName="ScaleTransform"
-                           DoubleAnimation.To="0" />
-          <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                           Storyboard.TargetName="ClickEllipse"
-                           DoubleAnimation.To="0" />
-         </Storyboard>
-        </VisualState>
-       </VisualStateGroup>
-      </VisualStateManager.VisualStateGroups>
-      <Canvas UIElement.IsHitTestVisible="False"
-              FrameworkElement.HorizontalAlignment="Stretch"
-              FrameworkElement.VerticalAlignment="Stretch">
-       <Ellipse Ellipse.Name="ClickEllipse"
-                Shape.Fill="{TemplateBinding local:Ripple.Feedback}"
-                UIElement.Opacity="0"
-                UIElement.RenderTransformOrigin=".5,.5"
-                FrameworkElement.Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleSize}"
-                FrameworkElement.Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleSize}"
-                Canvas.Left="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleX}"
-                Canvas.Top="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleY}">
-        <UIElement.RenderTransform>
-         <TransformGroup>
-          <ScaleTransform x:Name="ScaleTransform"
-                          ScaleTransform.ScaleX="0"
-                          ScaleTransform.ScaleY="0" />
-          <SkewTransform />
-          <RotateTransform />
-          <TranslateTransform x:Name="TranslateTransform" />
-         </TransformGroup>
-        </UIElement.RenderTransform>
-       </Ellipse>
-       <FrameworkElement.Style>
-        <Style Style.TargetType="{x:Type Canvas}">
-         <Setter Setter.Property="Panel.ZIndex"
-                 Setter.Value="0" />
-         <Style.Triggers>
-          <Trigger  Trigger.Property="helper:RippleHelper.RippleOnTop"
-                    Trigger.Value="True">
-           <Setter Setter.Property="Panel.ZIndex"
-                   Setter.Value="2" />
-          </Trigger>
-         </Style.Triggers>
-        </Style>
-       </FrameworkElement.Style>
-      </Canvas>
-      <ContentPresenter ContentPresenter.Content="{TemplateBinding ContentControl.Content}"
-                        ContentPresenter.ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                        ContentPresenter.ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                        ContentPresenter.ContentTemplateSelector="{TemplateBinding ContentControl.ContentTemplateSelector}"
-                        FrameworkElement.Margin="{TemplateBinding Control.Padding}"
-                        FrameworkElement.HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                        FrameworkElement.VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
-                        ContentPresenter.RecognizesAccessKey="{TemplateBinding local:Ripple.RecognizesAccessKey}"
-                        UIElement.SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                        Panel.ZIndex="1" />
-     </Grid>
-    </ControlTemplate>
-   </Setter.Value>
-  </Setter>
- </Style>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <SolidColorBrush x:Key="ListBorder"
+                     SolidColorBrush.Color="#828790" />
+    <Style   Style.TargetType="{x:Type local:AnimatedListBox}">
+        <Setter Setter.Property="Control.Background"
+                Setter.Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+        <Setter Setter.Property="Control.BorderBrush"
+                Setter.Value="{StaticResource ListBorder}" />
+        <Setter Setter.Property="Control.BorderThickness"
+                Setter.Value="1" />
+        <Setter Setter.Property="Control.Foreground"
+                Setter.Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Setter.Property="ScrollViewer.HorizontalScrollBarVisibility"
+                Setter.Value="Auto" />
+        <Setter Setter.Property="ScrollViewer.VerticalScrollBarVisibility"
+                Setter.Value="Auto" />
+        <Setter Setter.Property="ScrollViewer.CanContentScroll"
+                Setter.Value="True" />
+        <Setter Setter.Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate ControlTemplate.TargetType="{x:Type local:AnimatedListBox}">
 
 
+                    <local:AnimatedScrollViewer  KeyScrollable="{TemplateBinding local:AnimatedScrollViewer.KeyScrollable}"
+                                                 x:Name="PART_AnimatedScrollViewer"
+                                                 p8:Control.Padding="{TemplateBinding Control.Padding}"
+                                                 p8:UIElement.Focusable="True"
+                                                 HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                 VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                                 xmlns:p8="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                        <ItemsPresenter Focusable="False"
+                                        UIElement.SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                    </local:AnimatedScrollViewer>
+
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type local:Ripple}"
+           Style.TargetType="{x:Type local:Ripple}">
+        <Setter Setter.Property="local:Ripple.RecognizesAccessKey"
+                Setter.Value="True" />
+        <Setter Setter.Property="FrameworkElement.HorizontalAlignment"
+                Setter.Value="Stretch" />
+        <Setter Setter.Property="FrameworkElement.VerticalAlignment"
+                Setter.Value="Stretch" />
+        <Setter Setter.Property="Control.Background"
+                Setter.Value="#00FFFFFF" />
+        <Setter Setter.Property="Control.IsTabStop"
+                Setter.Value="False" />
+        <Setter Setter.Property="UIElement.ClipToBounds"
+                Setter.Value="{Binding RelativeSource={RelativeSource Self},Path=(helper:RippleHelper.ClipToBounds)}" />
+        <Setter Setter.Property="local:Ripple.Feedback"
+                Setter.Value="{Binding RelativeSource={RelativeSource Self},Path=(helper:RippleHelper.Feedback)}" />
+        <Setter Setter.Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate ControlTemplate.TargetType="{x:Type local:Ripple}">
+                    <Grid Panel.Background="#00FFFFFF">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition VisualTransition.From="Normal"
+                                                      VisualTransition.To="MousePressed">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
+                                                                      DoubleKeyFrame.Value="0" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:1.2"
+                                                                      DoubleKeyFrame.Value="1">
+                                                    <EasingDoubleKeyFrame.EasingFunction>
+                                                        <SineEase EasingFunctionBase.EasingMode="EaseIn" />
+                                                    </EasingDoubleKeyFrame.EasingFunction>
+                                                </EasingDoubleKeyFrame>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
+                                                                      DoubleKeyFrame.Value="0" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:1.2"
+                                                                      DoubleKeyFrame.Value="1">
+                                                    <EasingDoubleKeyFrame.EasingFunction>
+                                                        <SineEase EasingFunctionBase.EasingMode="EaseIn" />
+                                                    </EasingDoubleKeyFrame.EasingFunction>
+                                                </EasingDoubleKeyFrame>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                           Storyboard.TargetName="ClickEllipse">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0"
+                                                                      DoubleKeyFrame.Value="0" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.05"
+                                                                      DoubleKeyFrame.Value=".26" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualTransition>
+                                    <VisualTransition VisualTransition.From="MousePressed"
+                                                      VisualTransition.To="MouseOut">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
+                                                                      DoubleKeyFrame.Value="0">
+                                                    <EasingDoubleKeyFrame.EasingFunction>
+                                                        <SineEase EasingFunctionBase.EasingMode="EaseIn" />
+                                                    </EasingDoubleKeyFrame.EasingFunction>
+                                                </EasingDoubleKeyFrame>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
+                                                                      DoubleKeyFrame.Value="0">
+                                                    <EasingDoubleKeyFrame.EasingFunction>
+                                                        <SineEase EasingFunctionBase.EasingMode="EaseIn" />
+                                                    </EasingDoubleKeyFrame.EasingFunction>
+                                                </EasingDoubleKeyFrame>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                           Storyboard.TargetName="ClickEllipse">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.12"
+                                                                      DoubleKeyFrame.Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualTransition>
+                                    <VisualTransition VisualTransition.From="MousePressed"
+                                                      VisualTransition.To="Normal">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleX"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
+                                                                      DoubleKeyFrame.Value="1"
+                                                                      x:Name="MousePressedToNormalScaleXKeyFrame" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
+                                                                      DoubleKeyFrame.Value="1" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
+                                                                      DoubleKeyFrame.Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="ScaleY"
+                                                                           Storyboard.TargetName="ScaleTransform">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
+                                                                      DoubleKeyFrame.Value="1"
+                                                                      x:Name="MousePressedToNormalScaleYKeyFrame" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
+                                                                      DoubleKeyFrame.Value="1" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
+                                                                      DoubleKeyFrame.Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                           Storyboard.TargetName="ClickEllipse">
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.05"
+                                                                      DoubleKeyFrame.Value=".26" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.30"
+                                                                      DoubleKeyFrame.Value=".26" />
+                                                <EasingDoubleKeyFrame DoubleKeyFrame.KeyTime="0:0:0.50"
+                                                                      DoubleKeyFrame.Value="0">
+                                                    <EasingDoubleKeyFrame.EasingFunction>
+                                                        <SineEase EasingFunctionBase.EasingMode="EaseOut" />
+                                                    </EasingDoubleKeyFrame.EasingFunction>
+                                                </EasingDoubleKeyFrame>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualTransition>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleX"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="0" />
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleY"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="0" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="ClickEllipse"
+                                                         DoubleAnimation.To="0" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="MousePressed">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleX"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="1" />
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleY"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="1" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="ClickEllipse"
+                                                         DoubleAnimation.To="0.26" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="MouseOut">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleX"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="0" />
+                                        <DoubleAnimation Storyboard.TargetProperty="ScaleY"
+                                                         Storyboard.TargetName="ScaleTransform"
+                                                         DoubleAnimation.To="0" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="ClickEllipse"
+                                                         DoubleAnimation.To="0" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Canvas UIElement.IsHitTestVisible="False"
+                                FrameworkElement.HorizontalAlignment="Stretch"
+                                FrameworkElement.VerticalAlignment="Stretch">
+                            <Ellipse Ellipse.Name="ClickEllipse"
+                                     Shape.Fill="{TemplateBinding local:Ripple.Feedback}"
+                                     UIElement.Opacity="0"
+                                     UIElement.RenderTransformOrigin=".5,.5"
+                                     FrameworkElement.Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleSize}"
+                                     FrameworkElement.Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleSize}"
+                                     Canvas.Left="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleX}"
+                                     Canvas.Top="{Binding RelativeSource={RelativeSource TemplatedParent},Path=RippleY}">
+                                <UIElement.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform x:Name="ScaleTransform"
+                                                        ScaleTransform.ScaleX="0"
+                                                        ScaleTransform.ScaleY="0" />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform x:Name="TranslateTransform" />
+                                    </TransformGroup>
+                                </UIElement.RenderTransform>
+                            </Ellipse>
+                            <FrameworkElement.Style>
+                                <Style Style.TargetType="{x:Type Canvas}">
+                                    <Setter Setter.Property="Panel.ZIndex"
+                                            Setter.Value="0" />
+                                    <Style.Triggers>
+                                        <Trigger  Trigger.Property="helper:RippleHelper.RippleOnTop"
+                                                  Trigger.Value="True">
+                                            <Setter Setter.Property="Panel.ZIndex"
+                                                    Setter.Value="2" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </FrameworkElement.Style>
+                        </Canvas>
+                        <ContentPresenter ContentPresenter.Content="{TemplateBinding ContentControl.Content}"
+                                          ContentPresenter.ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                          ContentPresenter.ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                          ContentPresenter.ContentTemplateSelector="{TemplateBinding ContentControl.ContentTemplateSelector}"
+                                          FrameworkElement.Margin="{TemplateBinding Control.Padding}"
+                                          FrameworkElement.HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          FrameworkElement.VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          ContentPresenter.RecognizesAccessKey="{TemplateBinding local:Ripple.RecognizesAccessKey}"
+                                          UIElement.SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          Panel.ZIndex="1" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="TextBox"
+           BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Background"
+                Value="White" />
+        <Setter Property="BorderBrush"
+                Value="Gray" />
+        <Style.Triggers>
+            <Trigger Property="IsReadOnly"
+                     Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="(TextBox.Background).(SolidColorBrush.Color)"
+                                            FillBehavior="HoldEnd"
+                                            Duration="0:0:0.200"
+                                             To="Transparent" />
+                            <ColorAnimation Storyboard.TargetProperty="(TextBox.BorderBrush).(SolidColorBrush.Color)"
+                                             FillBehavior="HoldEnd"
+                                            Duration="0:0:0.200"   To="Transparent" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="(TextBox.Background).(SolidColorBrush.Color)"
+                                            To="White"
+                                            FillBehavior="HoldEnd"
+                                            Duration="0:0:0.200"
+                                            From="Transparent" />
+                            <ColorAnimation Storyboard.TargetProperty="(TextBox.BorderBrush).(SolidColorBrush.Color)"
+                                            To="Gray"
+                                            FillBehavior="HoldEnd"
+                                            Duration="0:0:0.200"
+                                            From="Transparent" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

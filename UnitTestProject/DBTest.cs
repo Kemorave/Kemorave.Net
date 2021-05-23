@@ -34,21 +34,7 @@ namespace UnitTestProject
             {
                 return base.ToString();
             }
-
-            protected override void OnDelete()
-            {
-                base.OnDelete();
-            }
-
-            protected override void OnLoad(SQLiteDataBase dataBase)
-            {
-                base.OnLoad(dataBase);
-            }
-
-            protected override void OnUpdate()
-            {
-                base.OnUpdate();
-            }
+ 
         }
         private class Post : Kemorave.SQLite.IDBModel
         {
@@ -88,6 +74,49 @@ namespace UnitTestProject
                 DataBase.DataSetter.Insert(this);
             }
         }
+        class User : Kemorave.SQLite.ModelBase.Model
+        {
+            public User()
+            { }
+
+            public User(SQLiteDataBase dataBase) : base(dataBase)
+            {
+            }
+            [TableColumn("Name", SQLiteType.TEXT, false, false, false)]
+            public string Name { get; set; } = "ALI";
+        }
+        class Profile : Kemorave.SQLite.ModelBase.Model
+        {
+            public Profile()
+            { }
+
+            public Profile(SQLiteDataBase dataBase) : base(dataBase)
+            {
+            }
+            [TableColumn("Nick", SQLiteType.TEXT, false, false, false)]
+            public string Nick { get; set; } = "Moga";
+
+        }
+        class UserProfile : Kemorave.SQLite.ModelBase.Model
+        {
+            public UserProfile()
+            { }
+
+            public UserProfile(SQLiteDataBase dataBase) : base(dataBase)
+            {
+            }
+
+            public UserProfile(SQLiteDataBase dataBase, long userId, long profileId):this(dataBase)
+            {
+                UserId = userId;
+                ProfileId = profileId;
+            }
+
+            [TableColumn("UserId", SQLiteType.INTEGER, false, false, false, false, null, "User", "Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE, null)]
+            public long UserId { get; set; }
+            [TableColumn("ProfileId", SQLiteType.INTEGER, false, false, false, false, null, "Profile", "Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE, null)]
+            public long ProfileId { get; set; }
+        }
         private const string FILENAME = "MySQLiteDB.sqlite";
 
         private static readonly string FILEPATH = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + FILENAME;
@@ -100,25 +129,38 @@ namespace UnitTestProject
                 using (Kemorave.SQLite.SQLiteDataBase db = new SQLiteDataBase(FILEPATH))
                 {
                     //db.Connection.Update += Connection_Update;
-                    db.Connection.Commit += Connection_Commit;
-                    db.Connection.Trace += Connection_Trace; ;
-
-                    db.TableManager.CreateTable(typeof(Image));
-                    var postT = new TableInfo("Post");
-                    postT.Columns.Add(new ColumnInfo("ID", SQLiteType.INTEGER, true, true));
-                    postT.Columns.Add(new ColumnInfo("Content", SQLiteType.TEXT));
-                    db.TableManager.CreateTable(postT);
+                   // db.Connection.Commit += Connection_Commit;
+                    //db.Connection.Trace += Connection_Trace; ;
                     Stopwatch stopwatch = new Stopwatch();
-                    var post = new Post(db, "Gola");
-                    post.Save();
-                    post.AddImage("AAAAA");
-                    post = db.DataGetter.GetItemByID<Post>(post.ID);
+                   // db.DataSetter.ProgressChanged += DataSetter_ProgressChanged;
+                    db.TableManager.CreateTable(typeof(User));
+                    db.TableManager.CreateTable(typeof(Profile));
+                    db.TableManager.CreateTable(typeof(UserProfile));
+                    List<User> users = new List<User>();
+                    for (int i = 0; i < 1000000; i++)
+                    {
+                        users.Add(new User() {  Name = $"Hola {i}"});
+                    }
+                    stopwatch.Start();
+                    db.DataSetter.Insert(users.ToArray());
+                    stopwatch.Stop();
+                    Console.WriteLine($"{users.Count} rows inserted in {stopwatch.Elapsed}");
+                 //   db.Backup(Environment.GetFolderPath( Environment.SpecialFolder.Desktop));
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error : {e.Message}.\n{e}", "Errpr");
             }
+
+            Console.WriteLine($"Press any to exit");
+            Console.Read();
+        }
+
+        private static void DataSetter_ProgressChanged(object sender, double e)
+        {
+
+            Debug.WriteLine($"Progress {e}%");
         }
 
         private static void Connection_Trace(object sender, System.Data.SQLite.TraceEventArgs e)

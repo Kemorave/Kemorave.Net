@@ -63,7 +63,7 @@ namespace Kemorave.Wpf
             get { return GetArcGeometry(); }
         }
 
-        protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
+        protected override void OnRender(DrawingContext drawingContext)
         {
             drawingContext.DrawGeometry(null, new Pen(Stroke, StrokeThickness), GetArcGeometry());
         }

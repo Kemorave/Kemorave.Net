@@ -123,14 +123,14 @@ namespace Kemorave.SQLite
             }
             return cipherText;
         }
-        public static string Hash(string value,string salt=null)
+        public static string Hash(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException(  nameof(value));
             }
 
-            return Convert.ToBase64String( System.Security.Cryptography.SHA1.Create().ComputeHash(Convert.FromBase64String(value)) );
+            return Convert.ToBase64String(SHA1.Create().ComputeHash(Convert.FromBase64String(value)) );
         }
         #endregion
     }

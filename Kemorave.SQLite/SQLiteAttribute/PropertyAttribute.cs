@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Kemorave.SQLite.SQLiteAttribute
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public partial class PropertyAttribute : System.Attribute
+    public partial class PropertyAttribute : Attribute
     {
         public PropertyAttribute(Behavior defaultValueBehavior = Behavior.PopulateAndInclude, [CallerMemberName] string columnName = null)
         {
@@ -90,6 +90,9 @@ namespace Kemorave.SQLite.SQLiteAttribute
             }
             return names;
         }
+
+        private static readonly Type typeOfBool = typeof(bool);
+
         internal static void SetProperties<T>(in T temp, PropertyInfo[] props, Dictionary<string, object> keyValues) where T : IDBModel, new()
         {
             object obj;
@@ -101,7 +104,15 @@ namespace Kemorave.SQLite.SQLiteAttribute
                     try
                     {
                         obj = keyValues[prop.Name];
-                        if (obj != DBNull.Value)
+                        if (obj == DBNull.Value)
+                        {
+                            prop.SetValue(temp, null);
+                        }
+                        else if (prop.PropertyType.Equals(typeOfBool))
+                        {
+                            prop.SetValue(temp, (obj as int? == 1 ? true : false));
+                        }
+                        else
                         {
                             prop.SetValue(temp, obj);
                         }

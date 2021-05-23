@@ -42,7 +42,7 @@ namespace Kemorave.Wpf
     {
         static AnimatedScrollViewer()
         {
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(AnimatedScrollViewer), new FrameworkPropertyMetadata(typeof(AnimatedScrollViewer)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(AnimatedScrollViewer), new FrameworkPropertyMetadata(typeof(AnimatedScrollViewer)));
         }
 
         private ScrollBar _VerticalScrollBar;
@@ -89,7 +89,7 @@ namespace Kemorave.Wpf
 
         public static readonly DependencyProperty TargetHorizontalOffsetProperty
                         = DependencyProperty.Register("TargetHorizontalOffset", typeof(double), typeof(AnimatedScrollViewer),
-                                        new PropertyMetadata(0.0, new PropertyChangedCallback(AnimatedScrollViewer.OnTargetHorizontalOffsetChanged)));
+                                        new PropertyMetadata(0.0, new PropertyChangedCallback(OnTargetHorizontalOffsetChanged)));
         private static void OnTargetHorizontalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AnimatedScrollViewer objectToScroll = (AnimatedScrollViewer)d;
@@ -102,7 +102,7 @@ namespace Kemorave.Wpf
 
         private static readonly DependencyProperty HorizontalScrollOffsetProperty
         = DependencyProperty.Register("HorizontalScrollOffset", typeof(double), typeof(AnimatedScrollViewer),
-                        new PropertyMetadata(0.0, new PropertyChangedCallback(AnimatedScrollViewer.OnHorizontalScrollOffsetChanged)));
+                        new PropertyMetadata(0.0, new PropertyChangedCallback(OnHorizontalScrollOffsetChanged)));
 
         private static void OnHorizontalScrollOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -112,7 +112,7 @@ namespace Kemorave.Wpf
 
         private static readonly DependencyProperty VerticalScrollOffsetProperty
         = DependencyProperty.Register("VerticalScrollOffset", typeof(double), typeof(AnimatedScrollViewer),
-                        new PropertyMetadata(0.0, new PropertyChangedCallback(AnimatedScrollViewer.OnVerticalScrollOffsetChanged)));
+                        new PropertyMetadata(0.0, new PropertyChangedCallback(OnVerticalScrollOffsetChanged)));
         private static void OnVerticalScrollOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((AnimatedScrollViewer)d).ScrollToVerticalOffset((double)e.NewValue);
@@ -180,13 +180,13 @@ namespace Kemorave.Wpf
         {
             base.OnApplyTemplate();
 
-            _VerticalScrollBar = base.GetTemplateChild("PART_VerticalScrollBar") as ScrollBar;
+            _VerticalScrollBar = GetTemplateChild("PART_VerticalScrollBar") as ScrollBar;
 
 
-            _HorizontalScrollBar = base.GetTemplateChild("PART_HorizontalScrollBar") as ScrollBar;
+            _HorizontalScrollBar = GetTemplateChild("PART_HorizontalScrollBar") as ScrollBar;
 
             PreviewKeyDown += OnPreviewKeyDownEvent;
-            base.PreviewMouseWheel += new MouseWheelEventHandler(this.CustomPreviewMouseWheel);
+            PreviewMouseWheel += new MouseWheelEventHandler(this.CustomPreviewMouseWheel);
         }
         public new void ScrollToEnd()
         {
@@ -247,7 +247,9 @@ namespace Kemorave.Wpf
         {
             TargetHorizontalOffset += ScrollDelta;
         }
+#pragma warning disable IDE0051 // Remove unused private members
         private void NormalizeScrollPos()
+#pragma warning restore IDE0051 // Remove unused private members
         {
             if (TargetHorizontalOffset > ScrollableWidth)
             {
@@ -271,41 +273,41 @@ namespace Kemorave.Wpf
         public double TargetVerticalOffset
         {
             get =>
-                            ((double)base.GetValue(TargetVerticalOffsetProperty));
+                            ((double)GetValue(TargetVerticalOffsetProperty));
             set =>
-                            base.SetValue(TargetVerticalOffsetProperty, value);
+                            SetValue(TargetVerticalOffsetProperty, value);
         }
 
         public double TargetHorizontalOffset
         {
             get =>
-                            ((double)base.GetValue(TargetHorizontalOffsetProperty));
+                            ((double)GetValue(TargetHorizontalOffsetProperty));
             set =>
-                            base.SetValue(TargetHorizontalOffsetProperty, value);
+                            SetValue(TargetHorizontalOffsetProperty, value);
         }
 
         public double HorizontalScrollOffset
         {
             get =>
-                            ((double)base.GetValue(HorizontalScrollOffsetProperty));
+                            ((double)GetValue(HorizontalScrollOffsetProperty));
             set =>
-                            base.SetValue(HorizontalScrollOffsetProperty, value);
+                            SetValue(HorizontalScrollOffsetProperty, value);
         }
 
         public double VerticalScrollOffset
         {
             get =>
-                            ((double)base.GetValue(VerticalScrollOffsetProperty));
+                            ((double)GetValue(VerticalScrollOffsetProperty));
             set =>
-                            base.SetValue(VerticalScrollOffsetProperty, value);
+                            SetValue(VerticalScrollOffsetProperty, value);
         }
 
         public Duration ScrollingDuration
         {
             get =>
-                            (Duration)base.GetValue(ScrollingDurationProperty);
+                            (Duration)GetValue(ScrollingDurationProperty);
             set =>
-                            base.SetValue(ScrollingDurationProperty, value);
+                            SetValue(ScrollingDurationProperty, value);
         }
     }
 }

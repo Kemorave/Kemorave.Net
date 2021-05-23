@@ -5,7 +5,7 @@ using System.Linq;
 namespace Kemorave.SQLite.SQLiteAttribute
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Parameter)]
-    public class TableAttribute : System.Attribute
+    public class TableAttribute : Attribute
     {
         public TableAttribute(string tableName )
         { 
@@ -31,7 +31,7 @@ namespace Kemorave.SQLite.SQLiteAttribute
         internal static TableInfo FromType(Type type)
         {
             TableInfo
-                tableInfo = new TableInfo(TableAttribute.GetTableName(type));
+                tableInfo = new TableInfo(GetTableName(type));
             
                 
                 foreach (var prop in type.GetProperties())

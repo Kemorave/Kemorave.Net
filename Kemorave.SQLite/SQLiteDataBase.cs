@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Security;
+using Kemorave.SQLite.Options;
 
 namespace Kemorave.SQLite
 {
@@ -55,16 +56,13 @@ namespace Kemorave.SQLite
             Dispose(false);
         }
         #endregion
-        public string Backup(string destPath)
+        public string Backup(string destPath, string name= null,bool overwrite=false)
         {
-            string name = $"SQLite Backup {DateTime.Now}.backup";
+            if(name==null)
+            name = $"Database Backup {DateTime.Now.ToFileTimeUtc()}.sqlite";
             string destfile = System.IO.Path.Combine(destPath, name);
-            if (System.IO.File.Exists(destfile))
-            {
-                System.IO.File.Delete(destfile);
-            }
-
-            System.IO.File.Copy(DataSource, destfile);
+          
+            System.IO.File.Copy(DataSource, destfile, overwrite);
             return destfile;
         }
         public override string ToString()
@@ -115,6 +113,22 @@ namespace Kemorave.SQLite
             }
 
             return new SQLiteCommand(Connection);
+        }
+        public SQLiteCommand CreateCommand<T>(SelectOptions<T>  options ) where T : IDBModel, new()
+        {
+            var cmd = new SQLiteCommand(options.GetCommand(),Connection);
+            if (options.Where!=null)
+            {
+                foreach (var con in options.Where.Conditons)
+                {
+                    foreach (var item in con)
+                    {
+                        if(item.HasParameters)
+                        cmd.Parameters.Add(new SQLiteParameter(dbType: System.Data.DbType.Object, value: item.Value));
+                    }
+                }
+            }
+            return cmd;
         }
         /// <summary>
         /// Recreates database
@@ -172,7 +186,7 @@ namespace Kemorave.SQLite
         public  DataBaseGetter DataGetter { get; }
         public  DataBaseSetter DataSetter { get; }
         public TableManager TableManager { get; }
-        public System.Data.SQLite.SQLiteConnection Connection { get; protected set; }
+        public SQLiteConnection Connection { get; protected set; }
         /// <summary>
         /// Path to database file
         /// </summary>

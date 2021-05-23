@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
+using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite.ModelBase
@@ -8,17 +11,19 @@ namespace Kemorave.SQLite.ModelBase
     {
 
         public Model()
-        { 
+        {
+
+            isNew = true;
         }
 
-        public Model(SQLiteDataBase dataBase)
+        public Model(SQLiteDataBase dataBase):this()
         {
-            DataBase = dataBase;
-            isNew = true;
+            DataBase = dataBase; 
         }
 
         ~Model()
         {
+            if(DataBase!=null)
             DataBase.Connection.Update -= Connection_Update;
         }
         
@@ -27,22 +32,29 @@ namespace Kemorave.SQLite.ModelBase
         internal void SetDataBase(SQLiteDataBase dataBase)
         { 
             DataBase = dataBase;
+            isNew = false;
+            DataBase.Connection.Update -= Connection_Update;
             DataBase.Connection.Update += Connection_Update;
             OnLoad(dataBase);
         }
-        private void Connection_Update(object sender, System.Data.SQLite.UpdateEventArgs e)
+        private void Connection_Update(object sender, UpdateEventArgs e)
         {
-            if (e.RowId==ID&&e.Table.Equals(TableAttribute.GetTableName(GetType()), StringComparison.Ordinal))
+            if (e.RowId==Id&&e.Table.Equals(TableAttribute.GetTableName(GetType()), StringComparison.Ordinal))
             {
                 switch (e.Event)
                 {
                     case UpdateEventType.Delete:
                         OnDelete(); break;
                     case UpdateEventType.Update:
+                        if (isSource)
+                        { isSource = false;
+                            return;
+                        }
                         OnUpdate(); break;
                 }
             }
         }
+       
 
         protected virtual void OnDelete()
         {
@@ -50,30 +62,41 @@ namespace Kemorave.SQLite.ModelBase
         }
         protected virtual void OnUpdate()
         {
-
+            Reload();
         }
         protected virtual void OnLoad(SQLiteDataBase dataBase)
         {
 
         }
+        public virtual void Delete()
+        {
+            if (!isNew)
+            {
+                DataBase?.DataSetter?.Delete(this);
+            }
+        }
+        public virtual  void Reload() {
+            DataBase?.DataGetter?.ReloadItems(this);
+        }
         public virtual void Save()
         {
+            isSource = true;
             if (isNew)
             {
-                DataBase.DataSetter.Insert(this);
+                DataBase?.DataSetter?.Insert(this);
                 isNew = false;
             }
             else
-            DataBase.DataSetter.Update(this);
+            DataBase?.DataSetter?.Update(this);
            
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
 
         protected SQLiteDataBase DataBase;
-        [SQLiteAttribute.Property(Behavior.Populate)]
-        [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
-        public long ID { get; set; }
-        bool isNew = false;
+        [Property(Behavior.Populate)]
+        [TableColumn("Id", SQLiteType.INTEGER, true, true, false)]
+        public long Id { get; set; }
+        public bool isNew = false;bool isSource=false;
     }
 }

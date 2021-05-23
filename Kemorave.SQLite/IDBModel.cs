@@ -2,6 +2,6 @@
 {
     public  interface IDBModel
     { 
-        long ID { get; set; }
+        long Id { get; set; }
     }
 }

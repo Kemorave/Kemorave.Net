@@ -5,6 +5,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Windows.Input;
+using System.Windows.Controls.Primitives;
+using System.Windows.Controls;
 
 namespace Kemorave.Wpf.Helper
 {
@@ -131,18 +133,11 @@ namespace Kemorave.Wpf.Helper
 
 
 
+  
 
 
-
-
-
-
-
-
-
-
-
-
+         
+       
 
         public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.RegisterAttached("CommandParameter", typeof(object), typeof(ControlHelper), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
@@ -180,12 +175,12 @@ namespace Kemorave.Wpf.Helper
 
             if (e.NewValue is string eventName && d is UIElement element)
             {
-                Debug.WriteLine(eventName + " Command Suc");
+                Debug.WriteLine($"Event name : {eventName} \nElement : {(element).GetType().Name}");
 
                 switch (eventName)
                 {
                     case "Click": element.MouseDown += Element_MouseDown; break;
-                    case "MouseDoubleClick": element.MouseDown += Element_MouseDown; break;
+                    case "MouseDoubleClick": element.PreviewMouseLeftButtonDown += Element_MouseDown; break;
                     default:
                         break;
                 }
