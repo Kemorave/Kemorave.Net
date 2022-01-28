@@ -12,6 +12,22 @@ namespace Kemorave.Wpf.Helper
         static CustomCommands()
         {
             ToggleCommand = new RelayCommand<UIElement>(Toggle, CanToggle);
+            FlashWindowCommand = new RelayCommand<Window>(FlashWindow);
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32")]
+          static extern int FlashWindow(IntPtr hwnd, bool bInvert);
+
+        public static void FlashWindow(Window Window)
+        {
+            if (Window == null)
+            {
+                throw new ArgumentNullException(nameof(Window));
+            }
+
+            System.Windows.Interop.WindowInteropHelper wih = new System.Windows.Interop.WindowInteropHelper(Window);
+          
+            FlashWindow(wih.Handle, true);
         }
         private static void Toggle(UIElement obj)
         {
@@ -31,6 +47,7 @@ namespace Kemorave.Wpf.Helper
             return arg != null;
         }
         public static ICommand ToggleCommand { get; }
+        public static ICommand FlashWindowCommand { get; }
     }
      class RelayCommand<T> : ICommand
     {

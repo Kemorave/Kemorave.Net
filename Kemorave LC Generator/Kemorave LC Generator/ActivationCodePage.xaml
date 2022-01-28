@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#2196F3"
+             xmlns:kemorave_lc_generator="clr-namespace:Kemorave_LC_Generator"
+             x:DataType="kemorave_lc_generator:ActivationCodePage"
+        Title="Code generation result"     x:Class="Kemorave_LC_Generator.ActivationCodePage">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+            <Label FontSize="40" Text="Activation code:"/>
+            <Label FontSize="30" Text="{Binding Path=Code}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Kemorave.SQLite;
+using Kemorave.SQLite.ModelBase;
 using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -36,7 +37,7 @@ namespace UnitTestProject
             }
  
         }
-        private class Post : Kemorave.SQLite.IDBModel
+        private class Post : IDBModel
         {
             public Post(SQLiteDataBase dataBase, string content) 
             {
@@ -51,27 +52,27 @@ namespace UnitTestProject
             }
 
             protected SQLiteDataBase DataBase;
-            [Kemorave.SQLite.SQLiteAttribute.Property(Behavior.Populate)]
+            [Kemorave.SQLite.SQLiteAttribute.Property(SqlPropertyHandling.Populate)]
             [TableColumn("ID", SQLiteType.INTEGER, true, true, false)]
-            public long ID { get; set; }
+            public long Id { get; set; }
             public string Content { get; set; }
-            [Property(Behavior.Ignore)]
+            [Property(SqlPropertyHandling.Ignore)]
             public List<Image> Images { get; }
             [FillMethod]
-            public void Fill(Kemorave.SQLite.DataBaseGetter getter)
+            public void Fill(Kemorave.SQLite.DataGetter getter)
             {
-                Images.AddRange(getter.Include(this
+                Images.AddRange(getter.FindIncluded(this
                     ,new IncludeOptions<Post, Image>(forigenKey:"ItemId","Path",new string[] { "Path"},
                     new Where(WhereConditon.IsEqual("Type", "PostImage")))));
             }
             public void AddImage(string path)
             {
-                new Image(DataBase,path, "PostImage", this.ID).Save();
+                new Image(DataBase,path, "PostImage", this.Id).Save();
             }
            
             public   void Save()
             {
-                DataBase.DataSetter.Insert(this);
+                DataBase.Setter.Insert(this);
             }
         }
         class User : Kemorave.SQLite.ModelBase.Model
@@ -112,9 +113,11 @@ namespace UnitTestProject
                 ProfileId = profileId;
             }
 
-            [TableColumn("UserId", SQLiteType.INTEGER, false, false, false, false, null, "User", "Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE, null)]
+            [ForeignKey("UserId", SQLiteType.INTEGER,false,false,null, "UserProfile","Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE)]
+            [TableColumn("UserId", SQLiteType.INTEGER)]
             public long UserId { get; set; }
-            [TableColumn("ProfileId", SQLiteType.INTEGER, false, false, false, false, null, "Profile", "Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE, null)]
+            [ForeignKey("ProfileId", SQLiteType.INTEGER, false, false, null, "Profile", "Id", SQLiteActions.CASCADE, SQLiteActions.CASCADE)]
+            [TableColumn("ProfileId", SQLiteType.INTEGER)]
             public long ProfileId { get; set; }
         }
         private const string FILENAME = "MySQLiteDB.sqlite";
@@ -142,7 +145,7 @@ namespace UnitTestProject
                         users.Add(new User() {  Name = $"Hola {i}"});
                     }
                     stopwatch.Start();
-                    db.DataSetter.Insert(users.ToArray());
+                    db.Setter.Insert(users.ToArray());
                     stopwatch.Stop();
                     Console.WriteLine($"{users.Count} rows inserted in {stopwatch.Elapsed}");
                  //   db.Backup(Environment.GetFolderPath( Environment.SpecialFolder.Desktop));

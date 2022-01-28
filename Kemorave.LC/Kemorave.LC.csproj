@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Kemorave</Authors>
+    <PackageLicenseExpression>All rights reserved</PackageLicenseExpression>
+    <Copyright>2022</Copyright>
+    <Platforms>AnyCPU;x86</Platforms>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+</Project>

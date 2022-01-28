@@ -97,9 +97,32 @@ namespace Kemorave.Command
         // Prism commands solve this in their implementation
         public event EventHandler CanExecuteChanged;
 
-        void ICommand.Execute(object parameter)
+       
+        public virtual bool CanExecute()
         {
-            _TargetExecuteMethod?.Invoke();
+            if (_TargetCanExecuteMethod == null)
+            {
+                return true;
+            } 
+            return _TargetCanExecuteMethod();
+        }
+
+        public void Execute(object per)
+        {
+            if (_TargetCanExecuteMethod != null)
+            {
+				if (!_TargetCanExecuteMethod())
+				{
+                    return;
+				}
+            }
+
+            _TargetExecuteMethod?.Invoke( );
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

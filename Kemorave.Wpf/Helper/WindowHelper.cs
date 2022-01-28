@@ -5,7 +5,7 @@ namespace Kemorave.Wpf.Helper
 {
  public class WindowHelper
  {
-  public static readonly DependencyProperty MovableProperty = DependencyProperty.RegisterAttached("Movable", typeof(bool), typeof(WindowHelper), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsMeasure, MovableProprtyChanged));
+  public static readonly DependencyProperty MovableProperty = DependencyProperty.RegisterAttached("Movable", typeof(bool), typeof(WindowHelper), new FrameworkPropertyMetadata(false , MovableProprtyChanged));
   private static void MovableProprtyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
   {
    if (d is Window window)
@@ -50,7 +50,7 @@ namespace Kemorave.Wpf.Helper
   /// ////////////////////////////////////////////////////////
   /// </summary>
 
-  public static readonly DependencyProperty InfoProgressBarValueProperty = DependencyProperty.RegisterAttached("InfoProgressBarValue", typeof(double), typeof(WindowHelper), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure, InfoProgressBarValueProprtyChanged));
+  public static readonly DependencyProperty InfoProgressBarValueProperty = DependencyProperty.RegisterAttached("InfoProgressBarValue", typeof(double), typeof(WindowHelper), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure, InfoProgressBarValueProprtyChanged));
   private static void InfoProgressBarValueProprtyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
   {
    if (d is Window window)
@@ -98,5 +98,11 @@ namespace Kemorave.Wpf.Helper
   }
 
 
- }
+
+        //////////////////////////////////////////
+        
+
+
+   
+    }
 }

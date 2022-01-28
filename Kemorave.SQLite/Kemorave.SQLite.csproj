@@ -1,12 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Kemorave</Authors>
+    <Description>Sqlite wrapper</Description>
+    <Copyright>2022</Copyright>
+    <PackageLicenseExpression>All rights reserved</PackageLicenseExpression>
+    <Platforms>AnyCPU;x86</Platforms>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\WPF C# Projects\Assemplies\System.Data.SQLite\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\..\WPF C# Projects\Assemplies\System.Data.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
 

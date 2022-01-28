@@ -1,102 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
-using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite.ModelBase
 {
-    public  class Model : IDBModel
+    public class Model : IDBModel 
     {
 
         public Model()
         {
-
-            isNew = true;
         }
 
-        public Model(SQLiteDataBase dataBase):this()
+        public Model(SQLiteDataBase dataBase) : this()
         {
-            DataBase = dataBase; 
+            DataBase = dataBase;
         }
 
         ~Model()
         {
-            if(DataBase!=null)
-            DataBase.Connection.Update -= Connection_Update;
+
         }
-        
-        //////////////////////////////////////////////////////////////////////////////////////////
-     
+
+
         internal void SetDataBase(SQLiteDataBase dataBase)
-        { 
+        {
             DataBase = dataBase;
             isNew = false;
             DataBase.Connection.Update -= Connection_Update;
             DataBase.Connection.Update += Connection_Update;
             OnLoad(dataBase);
         }
+
         private void Connection_Update(object sender, UpdateEventArgs e)
         {
-            if (e.RowId==Id&&e.Table.Equals(TableAttribute.GetTableName(GetType()), StringComparison.Ordinal))
+            if (e.RowId == Id && e.Table.Equals(TableAttribute.GetTableName(GetType()), StringComparison.Ordinal))
             {
                 switch (e.Event)
                 {
-                    case UpdateEventType.Delete:
-                        OnDelete(); break;
                     case UpdateEventType.Update:
                         if (isSource)
-                        { isSource = false;
+                        {
+                            isSource = false;
                             return;
                         }
-                        OnUpdate(); break;
+                        Reload(); break;
                 }
             }
         }
-       
 
-        protected virtual void OnDelete()
-        {
-
-        }
-        protected virtual void OnUpdate()
-        {
-            Reload();
-        }
         protected virtual void OnLoad(SQLiteDataBase dataBase)
         {
-
+            isNew = false;
+            this.DataBase = dataBase;
         }
+        protected virtual void OnDelete() { }
+        protected virtual void OnUpdate() { }
+        protected virtual void OnInsert() { }
+
+
         public virtual void Delete()
         {
             if (!isNew)
             {
-                DataBase?.DataSetter?.Delete(this);
+                OnDelete();
+                DataBase?.Setter?.Delete(this);
             }
-        }
-        public virtual  void Reload() {
-            DataBase?.DataGetter?.ReloadItems(this);
         }
         public virtual void Save()
         {
             isSource = true;
             if (isNew)
             {
-                DataBase?.DataSetter?.Insert(this);
+                OnInsert();
+                DataBase?.Setter?.Insert(this);
                 isNew = false;
             }
             else
-            DataBase?.DataSetter?.Update(this);
-           
+            {
+
+                OnUpdate();
+                DataBase?.Setter?.Update(this);
+            }
+
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////
+        public virtual void Reload()
+        {
+            if (isSource)
+            {
+                return;
+            }
+            DataBase?.Getter?.Reload(this);
+        }
+         
+
+         
+
 
         protected SQLiteDataBase DataBase;
-        [Property(Behavior.Populate)]
+        [Property(SqlPropertyHandling.Populate)]
         [TableColumn("Id", SQLiteType.INTEGER, true, true, false)]
-        public long Id { get; set; }
-        public bool isNew = false;bool isSource=false;
+        public virtual long Id { get; set; }
+
+        public bool isNew = true;
+        private bool isSource = false;
+
+        
+      
     }
 }

@@ -3,11 +3,12 @@ using System;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
-using System.Security;
+using Kemorave.SQLite.ModelBase;
 using Kemorave.SQLite.Options;
 
 namespace Kemorave.SQLite
 {
+  
     /// <summary>
     /// SQLite databse manager
     /// 
@@ -22,19 +23,14 @@ namespace Kemorave.SQLite
                 Connection.Open();
             }
         }
-        public SQLiteDataBase(string uri, SecureString secure = null) : this()
+        public SQLiteDataBase(string uri, string secure = null) : this()
         {
-            RefreshConnection(uri, secure?.ToString());
-            if (secure != null)
-            {
-                Connection.SetPassword(secure.ToString());
-            }
-            Connection.Open();
+            RefreshConnection(uri, secure); 
         }
         private SQLiteDataBase()
         {
-            DataGetter = new DataBaseGetter(this);
-            DataSetter = new DataBaseSetter(this);
+            Getter = new DataGetter(this);
+            Setter = new DataSetter(this);
             TableManager = new TableManager(this);
         }
 
@@ -56,12 +52,15 @@ namespace Kemorave.SQLite
             Dispose(false);
         }
         #endregion
-        public string Backup(string destPath, string name= null,bool overwrite=false)
+        public string Backup(string destPath, string name = null, bool overwrite = false)
         {
-            if(name==null)
-            name = $"Database Backup {DateTime.Now.ToFileTimeUtc()}.sqlite";
+            if (name == null)
+            {
+                name = $"Database Backup {DateTime.Now.ToFileTimeUtc()}.sqlite";
+            }
+
             string destfile = System.IO.Path.Combine(destPath, name);
-          
+
             System.IO.File.Copy(DataSource, destfile, overwrite);
             return destfile;
         }
@@ -114,22 +113,25 @@ namespace Kemorave.SQLite
 
             return new SQLiteCommand(Connection);
         }
-        public SQLiteCommand CreateCommand<T>(SelectOptions<T>  options ) where T : IDBModel, new()
+        public SQLiteCommand CreateCommand<T>(SelectOptions<T> options) where T : IDBModel, new()
         {
-            var cmd = new SQLiteCommand(options.GetCommand(),Connection);
-            if (options.Where!=null)
+            SQLiteCommand cmd = new SQLiteCommand(options.GetCommand(), Connection);
+            if (options.Where != null)
             {
-                foreach (var con in options.Where.Conditons)
+                foreach (WhereConditon[] con in options.Where.Conditons)
                 {
-                    foreach (var item in con)
+                    foreach (WhereConditon item in con)
                     {
-                        if(item.HasParameters)
-                        cmd.Parameters.Add(new SQLiteParameter(dbType: System.Data.DbType.Object, value: item.Value));
+                        if (item.HasParameters)
+                        {
+                            cmd.Parameters.Add(new SQLiteParameter(dbType: System.Data.DbType.Object, value: item.Value));
+                        }
                     }
                 }
             }
             return cmd;
         }
+
         /// <summary>
         /// Recreates database
         /// </summary>
@@ -175,16 +177,17 @@ namespace Kemorave.SQLite
         }
         private void RefreshConnection(string filePath, string secure)
         {
-            (DataSetter as DataBaseSetter).CheckBusyState();
+            Setter.CheckBusyState();
             Connection?.Dispose();
             Connection = new SQLiteConnection("Data Source = " + filePath);
             if (!string.IsNullOrEmpty(secure))
             {
                 Connection.SetPassword(secure);
             }
-        }
-        public  DataBaseGetter DataGetter { get; }
-        public  DataBaseSetter DataSetter { get; }
+            Connection.Open();
+        } 
+        public DataGetter Getter { get; }
+        public DataSetter Setter { get; }
         public TableManager TableManager { get; }
         public SQLiteConnection Connection { get; protected set; }
         /// <summary>

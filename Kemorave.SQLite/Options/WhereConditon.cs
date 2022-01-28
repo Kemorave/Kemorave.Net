@@ -9,9 +9,7 @@ namespace Kemorave.SQLite.Options
             HasParameters = true;
             Column = column ?? throw new ArgumentNullException(nameof(column));
             Value = value?.ToString() ?? throw new ArgumentNullException(nameof(value));
-            if (string.IsNullOrWhiteSpace(Value))
-                throw new ArgumentNullException("Value");
-            Operator = @operator ?? throw new ArgumentNullException(nameof(@operator));
+             Operator = @operator ?? throw new ArgumentNullException(nameof(@operator));
             Not = not;
         }
         private WhereConditon(string ownCommand,object value)
@@ -22,7 +20,12 @@ namespace Kemorave.SQLite.Options
         }
         static string Escape(string value)
         {
-            return value.Replace("%", "\\%").Replace("_", "\\_") ;
+            if (value == null)
+            {
+                return value;
+            }
+
+            return  value.Replace("%", "\\%").Replace("_", "\\_") ;
         }
 
         public static  WhereConditon IsEqual(string column, object value, bool not = false)
@@ -74,7 +77,7 @@ namespace Kemorave.SQLite.Options
                     flatValue += $",{value[i]}";
                 }
             flatValue += ")";
-            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)} IN  (?) ", flatValue);
+            return new WhereConditon($" {column} {(not ? "NOT" : string.Empty)} IN  {flatValue} ", null);
         }
         public static WhereConditon Between(string column, string min, string max, bool not = false)
         {

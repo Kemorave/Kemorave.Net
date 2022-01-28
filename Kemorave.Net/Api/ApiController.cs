@@ -1,151 +1,192 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Kemorave.Net.Api.DB
+namespace Kemorave.Net.Api
 {
-    public class ApiController<Model> : ApiControllerBase<DBActionResult, Model> where Model :  IDBModel, new()
+    public class ApiController<Model> : IController<Model> where Model : IModel
     {
-        public bool JsonResultSupport { get; }
 
-        public ApiController(ApiConfigration configration, string uri, bool jsonResult, object tag = null) : base(configration, uri, tag)
+        public ApiController(ClientConfigration configration, string baseUrl = null)
         {
-            JsonResultSupport = jsonResult;
+            Configration = configration ?? throw new ArgumentNullException(nameof(configration));
+            BaseUrl = baseUrl ?? configration.HttpClient.BaseAddress + "/" + nameof(Model).ToLower() + "/";
         }
 
-        /// <summary>
-        /// Deletes item from database by id
-        /// </summary>
-        /// <param name="id">item id</param>
-        /// <returns>Operation result</returns>
-        public override async Task<DBActionResult> DeleteItemAsync(int id)
+        public ClientConfigration Configration { get; }
+        public string BaseUrl { get; }
+        public async Task<string> Create(Model model)
         {
-            try
+            return await Task.Run(async () =>
             {
-                System.Net.Http.HttpResponseMessage res = await Configration.HttpClient.DeleteAsync(GetDeleteUri(id));
-                res.EnsureSuccessStatusCode();
-                if (JsonResultSupport)
-                {
-                    return DBActionResult.GetDBResult(await res.Content.ReadAsStringAsync());
-                }
-                return new DBActionResult(ApiConfigration.DeleteCode);
-            }
-            catch (Exception e)
-            {
-                return new DBActionResult(ApiConfigration.DeleteCode, e);
-            }
+                HttpResponseMessage res = await Configration.HttpClient.PostAsync(BaseUrl + "create", NetUtil.GetJsonContent(model));
+
+                return await res.GetContent();
+            });
         }
         /// <summary>
-        /// Gets all table items
-        /// </summary>
-        /// <param name="id">item id</param>
-        /// <returns>Operation result</returns>
-        public override async Task<Model> GetItemAsync(int id)
-        {
-
-            System.Net.Http.HttpResponseMessage res = await Configration.HttpClient.GetAsync(GetByIDUri(id));
-            res.EnsureSuccessStatusCode();
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Model>>(await res.Content.ReadAsStringAsync()).FirstOrDefault();
-
-        }
-        /// <summary>
-        /// Adds item to table
+        /// 
         /// </summary>
         /// <param name="model"></param>
-        /// <returns>Operation result</returns>
-        public override async Task<DBActionResult> InsertItem(Model model)
+        /// <param name="files"></param>
+        /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+        /// <returns></returns>
+        public async Task<string> Create(Model model, IEnumerable<string> files)
         {
-            try
+            return await Task.Run(async () =>
             {
-                System.Net.Http.HttpResponseMessage res = await Configration.HttpClient.PostAsync(GetPostUri(model), GetPostContent(model));
-                res.EnsureSuccessStatusCode();
-                if (JsonResultSupport)
+                using (HttpRequestMessage message = new HttpRequestMessage())
+                using (MultipartFormDataContent content = new MultipartFormDataContent())
                 {
-                    return DBActionResult.GetDBResult(await res.Content.ReadAsStringAsync());
+                    content.Add(NetUtil.GetJsonContent(model));
+                    foreach (string file in files)
+                    {
+                        FileStream filestream = new FileStream(file, FileMode.Open);
+                        string fileName = System.IO.Path.GetFileName(file);
+                        content.Add(new StreamContent(filestream), "file", fileName);
+                    }
+                    message.Method = HttpMethod.Post;
+                    message.Content = content;
+                    message.RequestUri = new Uri(BaseUrl + "create");
+                    HttpResponseMessage res = await Configration.HttpClient.SendAsync(message);
+                    return await res.GetContent();
                 }
-                return new DBActionResult(ApiConfigration.InsertCode) { };
-            }
-            catch (Exception e)
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+        /// <returns></returns>
+        public async Task Delete(long id)
+        {
+            await Task.Run(async () =>
+           {
+               HttpResponseMessage res = await Configration.HttpClient.DeleteAsync(BaseUrl + "delete/" + id);
+
+               return await res.GetContent();
+           });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="models"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+
+        /// <returns></returns>
+        public async Task DeleteMulti(IEnumerable<Model> models)
+        {
+            await Task.Run(async () =>
             {
-                return new DBActionResult(ApiConfigration.InsertCode, e);
-            }
+                HttpResponseMessage res = await Configration.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, BaseUrl + "delete/multi")
+
+                { Content = new StringContent("{\"ids\":\"[" + models.Select(m => m.Id.ToString()).Aggregate((s, a) => s + "," + a) + "]\"}") });
+                await res.GetContent();
+            });
         }
-        public override async Task<DBActionResult> UpdateItemAsync(Model model)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="from"></param>
+        /// <param name="where"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+
+        /// <returns></returns>
+        public async Task<List<Model>> FindAll(long offset, int limit = 30, FindDirection from = FindDirection.Next, string where = null)
         {
-            try
+            return await Task.Run(async () =>
             {
-                System.Net.Http.HttpResponseMessage res = await Configration.HttpClient.PutAsync(GetPutUri(model), GetPutContent(model));
-                res.EnsureSuccessStatusCode();
-                if (JsonResultSupport)
-                {
-                    return DBActionResult.GetDBResult(await res.Content.ReadAsStringAsync());
-                }
-                return new DBActionResult(ApiConfigration.UpdateCode) { };
-            }
-            catch (Exception e)
+                HttpResponseMessage res = await Configration.HttpClient.PostAsync(BaseUrl + "find/all/from/" + offset, NetUtil.GetJsonContent("{ \"from\":\"" + from + "\",\"limit\":" + limit + (string.IsNullOrEmpty(where) ? string.Empty : ",\"where\":" + where) + "}"));
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model>>(await res.GetContent());
+
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+
+        /// <returns></returns>
+        public async Task<List<Model>> FindAll()
+        {
+            return await Task.Run(async () =>
             {
-                return new DBActionResult(ApiConfigration.UpdateCode, e);
-            }
-        }
-        public override async Task<IEnumerable<Model>> GetAllItemsAsync()
-        {
-            System.Net.Http.HttpResponseMessage res = await Configration.HttpClient.GetAsync(GetAllItemsUri());
-            res.EnsureSuccessStatusCode();
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Model>>(await res.Content.ReadAsStringAsync());
+                HttpResponseMessage res = await Configration.HttpClient.GetAsync(BaseUrl + "find/all");
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model>>(await res.GetContent());
+
+            });
         }
 
-        #region Overrides
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
 
-
-        #endregion
-        #region WEB/prefix
-        protected virtual string GetPostUri(Model model)
+        /// <returns></returns>
+        public async Task<Model> FindById(long id)
         {
-            return Uri;
-        }
-
-        protected virtual string GetPutUri(Model model)
-        {
-            return Uri;
-        }
-
-        protected virtual string GetAllItemsUri()
-        {
-            return Uri;
-        }
-
-        protected virtual HttpContent GetPutContent(Model model)
-        {
-            return GetPostContent(model);
-        }
-
-        protected virtual HttpContent GetPostContent(Model model)
-        {
-            return ModelToJsonHttpContent(model);
-        }
-
-        protected HttpContent ModelToJsonHttpContent(Model model)
-        {
-            return new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(model));
-        }
-
-        protected virtual string GetDeleteUri(int id)
-        {
-            return GetByIDUri(id);
-        }
-
-        protected virtual string GetByIDUri(int id)
-        {
-            if (!Uri.EndsWith("//"))
+            return await Task.Run(async () =>
             {
-                return $"{Uri}//{id}";
-            }
-            return $"{Uri}{id}";
+                HttpResponseMessage res = await Configration.HttpClient.GetAsync(BaseUrl + "find/" + id);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(await res.GetContent());
+            });
         }
 
-        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="attribute"></param>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="from"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
 
+        /// <returns></returns>
+        public async Task<List<Model>> Search(string value, string attribute, long offset = 0, int limit = 30, FindDirection from = FindDirection.Next)
+        {
+            if (string.IsNullOrEmpty(attribute))
+            {
+                throw new ArgumentException("message", nameof(attribute));
+            }
+
+            return await FindAll(offset, limit, from, $"{{\"{attribute}\":{value}}}");
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        ///   /// <exception cref="ResponceExeption"/>
+        /// <exception cref="System.Net.Http.HttpRequestException"/>
+
+        /// <returns></returns>
+        public async Task Update(Model model)
+        {
+            await Task.Run(async () =>
+            {
+                HttpResponseMessage res = await Configration.HttpClient.PutAsync(BaseUrl + "update/" + model.Id, NetUtil.GetJsonContent(model));
+                await res.GetContent();
+            });
+        }
     }
 }

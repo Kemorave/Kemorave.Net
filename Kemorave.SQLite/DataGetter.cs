@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
+using Kemorave.SQLite.ModelBase;
 using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
 {
-    public class DataBaseGetter
+    public class DataGetter
     {
-
         private readonly SQLiteDataBase _dataBase;
-        public DataBaseGetter(SQLiteDataBase dataBase)
+
+        public DataGetter(SQLiteDataBase dataBase)
         {
             _dataBase = dataBase ?? throw new ArgumentNullException(nameof(dataBase));
         }
@@ -27,7 +28,7 @@ namespace Kemorave.SQLite
             }
         }
 
-        public IEnumerable<IncludeModel> IncludeThrough<Model, IncludeModel, ThroughModel>(Model item, IncludeOptions<Model, IncludeModel> includeOptions = null) where Model : ModelBase.Model, IDBModel, new() where IncludeModel : IDBModel, new() where ThroughModel : IDBModel, new()
+        public IEnumerable<IncludeModel> FindIncluded<Model, IncludeModel, ThroughModel>(Model item, IncludeOptions<Model, IncludeModel> includeOptions = null) where Model : ModelBase.Model, IDBModel, new() where IncludeModel : IDBModel, new() where ThroughModel : IDBModel, new()
         {
             if (includeOptions == null)
             {
@@ -37,15 +38,16 @@ namespace Kemorave.SQLite
             IncludeOptions<Model, ThroughModel> throughModelIncludeOptions = new IncludeOptions<Model, ThroughModel>();
             IncludeOptions<ThroughModel, IncludeModel> IncludeModelOptions = new IncludeOptions<ThroughModel, IncludeModel>();
             includeOptions.ItemID = item?.Id;
-            foreach (ThroughModel throughModelIncludeItem in Include(item, throughModelIncludeOptions))
+            foreach (ThroughModel throughModelIncludeItem in FindIncluded(item, throughModelIncludeOptions))
             {
-                foreach (IncludeModel includeItem in Include(throughModelIncludeItem, IncludeModelOptions))
+                foreach (IncludeModel includeItem in FindIncluded(throughModelIncludeItem, IncludeModelOptions))
                 {
                     yield return includeItem;
                 }
             }
         }
-        public IEnumerable<IncludeModel> Include<Model, IncludeModel>(Model item, IncludeOptions<Model, IncludeModel> includeOptions = null) where Model : IDBModel, new() where IncludeModel : IDBModel, new()
+
+        public IEnumerable<IncludeModel> FindIncluded<Model, IncludeModel>(Model item, IncludeOptions<Model, IncludeModel> includeOptions = null) where Model : IDBModel, new() where IncludeModel : IDBModel, new()
         {
             if (includeOptions == null)
             {
@@ -53,12 +55,13 @@ namespace Kemorave.SQLite
             }
             includeOptions.ItemID = item?.Id;
 
-            foreach (IncludeModel includeItem in GetItems(includeOptions))
+            foreach (IncludeModel includeItem in FindAll(includeOptions))
             {
                 yield return includeItem;
             }
         }
-        public Model GetItemByID<Model>(long Id, SelectOptions<Model> selectOptions = null) where Model : IDBModel, new()
+
+        public Model FindOneById<Model>(long? Id, SelectOptions<Model> selectOptions = null) where Model : IDBModel, new()
         {
             if (selectOptions == null)
             {
@@ -68,11 +71,16 @@ namespace Kemorave.SQLite
             {
                 selectOptions.Where = new Where();
             }
+            if(Id!=null)
             selectOptions.Where.AddConditons(WhereConditon.IsEqual("Id", Id));
             selectOptions.Limit = 1;
-            return GetItems(selectOptions).FirstOrDefault();
+            return FindAll(selectOptions).FirstOrDefault();
         }
-        public IEnumerable<Model> GetItems<Model>(SelectOptions<Model> selectOptions = null) where Model : IDBModel, new()
+        public Model LastRowInserted<Model>() where Model : IDBModel, new()
+        {
+            return FindAll<Model>(new SelectOptions<Model>(" id DESC ") { Limit=1}).FirstOrDefault();
+        }
+        public IEnumerable<Model> FindAll<Model>(SelectOptions<Model> selectOptions = null) where Model : IDBModel, new()
         {
             Type type = typeof(Model);
             if (selectOptions == null)
@@ -100,7 +108,7 @@ namespace Kemorave.SQLite
                 while (reader.Read())
                 {
                     temp = new Model();
-                   
+
                     int ordinal = -1;
                     foreach (KeyValuePair<string, object> item in values)
                     {
@@ -122,17 +130,26 @@ namespace Kemorave.SQLite
                     }
 
                     PropertyAttribute.SetProperties(in temp, props, keyValues);
+
                     fillMethod?.Invoke(temp, fillMethodInvArgs);
-                     if (temp is ModelBase.Model model)
-                    {
-                        model.SetDataBase(_dataBase);
-                    }
+                    (temp as ModelBase.Model)?.SetDataBase(_dataBase);
+
                     yield return temp;
                 }
             }
         }
 
-        public void ReloadItems<Model>(params Model[] models) where Model : IDBModel, new()
+        public int Count<Model>(Where where) where Model : IDBModel
+        {
+            string tName = TableAttribute.GetTableName(typeof(Model));
+            if (where == null)
+            {
+                return _dataBase.TableManager.CountRows(tName);
+            }
+            return Convert.ToInt32(_dataBase.CreateCommand($" SELECT count(1) FROM {tName} {where.GetCommand()}; ").ExecuteScalar());
+        }
+
+        public void Reload<Model>(params Model[] models) where Model : IDBModel, new()
         {
             if (models == null)
             {
@@ -146,8 +163,8 @@ namespace Kemorave.SQLite
             string tbName = TableAttribute.GetTableName(type);
             System.Reflection.PropertyInfo[] props = type.GetProperties();
             Dictionary<string, object> populateProp = PropertyAttribute.GetPopulateProperties(type, props);
-            var ids = models.Select(m => m.Id as object).ToArray(); 
-            var op = new SelectOptions<Model>(null, null, new Where(WhereConditon.IsIn("Id", ids))) { Table = tbName };
+            object[] ids = models.Select(m => m.Id as object).ToArray();
+            SelectOptions<Model> op = new SelectOptions<Model>(null, null, new Where(WhereConditon.IsIn("Id", ids))) { Table = tbName };
             op.OrderBy = "Id";
             using (SQLiteCommand command = _dataBase.CreateCommand(op))
             using (SQLiteDataReader reader = command.ExecuteReader())
@@ -160,9 +177,9 @@ namespace Kemorave.SQLite
 
                 Dictionary<string, object> keyValues = new Dictionary<string, object>(populateProp);
                 while (reader.Read())
-                { 
+                {
                     int ordinal = -1;
-                    foreach (var tmp in models.OrderBy(m => m.Id))
+                    foreach (Model tmp in models.OrderBy(m => m.Id))
                     {
                         foreach (KeyValuePair<string, object> property in populateProp)
                         {
@@ -181,7 +198,7 @@ namespace Kemorave.SQLite
                                     Debug.WriteLine(($"Property '{property.Key}' is Ignored"));
                                 }
                             }
-                        } 
+                        }
                         PropertyAttribute.SetProperties(in tmp, props, keyValues);
                     }
 

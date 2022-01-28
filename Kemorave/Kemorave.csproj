@@ -7,6 +7,8 @@
     <Copyright>2020</Copyright>
     <PackageLicenseExpression>All rights reserved</PackageLicenseExpression>
     <NeutralLanguage>en</NeutralLanguage>
+    <Platforms>AnyCPU;x86</Platforms>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
 </Project>

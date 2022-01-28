@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kemorave.SQLite.ModelBase;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -9,15 +10,15 @@ namespace Kemorave.SQLite.SQLiteAttribute
     [AttributeUsage(AttributeTargets.Property)]
     public partial class PropertyAttribute : Attribute
     {
-        public PropertyAttribute(Behavior defaultValueBehavior = Behavior.PopulateAndInclude, [CallerMemberName] string columnName = null)
+        public PropertyAttribute(SqlPropertyHandling defaultValueBehavior = SqlPropertyHandling.PopulateAndInclude, [CallerMemberName] string columnName = null)
         {
             SetName(columnName);
             SetDefaultValueBehavior(defaultValueBehavior);
         }
 
         public string Name { get; private set; }
-        public Behavior DefaultBehavior { get; private set; }
-        public void SetDefaultValueBehavior(Behavior defaultValueBehavior)
+        public SqlPropertyHandling DefaultBehavior { get; private set; }
+        public void SetDefaultValueBehavior(SqlPropertyHandling defaultValueBehavior)
         {
             DefaultBehavior = defaultValueBehavior;
         }
@@ -35,26 +36,24 @@ namespace Kemorave.SQLite.SQLiteAttribute
                 if (aat?.Length == 0 || aat == null)
                 {
                     names.Add(prop.Name, Tools.GetPropValue(obj, type, prop.Name));
+                    continue;
                 }
-                else
+                foreach (PropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
                 {
-                    foreach (PropertyAttribute att in prop.GetCustomAttributes(SQLiteAttributesType, true))
+                    switch (att?.DefaultBehavior)
                     {
-                        switch (att.DefaultBehavior)
-                        {
-                            case Behavior.Include:
-                                names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
-                                break;
-                            case Behavior.PopulateAndInclude:
-                                names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
-                                break;
-                            default:
-                                break;
-                        }
-
+                        case SqlPropertyHandling.Ignore:
+                            break;
+                        case SqlPropertyHandling.Populate:
+                            break;
+                        default:
+                            names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
+                            break;
                     }
+
                 }
             }
+
             return names;
         }
         internal static Dictionary<string, object> GetPopulateProperties(Type type, PropertyInfo[] props, object obj = null)
@@ -65,28 +64,24 @@ namespace Kemorave.SQLite.SQLiteAttribute
                 object[] aat = prop.GetCustomAttributes(SQLiteAttributesType, true);
                 if (aat?.Length == 0 || aat == null)
                 {
-                    names.Add(prop.Name, null);
+                    names.Add(prop.Name, Tools.GetPropValue(obj, type, prop.Name));
+                    continue;
                 }
-                else
+                foreach (PropertyAttribute att in aat)
                 {
-                    foreach (PropertyAttribute att in aat)
+                    switch (att?.DefaultBehavior)
                     {
-                        if (att != null)
-                        {
-                            switch (att.DefaultBehavior)
-                            {
-                                case Behavior.Populate:
-                                    names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
-                                    break;
-                                case Behavior.PopulateAndInclude:
-                                    names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        case SqlPropertyHandling.Ignore:
+                            break;
+                        case SqlPropertyHandling.Include:
+                            break;
+                        default:
+                            names.Add(att.Name, Tools.GetPropValue(obj, type, prop.Name));
+                            break;
                     }
+
                 }
+
             }
             return names;
         }
@@ -110,7 +105,7 @@ namespace Kemorave.SQLite.SQLiteAttribute
                         }
                         else if (prop.PropertyType.Equals(typeOfBool))
                         {
-                            prop.SetValue(temp, (obj as int? == 1 ? true : false));
+                            prop.SetValue(temp, obj?.ToString()?.Equals("1") == true || (bool.TryParse(obj?.ToString(),out bool v)&&v) ? true : false);
                         }
                         else
                         {

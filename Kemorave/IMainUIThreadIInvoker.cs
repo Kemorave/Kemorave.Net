@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Kemorave
 {
 
     public interface IMainUIThreadIInvoker
- {
-  void Invoke(Action action);
- }
+    {
+        Task Invoke(Action action);
+    }
 }

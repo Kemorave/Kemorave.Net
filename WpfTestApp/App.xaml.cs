@@ -10,7 +10,7 @@ namespace WpfTestApp
     {
         public App()
         {
-            Kemorave.ThreadingHelp.Initialize(new MU());
+            Kemorave.ThreadingHelper.Initialize(new MU());
         }
     }
     /// <summary>

@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Kemorave.SQLite.SQLiteAttribute
 {
     /// <summary>
-    /// A method with <see cref="DataBaseGetter" /> parameter
+    /// A method with <see cref="DataGetter" /> parameter
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 

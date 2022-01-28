@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#2196F3"
+             x:Class="Kemorave_LC_Generator.MainPage">
+
+    <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Margin="20,0">
+        <Frame CornerRadius="10"
+             Padding="24" >
+            <StackLayout>
+                <Label    TextColor="#2196F3"
+                          Text="LC generator"
+                          HorizontalTextAlignment="Center"
+                          FontSize="36" />
+                <Label    TextColor="Black"
+                          Text="Kemorave co" FontAttributes="Bold"
+                          HorizontalTextAlignment="Center"
+                          FontSize="Small" />
+            </StackLayout>
+        </Frame>
+        <Entry Placeholder="Name" x:Name="Host" Margin="0,50,0,0"/>
+        <Button CornerRadius="5" Text="Get activation host" Clicked="Button_Clicked" Margin="0,10,0,0"/>
+    </StackLayout>
+
+</ContentPage>

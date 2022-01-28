@@ -1,29 +1,32 @@
-﻿using Kemorave.SQLite.SQLiteAttribute;
+﻿using System.Linq;
+using Kemorave.SQLite.ModelBase;
+using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite.Options
 {
-    public sealed class IncludeOptions<Model, IncludeModel> : SelectOptions<IncludeModel>,IIncludeOptions<Model, IncludeModel> where Model :  IDBModel, new() where IncludeModel :  IDBModel, new()
+    public sealed class IncludeOptions<Model, IncludeModel> : SelectOptions<IncludeModel>, IIncludeOptions<Model, IncludeModel> where Model : IDBModel, new() where IncludeModel : IDBModel, new()
 
-    { 
-          
-        public IncludeOptions(string forigenKey=null, string orderBy = null, string[] atributes = null, Where where = null, int? limit = null, int? offset = null) : base(orderBy, atributes, where, limit, offset)
-        { 
+    {
+
+        public IncludeOptions(string forigenKey = null, string orderBy = null, string[] atributes = null, Where where = null, int? limit = null, int? offset = null) : base(orderBy, atributes, where, limit, offset)
+        {
             IncludeTable = TableAttribute.GetTableName(typeof(IncludeModel));
+            string MainTable = TableAttribute.GetTableName(typeof(Model));
 
-            ForigenKey = forigenKey;
+            ForigenKey = forigenKey ?? ForeignKeyAttribute.GetTableForeignKey(typeof(IncludeModel),MainTable)?.ColumnName;
             if (string.IsNullOrEmpty(ForigenKey))
             {
-                ForigenKey = Table += "Id";
+                throw new ForeignKeyNotFoundException($"{IncludeTable} has no forigen key that refrence {MainTable}"); 
             }
         }
 
         public override string ToString()
         {
-            return string.Format( GetCommand(),"Id");
+            return string.Format(GetCommand(), "Id");
         }
         public override string GetCommand()
         {
-          
+
             string atributes = "*";
             if (Attributes?.Length > 0)
             {
@@ -34,7 +37,7 @@ namespace Kemorave.SQLite.Options
                         atributes += $",{Attributes[i]}";
                     }
             }
-            string cmd = $"SELECT {(DISTINCT ? "DISTINCT" : string.Empty)} {atributes} FROM {IncludeTable} {(Where?.GetCommand() == null ? "WHERE" : $"{Where} AND ")} {ForigenKey} in (SELECT {(ItemID==null?"Id": ItemID.Value.ToString())} FROM {Table})";
+            string cmd = $"SELECT {(DISTINCT ? "DISTINCT" : string.Empty)} {atributes} FROM {IncludeTable} {(Where?.GetCommand() == null ? "WHERE" : $"{Where} AND ")} {ForigenKey} in (SELECT {(ItemID == null ? "Id" : ItemID.Value.ToString())} FROM {Table})";
             return cmd;
         }
         internal long? ItemID { get; set; }

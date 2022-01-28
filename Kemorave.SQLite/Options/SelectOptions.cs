@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Kemorave.SQLite.ModelBase;
 using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite.Options
@@ -42,13 +43,14 @@ namespace Kemorave.SQLite.Options
                         atributes += $",{Attributes[i]}";
                     }
             }
-            cmd += $"SELECT {(DISTINCT ? "DISTINCT" : string.Empty)} {atributes} FROM {Table} {Where}";
-            if (Limit > 0)
+            cmd += $"SELECT{(DISTINCT ? " DISTINCT" : string.Empty)} {atributes} FROM {Table} {Where}";
+            if (!string.IsNullOrEmpty(OrderBy))
+                cmd += $" ORDER BY {OrderBy}";
+
+             if (Limit > 0)
                 cmd += $" LIMIT {Limit}";
             if (Offset > 0)
                 cmd += $" OFFSET {Offset}";
-            if (!string.IsNullOrEmpty(OrderBy))
-                cmd += $" ORDER BY {OrderBy}";
             return cmd;
         }
     }

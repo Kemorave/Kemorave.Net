@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 
-
 namespace Kemorave.Components.ValueConverters
 {
  public class EnumToArray : IValueConverter

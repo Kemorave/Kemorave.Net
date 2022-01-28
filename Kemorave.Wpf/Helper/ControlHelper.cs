@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Diagnostics;
-using System.Windows.Input;
-using System.Windows.Controls.Primitives;
-using System.Windows.Controls;
 
 namespace Kemorave.Wpf.Helper
 {
     public class ControlHelper
     {
-
         public static void StartDoubleAnimation(UIElement uIElement, DependencyProperty dp, double toValue, Duration duration, HandoffBehavior handoffBehavior = HandoffBehavior.Compose)
         {
             if (double.IsNaN(toValue) || double.IsInfinity(toValue))
@@ -30,7 +27,7 @@ namespace Kemorave.Wpf.Helper
             obj.SetValue(RandomColorBrushProperty, PickBrush());
 
             return (Brush)obj.GetValue(RandomColorBrushProperty);
-            
+
         }
 
         public static void SetRandomColorBrush(DependencyObject obj, Brush value)
@@ -38,107 +35,87 @@ namespace Kemorave.Wpf.Helper
             obj.SetValue(RandomColorBrushProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for RandomColorBrush.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RandomColorBrushProperty =
-            DependencyProperty.RegisterAttached("RandomColorBrush", typeof(Brush), typeof(ControlHelper), new PropertyMetadata(PickBrush()),validateValueCallback);
+           DependencyProperty.RegisterAttached("RandomColorBrush", typeof(Brush), typeof(ControlHelper), new PropertyMetadata(PickBrush()), validateValueCallback);
 
         private static bool validateValueCallback(object value)
         {
             return true;
         }
 
-        public static int random=10;
+        public static int random = 10;
         public static Brush PickBrush()
         {
             Brush result;
-            Random rnd = new Random(random); 
+            Random rnd = new Random(random);
             Type brushesType = typeof(Brushes);
 
             System.Reflection.PropertyInfo[] properties = brushesType.GetProperties();
-           
-             random = rnd.Next(properties.Length);
+
+            random = rnd.Next(properties.Length);
             result = (Brush)properties.ToList().ElementAtOrDefault(random).GetValue(null, null);
             Debug.WriteLine($"Random shit at {random}");
             return result;
         }
 
-        public static bool GetIsHidden(DependencyObject obj)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #region Click/Key events
+
+
+        public static InputBindingCollection GetInputBindings(DependencyObject obj)
         {
-            return (bool)obj.GetValue(IsHiddenProperty);
+            return (InputBindingCollection)obj.GetValue(InputBindingsProperty);
         }
 
-        public static void SetIsHidden(DependencyObject obj, bool value)
+        public static void SetInputBindings(DependencyObject obj, InputBindingCollection value)
         {
-            obj.SetValue(IsHiddenProperty, value);
+            obj.SetValue(InputBindingsProperty, value);
         }
 
+        // Using a DependencyProperty as the backing store for InputBindings.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InputBindingsProperty =
+            DependencyProperty.RegisterAttached("InputBindings", typeof(InputBindingCollection), typeof(ControlHelper), new PropertyMetadata(null, OnInputBindingCollectionChanged));
 
-
-
-
-        // Using a DependencyProperty as the backing store for IsHidden.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsHiddenProperty =
-            DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(ControlHelper), new PropertyMetadata(false, IsHiddenChanged));
-
-        private static void IsHiddenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnInputBindingCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is UIElement uIElement)
-            {
-                switch ((bool)e.NewValue)
-                {
-                    case true:
-                        uIElement.Visibility = Visibility.Collapsed; break;
-                    default:
-                        uIElement.Visibility = Visibility.Visible; break;
-                }
-            }
-        }
-        public static bool GetIsCollapsed(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(IsCollapsedProperty);
-        }
-
-        public static void SetIsCollapsed(DependencyObject obj, bool value)
-        {
-            obj.SetValue(IsCollapsedProperty, value);
-        }
-
-
-
-
-
-
-
-
-
-
-
-        // Using a DependencyProperty as the backing store for IsCollapsed.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsCollapsedProperty =
-            DependencyProperty.RegisterAttached("IsCollapsed", typeof(bool), typeof(ControlHelper), new PropertyMetadata(false, IsCollapsedChanged));
-        private static void IsCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is UIElement uIElement)
-            {
-                switch ((bool)e.NewValue)
-                {
-                    case true:
-                        uIElement.Visibility = Visibility.Collapsed; break;
-                    default:
-                        uIElement.Visibility = Visibility.Visible; break;
+            if (d is FrameworkElement element)
+            { 
+                if (e.NewValue is InputBindingCollection collection && collection.Count > 0)
+                { 
+                    foreach (InputBinding item in collection)
+                    { 
+                        if(item.Command!=null&& item.Gesture!=null)
+                        element.InputBindings.Add(new InputBinding(item.Command, item.Gesture) { CommandParameter =item.CommandParameter?? element.DataContext,CommandTarget = item.CommandTarget});
+                    }
                 }
             }
         }
 
 
 
-
-  
-
-
-         
-       
-
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.RegisterAttached("CommandParameter", typeof(object), typeof(ControlHelper), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static void SetCommandParameter(DependencyObject control, object st)
@@ -167,69 +144,129 @@ namespace Kemorave.Wpf.Helper
             return null;
         }
 
-        public static readonly DependencyProperty CommandEventNameProperty = DependencyProperty.RegisterAttached("CommandEventName", typeof(string), typeof(ControlHelper), new UIPropertyMetadata(null, CommandEventNamePropertyChanged));
-
-        private static void CommandEventNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public enum ClickEvent { Click, DoubleClick, TripleClick }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty CommandClickProperty = DependencyProperty.RegisterAttached("CommandClick", typeof(ClickEvent?), typeof(ControlHelper), new UIPropertyMetadata(null, CommandClickPropertyChanged));
+        public static void SetCommandClick(DependencyObject control, ClickEvent st)
+        {
+            control.SetValue(CommandClickProperty, st);
+        }
+        public static ClickEvent? GetCommandClick(DependencyObject control)
+        {
+            var val = control.GetValue(CommandClickProperty);
+            if (val is ClickEvent clickEvent)
+                return clickEvent;
+            return null;
+        }
+        private static void CommandClickPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             //Debug.WriteLine(d + " Command ini");
 
-            if (e.NewValue is string eventName && d is UIElement element)
+            if (d is UIElement element)
             {
-                Debug.WriteLine($"Event name : {eventName} \nElement : {(element).GetType().Name}");
-
-                switch (eventName)
+                element.PreviewMouseDown -= Element_MouseDown;
+                if (e.NewValue is ClickEvent eventName)
                 {
-                    case "Click": element.MouseDown += Element_MouseDown; break;
-                    case "MouseDoubleClick": element.PreviewMouseLeftButtonDown += Element_MouseDown; break;
-                    default:
-                        break;
+                    Debug.WriteLine($"Event click : {eventName} \nElement : {(element).GetType().Name}");
+                    element.PreviewMouseDown += Element_MouseDown;
                 }
             }
-        }
 
+        }
         private static void Element_MouseDown(object sender, MouseButtonEventArgs e)
         {
-           // Debug.WriteLine(sender + " Command ex");
+
             if (sender is FrameworkElement element)
             {
                 if (GetCommand(element) is ICommand command)
                 {
-                    if (GetCommandEventName(element) == "Click" && e.ClickCount == 1)
-                    {
-                        if (command.CanExecute(GetCommandParameter(element)))
+                    if (command.CanExecute(GetCommandParameter(element)))
+                        if (GetCommandClick(element) is ClickEvent clickEvent)
                         {
-                            command.Execute(GetCommandParameter(element));
+                            switch (clickEvent)
+                            {
+                                case ClickEvent.Click:
+                                    if (e.ClickCount == 1)
+                                    {
+                                        command.Execute(GetCommandParameter(element));
+                                    }
+                                    break;
+                                case ClickEvent.DoubleClick:
+                                    if (e.ClickCount == 2)
+                                    {
+                                        command.Execute(GetCommandParameter(element));
+                                    }
+                                    break;
+                                case ClickEvent.TripleClick:
+                                    if (e.ClickCount == 3)
+                                    {
+                                        command.Execute(GetCommandParameter(element));
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                    if (GetCommandEventName(element) == "MouseDoubleClick" && e.ClickCount == 2)
-                    {
-                        if (command.CanExecute(GetCommandParameter(element)))
-                        {
-                            command.Execute(GetCommandParameter(element));
-                        }
-                    }
+
                 }
             }
         }
-
-        public static void SetCommandEventName(DependencyObject control, string st)
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty CommandKeyProperty = DependencyProperty.RegisterAttached("CommandKey", typeof(System.Windows.Input.Key?), typeof(ControlHelper), new UIPropertyMetadata(null, CommandKeyPropertyChanged));
+        public static void SetCommandKey(DependencyObject control, Key? st)
         {
-            control.SetValue(CommandEventNameProperty, st);
+            control.SetValue(CommandKeyProperty, st);
         }
-        public static string GetCommandEventName(DependencyObject control)
+        public static Key? GetCommandKey(DependencyObject control)
         {
-            var val = control.GetValue(CommandEventNameProperty);
-            if (val is string)
-                return (string)val;
+            var val = control.GetValue(CommandKeyProperty);
+            if (val is Key key)
+                return key;
             return null;
         }
+        private static void CommandKeyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //Debug.WriteLine(d + " Command ini");
+
+            if (d is UIElement element)
+            {
+                element.PreviewKeyDown -= Element_PreviewKeyDown;
+                if (e.NewValue is Key key)
+                {
+                    Debug.WriteLine($"Event key : {key} \nElement : {(element).GetType().Name}");
+
+                    element.PreviewKeyDown += Element_PreviewKeyDown;
+                }
+            }
+        }
+        private static void Element_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (sender is FrameworkElement element)
+
+                if (e.Key.Equals(GetCommandKey(element)))
+                {
+                    if (GetCommand(element) is ICommand command)
+
+                        if (command.CanExecute(GetCommandParameter(element)))
+                        {
+                            command.Execute(GetCommandParameter(element));
+                        }
+                }
+        }
+
+
+
+        #endregion
 
 
 
 
 
-
-
+        #region Animations
 
 
 
@@ -262,9 +299,59 @@ namespace Kemorave.Wpf.Helper
                 return (Storyboard)val;
             return null;
         }
+        #endregion
 
 
+        #region Visiblity
+        public static readonly DependencyProperty IsHiddenProperty =
+           DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(ControlHelper), new PropertyMetadata(false, IsHiddenChanged));
 
+        private static void IsHiddenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is UIElement uIElement)
+            {
+                switch ((bool)e.NewValue)
+                {
+                    case true:
+                        uIElement.Visibility = Visibility.Collapsed; break;
+                    default:
+                        uIElement.Visibility = Visibility.Visible; break;
+                }
+            }
+        }
+        public static bool GetIsHidden(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsHiddenProperty);
+        }
+
+        public static void SetIsHidden(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsHiddenProperty, value);
+        }
+        public static readonly DependencyProperty IsCollapsedProperty =
+            DependencyProperty.RegisterAttached("IsCollapsed", typeof(bool), typeof(ControlHelper), new PropertyMetadata(false, IsCollapsedChanged));
+        private static void IsCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is UIElement uIElement)
+            {
+                switch ((bool)e.NewValue)
+                {
+                    case true:
+                        uIElement.Visibility = Visibility.Collapsed; break;
+                    default:
+                        uIElement.Visibility = Visibility.Visible; break;
+                }
+            }
+        }
+        public static bool GetIsCollapsed(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsCollapsedProperty);
+        }
+
+        public static void SetIsCollapsed(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsCollapsedProperty, value);
+        }
 
         public static bool GetIsNotHidden(DependencyObject obj)
         {
@@ -276,9 +363,8 @@ namespace Kemorave.Wpf.Helper
             obj.SetValue(IsNotHiddenProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for IsNotHidden.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsNotHiddenProperty =
-            DependencyProperty.RegisterAttached("IsNotHidden", typeof(bool), typeof(ControlHelper), new PropertyMetadata(true, IsNotHiddenChanged));
+           DependencyProperty.RegisterAttached("IsNotHidden", typeof(bool), typeof(ControlHelper), new PropertyMetadata(true, IsNotHiddenChanged));
 
         private static void IsNotHiddenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -293,8 +379,7 @@ namespace Kemorave.Wpf.Helper
                 }
             }
         }
-         ///////////////////////////////////////////////////////////////////////////////////////
-       public static bool GetIsNotCollapsed(DependencyObject obj)
+        public static bool GetIsNotCollapsed(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsNotCollapsedProperty);
         }
@@ -329,5 +414,6 @@ namespace Kemorave.Wpf.Helper
                 }
             }
         }
+        #endregion
     }
 }

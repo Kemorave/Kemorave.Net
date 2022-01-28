@@ -11,7 +11,7 @@ namespace Kemorave.SQLite.Options
             _Conditons = new List<Tuple<ConditionOperator, WhereConditon[]>>();
         }
 
-        public Where(WhereConditon[] conditons, ConditionOperator conditionOperator = ConditionOperator.AND) : this()
+        public Where( ConditionOperator conditionOperator ,params WhereConditon[] conditons) : this()
         {
             AddConditons(conditionOperator, conditons);
         }
@@ -25,15 +25,27 @@ namespace Kemorave.SQLite.Options
             return GetCommand();
         }
 
-        internal string GetCommand()
+        public string GetCommand()
         {
             string cmd = $"WHERE ";
 
             for (int i = 0; i < _Conditons.Count; i++)
             {
+                bool clau = false;
+                if (i+1 < _Conditons.Count)
+                {
+                    if (_Conditons[i].Item1!= _Conditons[i+1].Item1)
+                    {
+                        clau = true;
+                    }
+                }
+                if (clau)
+                {
+                    cmd += "(";
+                }
                 if (i > 0)
                 {
-                    cmd += _Conditons[i].Item1;
+                    cmd +=$" {_Conditons[i].Item1} ";
                 }
                 for (int k = 0; k < _Conditons[i].Item2.Length; k++)
                 {
@@ -43,8 +55,12 @@ namespace Kemorave.SQLite.Options
                     }
                     else
                     {
-                        cmd += $"{_Conditons[i].Item1} {_Conditons[i].Item2[k].GetCommand()}";
+                        cmd += $" {_Conditons[i].Item1} {_Conditons[i].Item2[k].GetCommand()} ";
                     }
+                }
+                if (clau)
+                {
+                    cmd += ")";
                 }
             }
             return cmd;
