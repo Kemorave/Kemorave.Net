@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 
+using Kemorave.SQLite.Options;
 using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
@@ -40,16 +41,20 @@ namespace Kemorave.SQLite
 		{
 			return dataBase.ExecuteCommand(TableInfo.GetClearCommand(tableName));
 		}
-		public int CountRows(string tableName)
+
+		public int CountRows(string tableName, Where where = null)
 		{
-			return Convert.ToInt32((dataBase.CreateCommand($" SELECT count(1) FROM {tableName}; ").ExecuteScalar() ) );
+			return Convert.ToInt32((dataBase.CreateCommand($" SELECT count(1) FROM {tableName} {where?.GetCommand()}; ").ExecuteScalar()));
+		}
+		public int CountRows<T>(Where where = null)
+		{
+			string tableName = TableAttribute.GetTableName(typeof(T));
+			return Convert.ToInt32((dataBase.CreateCommand($" SELECT count(1) FROM {tableName} {where?.GetCommand()}; ").ExecuteScalar()));
 		}
 
 		public int CreateTable(TableInfo table)
 		{
-
 			return dataBase.ExecuteCommand(table.GetCreateCommand());
-
 		}
 		public int CreateTable(Type type)
 		{
@@ -113,6 +118,5 @@ namespace Kemorave.SQLite
 			}
 			return tableInfo;
 		}
-
 	}
 }

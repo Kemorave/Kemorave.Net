@@ -10,18 +10,18 @@ using Kemorave.SQLite.SQLiteAttribute;
 
 namespace Kemorave.SQLite
 {
-	public class DataSetter : Progress<double>
+	public class DataSetter : Progress<SetterProgressArgs>
 	{
 		public const string InsertOperation = "Insert";
 		public const string UpdateOperation = "Update";
 		public const string DeleteOperation = "Delete";
 
-		public event EventHandler<IDBModel> BeforeInsert;
-		public event EventHandler<IDBModel> AfterInsert;
-		public event EventHandler<IDBModel> BeforeUpdate;
-		public event EventHandler<IDBModel> AfterUpdate;
-		public event EventHandler<IDBModel> BeforeDelete;
-		public event EventHandler<IDBModel> AfterDelete;
+		public event EventHandler<SetterOperationArgs<IDBModel>> BeforeInsert;
+		public event EventHandler<SetterOperationArgs<IDBModel>> AfterInsert;
+		public event EventHandler<SetterOperationArgs<IDBModel>> BeforeUpdate;
+		public event EventHandler<SetterOperationArgs<IDBModel>> AfterUpdate;
+		public event EventHandler<SetterOperationArgs<IDBModel>> BeforeDelete;
+		public event EventHandler<SetterOperationArgs<IDBModel>> AfterDelete;
 
 		public DataSetter(SQLiteDataBase dataBase)
 		{
@@ -32,7 +32,7 @@ namespace Kemorave.SQLite
 		{
 		}
 
-		private bool _isCanceled;
+		private volatile bool _isCanceled;
 
 		private readonly SQLiteDataBase DataBase;
 
@@ -43,7 +43,7 @@ namespace Kemorave.SQLite
 			{
 				if (value != 0 && maximume != 0)
 				{
-					OnReport(Math.Round(((value * 100.0) / maximume), 2));
+					OnReport(new SetterProgressArgs(CurrentOperation) { Progress = Math.Round(((value * 100.0) / maximume), 2) });
 				}
 			}
 			catch (Exception) { }
@@ -151,9 +151,9 @@ namespace Kemorave.SQLite
 
 							CheckCancellation();
 
-							BeforeDelete?.Invoke(this, item);
+							BeforeDelete?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation,item));
 							TORE += command.ExecuteNonQuery();
-							AfterDelete?.Invoke(this, item);
+							AfterDelete?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation, item));
 							command.Parameters.Clear();
 
 							ToPercentage(TORE, rows.Length);
@@ -221,7 +221,7 @@ namespace Kemorave.SQLite
 								command.Parameters.Add(new SQLiteParameter(DbType.Object, val.Value));
 							}
 							CheckCancellation();
-							BeforeInsert?.Invoke(this, item);
+							BeforeInsert?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation, item));
 							TORE += command.ExecuteNonQuery();
 							item.Id = DataBase.Connection.LastInsertRowId;
 
@@ -233,7 +233,7 @@ namespace Kemorave.SQLite
 								}
 							}
 							fillMethod?.Invoke(item, fillMethodInvArgs);
-							AfterInsert?.Invoke(this, item);
+							AfterInsert?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation, item));
 							command.Parameters.Clear();
 
 							ToPercentage(TORE, rows.Count);
@@ -291,9 +291,9 @@ namespace Kemorave.SQLite
 							CheckCancellation();
 							command.Parameters.Add(new SQLiteParameter(DbType.Object, item.Id));
 
-							BeforeUpdate?.Invoke(this, item);
+							BeforeUpdate?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation, item));
 							TORE += command.ExecuteNonQuery();
-							AfterUpdate?.Invoke(this, item);
+							AfterUpdate?.Invoke(this, new SetterOperationArgs<IDBModel>(CurrentOperation, item));
 							command.Parameters.Clear();
 
 							ToPercentage(TORE, rows.Length);

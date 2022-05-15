@@ -114,7 +114,7 @@ namespace Kemorave.SQLite.SQLiteAttribute
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e.Message);
+                        Debug.WriteLine("Property set error at ("+prop?.Name+"), exception:"+e.Message);
                     }
                 }
             }
