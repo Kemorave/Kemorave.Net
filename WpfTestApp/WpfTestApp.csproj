@@ -35,20 +35,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    <PackageReference Include="VirtualizingWrapPanel " Version="1.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Kemorave">
       <HintPath>..\Kemorave\bin\Debug\netstandard2.0\Kemorave.dll</HintPath>
     </Reference>
     <Reference Include="Kemorave.Win, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Kemorave.Win\bin\Debug\Kemorave.Win.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-core.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.4.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-shell.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
+    </Reference> 
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -61,10 +60,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="VirtualizingWrapPanel">
-      <HintPath>..\..\WPF C# Projects\Assemplies\virtualizingwrappanel.1.5.0.nupkg\lib\net45\VirtualizingWrapPanel.dll</HintPath>
-    </Reference>
+    </Reference> 
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
