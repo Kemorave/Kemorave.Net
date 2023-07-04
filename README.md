@@ -1,6 +1,6 @@
 # Kemorave.Net
 My lazy solutions
-An over 3 years journey to master C# and .Net tech
+Is an over 3 years journey to master C# and .Net tech
 
 - SQlite mini orm
 - WPF controlls and effects lib
