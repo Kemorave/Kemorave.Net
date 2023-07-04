@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace WpfTestApp
@@ -18,9 +19,10 @@ namespace WpfTestApp
     /// </summary>
     internal class MU : Kemorave.IMainUIThreadIInvoker
     {
-        public void Invoke(Action action)
+        public Task Invoke(Action action)
         {
             App.Current.Dispatcher.Invoke(action);
+            return Task.CompletedTask;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace WpfTestApp
                 return;
             }
             IsBusy = true;
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 MultiSelection = false;
                 try
@@ -47,11 +47,11 @@ namespace WpfTestApp
                     TotalProgramsSize = 0;
                     if (ShowSystemComponentApps)
                     {
-                        ProgramesList.AddRange(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
+                    await    ProgramesList.AddRangeAsync(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
                     }
                     else
                     {
-                        ProgramesList.AddRange(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms().Where(a => !a.IsSystemComponent), true);
+                    await    ProgramesList.AddRangeAsync(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms().Where(a => !a.IsSystemComponent), true);
                     }
 
                     foreach (Kemorave.Win.RegistryTools.ProgramInfo item in ProgramesList)
@@ -133,11 +133,11 @@ namespace WpfTestApp
                 return;
             }
             IsBusy = true;
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
-                    ProgramesList.AddRange(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
+                   await ProgramesList.AddRangeAsync(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
                 }
                 catch (Exception ex)
                 {
@@ -158,11 +158,11 @@ namespace WpfTestApp
                 return;
             }
             IsBusy = true;
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
-                    ProgramesList.AddRange(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
+                 await   ProgramesList.AddRangeAsync(Kemorave.Win.RegistryTools.RegistryHelper.GetAllInstalledPrograms(), true);
                 }
                 catch (Exception ex)
                 {
