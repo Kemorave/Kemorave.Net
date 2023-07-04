@@ -29,8 +29,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kemorave.Wpf", "Kemorave.Wp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kemorave.LC", "Kemorave.LC\Kemorave.LC.csproj", "{1E5A5807-32EE-491C-ADC8-E9C73696DD09}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LCGenerator", "LCGenerator", "{8B68052B-B199-4985-A6F0-E931FF019942}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
