@@ -1,5 +1,6 @@
 # Kemorave.Net
 [![.NET Core Desktop](https://github.com/Kemorave/Kemorave.Net/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/Kemorave/Kemorave.Net/actions/workflows/dotnet-desktop.yml)
+<br>
 An over 3 years journey to master C# and .Net tech
 
 - SQlite orm
