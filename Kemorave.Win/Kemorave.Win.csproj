@@ -30,13 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-core.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>..\..\WPF C# Projects\Assemplies\microsoft-windowsapicodepack-shell.1.1.4.nupkg\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
