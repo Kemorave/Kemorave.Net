@@ -6,7 +6,7 @@
 ## An over 3 years journey to master C# and .Net tech 
 
 - SQlite ORM
-- MVVM tiny toolset lib
+- MVVM small toolset lib
 - WPF controlls and effects lib
 - File and asp web helping libs 
 - Windows API lib
