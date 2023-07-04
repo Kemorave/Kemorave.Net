@@ -1,5 +1,5 @@
 # Kemorave.Net
-is an over 3 years journey to master C# and .Net tech
+An over 3 years journey to master C# and .Net tech
 
 - SQlite orm
 - MVVM tiny toolset lib
