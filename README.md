@@ -8,3 +8,6 @@ Is an over 3 years journey to master C# and .Net tech
 - File and web helping libs
 - Windows API lib
 - I forgot the rest, only god know whats in there now
+
+Creative Commons Legal Code
+CC0 1.0 Universal
