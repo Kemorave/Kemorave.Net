@@ -2,7 +2,7 @@
 My lazy solutions
 Is an over 3 years journey to master C# and .Net tech
 
-- SQlite mini orm
+- SQlite orm
 - WPF controlls and effects lib
 - File and web helping libs
 - Windows API stuff
