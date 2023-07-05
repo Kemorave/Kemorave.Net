@@ -10,7 +10,8 @@
 - WPF controls, tools and effects lib
 - Files/Devices IO and asp web utility libs 
 - Windows lite API lib
-- I forgot the rest, only god knows whats in there now
+  
+I forgot the rest, only god knows whats in there now
 
 Creative Commons Legal Code
 CC0 1.0 Universal
