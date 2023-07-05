@@ -8,7 +8,7 @@
 - SQlite ORM
 - MVVM lite toolset lib
 - WPF controls, tools and effects lib
-- File IO and asp web utility libs 
+- Files/Devices IO and asp web utility libs 
 - Windows lite API lib
 - I forgot the rest, only god knows whats in there now
 
