@@ -2,13 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Description>General MVVM lib</Description>
     <Copyright>2020</Copyright>
-    <PackageLicenseExpression>All rights reserved</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage>en</NeutralLanguage>
     <Platforms>AnyCPU;x86</Platforms>
     <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <UserSecretsId>b0b9b350-bd3e-4607-8c03-198d26c17722</UserSecretsId>
   </PropertyGroup>
 
 </Project>

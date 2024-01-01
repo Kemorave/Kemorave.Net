@@ -5,7 +5,7 @@
     <Authors>Kemorave</Authors>
     <Description>Sqlite wrapper</Description>
     <Copyright>2022</Copyright>
-    <PackageLicenseExpression>All rights reserved</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Platforms>AnyCPU;x86</Platforms>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
